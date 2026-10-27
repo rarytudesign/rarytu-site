@@ -20,19 +20,20 @@
   .bar { display: flex; justify-content: space-between; align-items: center; gap: 16px; padding: 18px 32px; background: var(--muted); font-weight: 500; }
   .bar a { text-decoration: none; }
   .bar a:hover { text-decoration: underline; text-underline-offset: 3px; }
-  main { max-width: 760px; padding: 56px 32px 80px; }
+  main { max-width: 860px; padding: 56px 32px 80px; }
   h1 { font-weight: 500; font-size: 52px; line-height: 54px; letter-spacing: -0.6px; margin: 0 0 16px; }
-  .lede { margin: 0 0 40px; max-width: 520px; }
+  .lede { margin: 0 0 40px; max-width: 560px; }
   .actions { display: flex; flex-wrap: wrap; gap: 12px; }
   button { font: inherit; font-weight: 500; letter-spacing: 0; cursor: pointer; height: 52px; padding: 0 26px; border-radius: 100px; border: 1px solid var(--brand); transition: background-color 200ms, color 200ms, opacity 200ms; }
+  button.sm { height: 36px; padding: 0 14px; font-size: 14px; }
   .primary { background: var(--brand); color: var(--surface); }
   .secondary { background: transparent; color: var(--brand); }
-  .secondary:hover { background: var(--brand); color: var(--surface); }
-  .primary:hover { opacity: 0.85; }
+  .secondary:hover:not(:disabled) { background: var(--brand); color: var(--surface); }
+  .primary:hover:not(:disabled) { opacity: 0.85; }
   button:disabled { opacity: 0.4; cursor: default; }
-  button:focus-visible { outline: 2px solid var(--brand); outline-offset: 3px; }
+  button:focus-visible, input:focus-visible { outline: 2px solid var(--brand); outline-offset: 3px; }
   .status { margin-top: 28px; padding: 20px 22px; border-radius: 16px; background: var(--muted); }
-  .status[hidden] { display: none; }
+  .status[hidden], .history[hidden], .token[hidden] { display: none; }
   .status h2 { font-size: 20px; line-height: 24px; letter-spacing: -0.2px; font-weight: 500; margin: 0 0 8px; }
   .status p { margin: 0; }
   .status p + p { margin-top: 6px; }
@@ -46,18 +47,29 @@
   .note { color: var(--warn); }
   .error { color: var(--err); }
   .small { font-size: 14px; line-height: 20px; opacity: 0.75; }
+  .row { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 16px; }
+  .token { margin-top: 40px; padding: 20px 22px; border: 1px solid var(--line); border-radius: 16px; }
+  .token h2 { font-size: 20px; line-height: 24px; font-weight: 500; margin: 0 0 8px; }
+  .token ol { margin: 8px 0 0; padding-left: 20px; }
+  .token input { font: inherit; width: 100%; max-width: 520px; height: 44px; padding: 0 14px; border: 1px solid var(--line); border-radius: 10px; color: var(--brand); }
   .history { margin-top: 64px; }
-  .history[hidden] { display: none; }
-  .history h2 { font-size: 32px; line-height: 34px; letter-spacing: -1px; font-weight: 500; margin: 0 0 20px; }
+  .history h2 { font-size: 32px; line-height: 34px; letter-spacing: -1px; font-weight: 500; margin: 0 0 8px; }
+  .history .small { margin: 0 0 20px; }
   table { width: 100%; border-collapse: collapse; font-variant-numeric: tabular-nums; }
   th, td { text-align: left; padding: 12px 12px 12px 0; border-bottom: 1px solid var(--line); vertical-align: middle; }
   th { font-weight: 500; font-size: 14px; }
+  td.act { white-space: nowrap; text-align: right; padding-right: 0; }
+  td.act a, td.act button { margin-left: 8px; }
+  td.act a { font-size: 14px; }
+  .tag { display: inline-block; font-size: 12px; line-height: 18px; padding: 0 8px; border-radius: 100px; background: var(--brand); color: var(--surface); margin-left: 6px; vertical-align: 1px; }
   .sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
-  @media (max-width: 600px) {
+  @media (max-width: 640px) {
     .bar { padding: 14px 16px; }
     main { padding: 32px 16px 64px; }
     h1 { font-size: 40px; line-height: 44px; }
-    button { width: 100%; }
+    .actions button { width: 100%; }
+    th:nth-child(3), td:nth-child(3) { display: none; }
+    td.act { white-space: normal; }
   }
 </style>
 </head>
@@ -69,7 +81,7 @@
 
 <main>
   <h1>Site backups</h1>
-  <p class="lede">A backup is a ZIP with the whole site: every page in both languages, styles, scripts, fonts, images, videos and CVs. You can upload it to any hosting as it is.</p>
+  <p class="lede">A backup is a ZIP with the whole site: every page in both languages, styles, scripts, fonts, images, videos and CVs. Keep it on your computer and restore the site from it at any time.</p>
 
   <div class="actions">
     <button class="primary" id="backup" type="button">Back up the site</button>
@@ -79,47 +91,101 @@
 
   <section class="status" id="status" hidden aria-live="polite"></section>
 
-  <!-- Backup history: switched on once the site runs on hosting that keeps the backups -->
+  <section class="token" id="token" hidden>
+    <h2>Connect GitHub to restore</h2>
+    <p>Restoring writes to the site’s GitHub repository, so this computer needs a GitHub access token once. It stays in this browser only.</p>
+    <ol class="small">
+      <li>Open <a href="https://github.com/settings/personal-access-tokens/new" target="_blank" rel="noopener">github.com → new fine-grained token</a>.</li>
+      <li>Name: “rarytu backups”. Expiration: 1 year. Repository access: <b>Only select repositories → rarytu-site</b>.</li>
+      <li>Permissions → Repository permissions → <b>Contents: Read and write</b>. Generate the token and copy it.</li>
+    </ol>
+    <div class="row">
+      <input id="token-input" type="password" placeholder="github_pat_…" autocomplete="off" spellcheck="false">
+      <button class="primary sm" id="token-save" type="button">Save</button>
+    </div>
+    <p class="small" id="token-msg" style="margin-top:8px"></p>
+  </section>
+
   <section class="history" id="history" hidden>
     <h2>Backup history</h2>
+    <p class="small">Every change to the site is saved on GitHub as a separate version. You can download any of them as a backup or bring the site back to it.</p>
     <table>
-      <thead><tr><th>Date</th><th>Size</th><th>Files</th><th>Made by</th><th><span class="sr">Actions</span></th></tr></thead>
-      <tbody id="history-rows"></tbody>
+      <thead><tr><th>Date</th><th>What changed</th><th>Version</th><th><span class="sr">Actions</span></th></tr></thead>
+      <tbody id="history-rows"><tr><td colspan="4" class="small">Loading…</td></tr></tbody>
     </table>
+    <p class="small" style="margin-top:14px"><button class="secondary sm" id="token-change" type="button">GitHub access</button></p>
   </section>
 </main>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
 <script>
 (() => {
-  const ROOT = new URL("../", location.href);          // the site root, wherever it is hosted
+  // The site lives in this repository; GitHub Pages publishes its main branch.
+  const REPO = { owner: "rarytudesign", name: "rarytu-site", branch: "main" };
+  const API = `https://api.github.com/repos/${REPO.owner}/${REPO.name}`;
+  const KEEP = new Set(["README.md", ".nojekyll", ".gitignore", "CNAME"]);  // repo files that are not part of a backup
+  const ROOT = new URL("../", location.href);
   const $ = (id) => document.getElementById(id);
   const status = $("status");
   const fmtSize = (b) => b > 1048576 ? (b / 1048576).toFixed(1) + " MB" : Math.max(1, Math.round(b / 1024)) + " KB";
   const pad = (n) => String(n).padStart(2, "0");
   const stamp = (d = new Date()) => `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}-${pad(d.getHours())}${pad(d.getMinutes())}`;
+  const fmtDate = (iso) => { const d = new Date(iso); return d.toLocaleDateString(undefined, { day: "numeric", month: "short", year: "numeric" }) + ", " + pad(d.getHours()) + ":" + pad(d.getMinutes()); };
   const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
-  const show = (html) => { status.innerHTML = html; status.hidden = false; };
+  const show = (html) => { status.innerHTML = html; status.hidden = false; status.scrollIntoView({ block: "nearest", behavior: "smooth" }); };
   const bar = () => status.querySelector(".progress i");
+  const onGitHub = !/claude\.ai|claudeusercontent|localhost|127\.0\.0\.1/.test(location.hostname);
 
-  // ---------- Back up ----------
+  // ---------- token (kept in this browser only) ----------
+  const getToken = () => { try { return localStorage.getItem("rarytu-gh-token") || ""; } catch { return ""; } };
+  const setToken = (t) => { try { t ? localStorage.setItem("rarytu-gh-token", t) : localStorage.removeItem("rarytu-gh-token"); } catch {} };
+  async function gh(path, opts = {}) {
+    const r = await fetch(path.startsWith("http") ? path : API + path, {
+      ...opts,
+      headers: { Accept: "application/vnd.github+json", ...(getToken() ? { Authorization: "Bearer " + getToken() } : {}), ...(opts.body ? { "Content-Type": "application/json" } : {}) },
+    });
+    if (!r.ok) { const e = new Error((await r.json().catch(() => ({}))).message || ("GitHub " + r.status)); e.status = r.status; throw e; }
+    return r.status === 204 ? null : r.json();
+  }
+  let pendingAfterToken = null;
+  function askToken(then) { pendingAfterToken = then || null; $("token").hidden = false; $("token-input").focus(); $("token").scrollIntoView({ block: "center", behavior: "smooth" }); }
+  $("token-change").addEventListener("click", () => askToken());
+  $("token-save").addEventListener("click", async () => {
+    const t = $("token-input").value.trim(); const msg = $("token-msg");
+    if (!t) { setToken(""); msg.textContent = "Token removed from this browser."; return; }
+    setToken(t); msg.textContent = "Checking…";
+    try {
+      const repo = await gh("");
+      if (!repo.permissions || !repo.permissions.push) throw new Error("This token can read the repository but can’t write to it. Give it Contents: Read and write.");
+      msg.textContent = "Connected. Restore is ready on this computer."; $("token-input").value = "";
+      setTimeout(() => { $("token").hidden = true; const f = pendingAfterToken; pendingAfterToken = null; if (f) f(); }, 700);
+    } catch (e) { setToken(""); msg.innerHTML = `<span class="error">${esc(e.status === 401 ? "GitHub didn’t accept this token. Check that it was copied whole." : e.message)}</span>`; }
+  });
+
+  // ---------- Back up: every site file into one ZIP, saved to the computer ----------
   async function fetchFile(entry) {
     let r = await fetch(new URL(entry.p, ROOT), { cache: "no-store" });
-    if (!r.ok && entry.b) r = await fetch(entry.b, { cache: "no-store" });   // preview: videos live in the asset store
+    if (!r.ok && entry.b) r = await fetch(entry.b, { cache: "no-store" });   // claude.ai preview: videos live in its asset store
     if (!r.ok) throw new Error(entry.p + " (" + r.status + ")");
     return r;
   }
-  // HTML in the preview points videos at the asset store; the backup gets the real file paths
   function portableHtml(text, path, blobs) {
-    const depth = path.split("/").length - 1, up = "../".repeat(depth);
+    const up = "../".repeat(path.split("/").length - 1);
     text = text.replace(/\/_blob\/([0-9a-f]{32})/g, (m, id) => blobs[id] ? up + blobs[id] : m);
-    if ((text.match(/<!doctype html>/gi) || []).length > 1) {             // preview wrapper around the root page
+    if ((text.match(/<!doctype html>/gi) || []).length > 1) {
       const i = text.toLowerCase().indexOf("<!doctype html>", 10);
       text = text.slice(i, text.lastIndexOf("</body></html>")).trim();
     }
     return text;
   }
-
+  async function save(filename, blob) {
+    const downloads = window.claude ? await window.claude.use("downloads").catch(() => null) : null;
+    if (downloads) return downloads.save({ filename, data: blob });
+    const a = document.createElement("a");
+    a.href = URL.createObjectURL(blob); a.download = filename;
+    document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(() => URL.revokeObjectURL(a.href), 60000);
+  }
   $("backup").addEventListener("click", async () => {
     const btn = $("backup"); btn.disabled = true;
     show('<h2>Making a backup…</h2><p id="b-step">Reading the file list</p><div class="progress"><i></i></div>');
@@ -141,61 +207,140 @@
       };
       await Promise.all(Array.from({ length: 6 }, worker));
       if (failed.length) throw new Error("Some files could not be read: " + failed.slice(0, 5).join(", ") + (failed.length > 5 ? "…" : ""));
-      const info = { site: "rarytu", created: new Date().toISOString(), files: N, bytes, source: location.origin };
-      zip.file("backup.json", JSON.stringify(info, null, 2));
+      zip.file("backup.json", JSON.stringify({ site: "rarytu", created: new Date().toISOString(), files: N, bytes, source: location.href }, null, 2));
       $("b-step").textContent = "Packing the archive";
       const blob = await zip.generateAsync({ type: "blob", compression: "DEFLATE", compressionOptions: { level: 6 } },
         (m) => { bar().style.width = (85 + m.percent * 0.15).toFixed(1) + "%"; });
       const name = "rarytu-backup-" + stamp() + ".zip";
       await save(name, blob);
-      show(`<h2>Backup ready</h2><p>${esc(name)}</p><p class="small">${N} files, ${fmtSize(blob.size)}. Keep it somewhere safe, e.g. in your cloud drive.</p>`);
+      show(`<h2>Backup saved</h2><p>${esc(name)}</p><p class="small">${N} files, ${fmtSize(blob.size)}. Your browser put it in Downloads. Keep a copy in your cloud drive too.</p>`);
     } catch (e) {
       if (e && e.code === "declined") show("<h2>Backup not saved</h2><p>You cancelled the download. Press the button again to make a new one.</p>");
       else show(`<h2 class="error">Backup failed</h2><p>${esc(e.message || e)}</p>`);
     } finally { btn.disabled = false; }
   });
 
-  async function save(filename, blob) {
-    const downloads = window.claude ? await window.claude.use("downloads").catch(() => null) : null;
-    if (downloads) return downloads.save({ filename, data: blob });     // claude.ai preview
-    const a = document.createElement("a");                               // any normal hosting
-    a.href = URL.createObjectURL(blob); a.download = filename;
-    document.body.appendChild(a); a.click(); a.remove();
-    setTimeout(() => URL.revokeObjectURL(a.href), 60000);
+  // ---------- Restore from a ZIP on the computer ----------
+  async function readBackup(file) {
+    const zip = await JSZip.loadAsync(file);
+    let names = Object.keys(zip.files).filter((n) => !zip.files[n].dir && !/(^|\/)(\.DS_Store|__MACOSX\/)/.test(n));
+    const first = names[0] || "", top = first.includes("/") ? first.split("/")[0] + "/" : "";
+    const prefix = top && names.every((n) => n.startsWith(top)) ? top : "";   // a ZIP with everything inside one folder
+    const files = names.map((n) => ({ path: n.slice(prefix.length), entry: zip.files[n] })).filter((f) => f.path && f.path !== "backup.json" && !KEEP.has(f.path));
+    const has = (p) => files.some((f) => f.path === p);
+    let info = null; try { info = JSON.parse(await zip.file(prefix + "backup.json").async("string")); } catch {}
+    const checks = [
+      ["Home page", has("index.html")],
+      ["English pages", has("en/index.html") && has("en/about/index.html") && has("en/approach/index.html")],
+      ["Russian pages", has("ru/index.html") && has("ru/about/index.html") && has("ru/approach/index.html")],
+      ["Styles and scripts", has("assets/styles.css") && has("assets/main.js")],
+      ["Images", files.some((f) => f.path.startsWith("assets/img/"))],
+    ];
+    return { files, info, checks, valid: checks.every((c) => c[1]), pages: files.filter((f) => f.path.endsWith("index.html")).length };
   }
-
-  // ---------- Restore ----------
+  let chosen = null;
   $("restore").addEventListener("click", () => $("file").click());
   $("file").addEventListener("change", async (ev) => {
     const file = ev.target.files[0]; ev.target.value = "";
     if (!file) return;
     show('<h2>Checking the backup…</h2><p>' + esc(file.name) + '</p><div class="progress"><i style="width:30%"></i></div>');
     try {
-      const zip = await JSZip.loadAsync(file);
-      let names = Object.keys(zip.files).filter((n) => !zip.files[n].dir);
-      // accept archives with everything inside one top folder too
-      const top = names[0] && names[0].includes("/") ? names[0].split("/")[0] + "/" : "";
-      const prefix = top && names.every((n) => n.startsWith(top)) ? top : "";
-      const has = (p) => !!zip.file(prefix + p);
-      const pages = names.filter((n) => n.endsWith("index.html")).length;
-      let info = null; try { info = JSON.parse(await zip.file(prefix + "backup.json").async("string")); } catch {}
-      const checks = [
-        ["Home page", has("index.html")],
-        ["English pages", has("en/index.html") && has("en/about/index.html") && has("en/approach/index.html")],
-        ["Russian pages", has("ru/index.html") && has("ru/about/index.html") && has("ru/approach/index.html")],
-        ["Styles and scripts", has("assets/styles.css") && has("assets/main.js")],
-        ["Images", names.some((n) => n.startsWith(prefix + "assets/img/"))],
-      ];
-      const valid = checks.every((c) => c[1]);
-      show(`<h2>${valid ? "This backup looks complete" : "This doesn’t look like a full site backup"}</h2>
-        <p>${esc(file.name)}: ${names.length} files, ${pages} pages, ${fmtSize(file.size)}${info && info.created ? ", made " + esc(new Date(info.created).toLocaleString()) : ""}</p>
-        <ul class="checks">${checks.map((c) => `<li class="${c[1] ? "ok" : "bad"}">${c[0]}</li>`).join("")}</ul>
-        <p class="note" style="margin-top:14px">Restoring will replace the live site with this backup. It turns on once the site runs on hosting: a page alone can’t overwrite the site’s files.</p>
-        <p style="margin-top:14px"><button class="primary" type="button" disabled>Restore this backup</button></p>`);
+      const b = await readBackup(file); chosen = { file, ...b };
+      show(`<h2>${b.valid ? "This backup looks complete" : "This doesn’t look like a full site backup"}</h2>
+        <p>${esc(file.name)}: ${b.files.length} files, ${b.pages} pages, ${fmtSize(file.size)}${b.info && b.info.created ? ", made " + esc(fmtDate(b.info.created)) : ""}</p>
+        <ul class="checks">${b.checks.map((c) => `<li class="${c[1] ? "ok" : "bad"}">${c[0]}</li>`).join("")}</ul>
+        ${onGitHub ? `<p class="note" style="margin-top:14px">Restoring replaces the whole site with this backup. The current version stays in the history below, so you can always go back.</p>
+        <div class="row"><button class="primary" id="do-restore" type="button" ${b.valid ? "" : "disabled"}>Restore this backup</button></div>`
+        : `<p class="note" style="margin-top:14px">Restore works on the live site (GitHub Pages), not in this preview.</p>`}`);
+      const btn = $("do-restore"); if (btn) btn.addEventListener("click", () => getToken() ? restoreZip() : askToken(restoreZip));
     } catch (e) {
       show(`<h2 class="error">Can’t open this file</h2><p>${esc(file.name)} is not a readable ZIP archive.</p>`);
     }
   });
+
+  // git's id for a file: SHA-1 of "blob <size>\0<bytes>"; lets us upload only what actually changed
+  async function gitSha(bytes) {
+    const head = new TextEncoder().encode("blob " + bytes.length + "\0");
+    const all = new Uint8Array(head.length + bytes.length); all.set(head); all.set(bytes, head.length);
+    return [...new Uint8Array(await crypto.subtle.digest("SHA-1", all))].map((x) => x.toString(16).padStart(2, "0")).join("");
+  }
+  function b64(bytes) { let s = ""; for (let i = 0; i < bytes.length; i += 0x8000) s += String.fromCharCode.apply(null, bytes.subarray(i, i + 0x8000)); return btoa(s); }
+
+  async function currentTree() {
+    const ref = await gh(`/git/ref/heads/${REPO.branch}`);
+    const commit = await gh(`/git/commits/${ref.object.sha}`);
+    const tree = await gh(`/git/trees/${commit.tree.sha}?recursive=1`);
+    return { head: ref.object.sha, tree: tree.tree.filter((t) => t.type === "blob") };
+  }
+  async function commitTree(entries, head, message) {
+    const tree = await gh("/git/trees", { method: "POST", body: JSON.stringify({ tree: entries }) });
+    const commit = await gh("/git/commits", { method: "POST", body: JSON.stringify({ message, tree: tree.sha, parents: [head] }) });
+    await gh(`/git/refs/heads/${REPO.branch}`, { method: "PATCH", body: JSON.stringify({ sha: commit.sha }) });
+    return commit.sha;
+  }
+  async function restoreZip() {
+    const b = chosen; if (!b) return;
+    show('<h2>Restoring…</h2><p id="r-step">Reading the current site</p><div class="progress"><i></i></div>');
+    try {
+      const { head, tree } = await currentTree();
+      const now = new Map(tree.map((t) => [t.path, t.sha]));
+      const entries = []; let uploaded = 0, i = 0;
+      for (const f of b.files) {
+        const bytes = new Uint8Array(await f.entry.async("uint8array"));
+        let sha = await gitSha(bytes);
+        if (now.get(f.path) !== sha) {
+          $("r-step").textContent = "Uploading " + f.path;
+          sha = (await gh("/git/blobs", { method: "POST", body: JSON.stringify({ content: b64(bytes), encoding: "base64" }) })).sha;
+          uploaded++;
+        }
+        entries.push({ path: f.path, mode: "100644", type: "blob", sha });
+        bar().style.width = (++i / b.files.length * 90).toFixed(1) + "%";
+      }
+      tree.filter((t) => KEEP.has(t.path)).forEach((t) => entries.push({ path: t.path, mode: t.mode, type: "blob", sha: t.sha }));
+      const removed = tree.filter((t) => !KEEP.has(t.path) && !b.files.some((f) => f.path === t.path)).length;
+      if (!uploaded && !removed) { show("<h2>Nothing to restore</h2><p>The site already matches this backup exactly.</p>"); return; }
+      $("r-step").textContent = "Saving the new version";
+      await commitTree(entries, head, `Restore from backup ${b.file.name}`);
+      bar().style.width = "100%";
+      show(`<h2>Site restored</h2><p>${uploaded} files updated${removed ? ", " + removed + " removed" : ""}. GitHub Pages publishes it in 1–2 minutes; then refresh the site.</p>`);
+      loadHistory();
+    } catch (e) { restoreError(e); }
+  }
+  function restoreError(e) {
+    if (e.status === 401 || e.status === 403) { setToken(""); show(`<h2 class="error">GitHub refused access</h2><p>The saved token is missing, expired or can’t write. Add a new one below and try again.</p>`); askToken(); }
+    else show(`<h2 class="error">Restore failed</h2><p>${esc(e.message || e)}</p><p class="small">The site wasn’t changed.</p>`);
+  }
+
+  // ---------- History: every version of the site on GitHub ----------
+  async function loadHistory() {
+    const rows = $("history-rows");
+    try {
+      const list = await gh(`/commits?sha=${REPO.branch}&per_page=30`);
+      rows.innerHTML = list.map((c, i) => {
+        const msg = c.commit.message.split("\n")[0];
+        return `<tr><td>${esc(fmtDate(c.commit.author.date))}</td><td>${esc(msg)}${i === 0 ? '<span class="tag">live</span>' : ""}</td><td class="small">${c.sha.slice(0, 7)}</td>
+          <td class="act"><a href="https://github.com/${REPO.owner}/${REPO.name}/archive/${c.sha}.zip">Download</a>${i === 0 ? "" : `<button class="secondary sm" type="button" data-sha="${c.sha}" data-when="${esc(fmtDate(c.commit.author.date))}">Restore</button>`}</td></tr>`;
+      }).join("");
+      rows.querySelectorAll("button[data-sha]").forEach((btn) => btn.addEventListener("click", () => {
+        const go = () => restoreVersion(btn.dataset.sha, btn.dataset.when);
+        getToken() ? go() : askToken(go);
+      }));
+    } catch (e) { rows.innerHTML = `<tr><td colspan="4" class="small">Couldn’t load the history from GitHub (${esc(e.message)}).</td></tr>`; }
+  }
+  async function restoreVersion(sha, when) {
+    if (!confirm(`Bring the whole site back to the version from ${when}? The current version stays in the history.`)) return;
+    show('<h2>Restoring…</h2><p>Bringing back the version from ' + esc(when) + '</p><div class="progress"><i style="width:50%"></i></div>');
+    try {
+      const { head } = await currentTree();
+      const old = await gh(`/git/commits/${sha}`);
+      const commit = await gh("/git/commits", { method: "POST", body: JSON.stringify({ message: `Restore the version from ${when}`, tree: old.tree.sha, parents: [head] }) });
+      await gh(`/git/refs/heads/${REPO.branch}`, { method: "PATCH", body: JSON.stringify({ sha: commit.sha }) });
+      show(`<h2>Site restored</h2><p>The site is back to the version from ${esc(when)}. GitHub Pages publishes it in 1–2 minutes; then refresh the site.</p>`);
+      loadHistory();
+    } catch (e) { restoreError(e); }
+  }
+
+  if (onGitHub) { $("history").hidden = false; loadHistory(); }
 })();
 </script>
 </body>

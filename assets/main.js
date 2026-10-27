@@ -227,7 +227,18 @@
         .forEach((e) => { show(e.target); rio.unobserve(e.target); });
       clearTimeout(batchTimer); batchTimer = setTimeout(() => (batch = 0), 140);
     }, { threshold: 0.12, rootMargin: "0px 0px -5% 0px" });
-    shown.then(() => requestAnimationFrame(() => all.forEach((el) => rio.observe(el))));
+    // Blocks at the very end of the page (footer contacts, "Back to top") can sit below that trigger line
+    // even when scrolled all the way down, especially on tall screens: reveal whatever is left once the
+    // bottom is reached, and anything already on screen after the page opens.
+    const flush = () => all.forEach((el) => {
+      if (el.classList.contains("in")) return;
+      const r = el.getBoundingClientRect();
+      if (r.top < innerHeight && r.bottom > 0) { show(el); rio.unobserve(el); }
+    });
+    const atBottom = () => { if (scrollY + innerHeight >= document.documentElement.scrollHeight - 4) flush(); };
+    addEventListener("scroll", atBottom, { passive: true });
+    addEventListener("resize", atBottom, { passive: true });
+    shown.then(() => requestAnimationFrame(() => { all.forEach((el) => rio.observe(el)); setTimeout(() => { flush(); atBottom(); }, 400); }));
   }
 
   /* ---------- Images fade in once decoded (no half-painted frames) ---------- */

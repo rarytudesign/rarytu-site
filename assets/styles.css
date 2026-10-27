@@ -706,8 +706,9 @@ html[lang="ru"] .dfoot__title { font-family: var(--font); font-size: clamp(60px,
 @media (min-width: 744px) { .gitem { border-radius: 16px; } }
 @media (min-width: 1280px) { .gitem { border-radius: 24px; } }
 .gitem img { width: 100%; height: 100%; object-fit: cover; }
-.gitem--video { background: #0d0d0d; }
-.gitem__v, .chero__v { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+.gitem--video { background: transparent; }
+/* videos bleed 1px past the rounded frame so no background hairline shows at the edges */
+.gitem__v, .chero__v { position: absolute; inset: -1px; width: calc(100% + 2px); height: calc(100% + 2px); max-width: none; object-fit: cover; }
 .gitem iframe { position: absolute; top: 50%; left: 50%; border: 0; transform: translate(-50%, -50%); width: max(100%, calc(100% * (16 / 9) * var(--ar))); height: max(100%, calc(100% / ((16 / 9) * var(--ar)))); }
 
 .pnav { display: flex; justify-content: space-between; align-items: center; gap: 16px; margin-top: 16px; height: 58px; border-top: 1px solid var(--brand); border-bottom: 1px solid var(--brand); text-transform: uppercase; letter-spacing: 0.2px; line-height: 20px; font-size: 16px; }
@@ -753,3 +754,4 @@ html[lang="ru"] .dfoot__title { font-family: var(--font); font-size: clamp(60px,
 .admin-link:focus-visible { opacity: 1; }
 .mmenu .admin-link { font-size: 16px; line-height: 20px; }
 @media (min-width: 1280px) { .sidebar .admin-link { text-box: trim-both cap alphabetic; } }
+.gitem, .chero { isolation: isolate; }

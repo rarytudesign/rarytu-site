@@ -65,6 +65,10 @@ Rule: one step at a time. Test, commit, push, then tick it here.
   go into each page's own JSON in A4–A6; case pages use the Work page tagline and their own title/description.
 
 ## Log
+- 2026-10-27: Figma check round 2 (mobile). Text gets 2px slack into the side margin (browsers count trailing letter-spacing,
+  Figma doesn't); education paragraph gap 8px; RU: principles heading wraps (nbsp removed, text-wrap), Approach heading 40/36 and intro
+  276px wide, tools text full width with no paragraph gaps, About bio column 2 split into two paragraphs with 6px gap. Measured: EN and RU
+  Work / About / Approach / HEVY all within 0–3px of Figma section by section.
 - 2026-10-27: Figma check round (mobile 390, Figma page 131:2228; tablet page 141:11037).
   Preview bug: iframe got its width after loading, so main.js split headings into one word per line; now the frame is sized first.
   EN content: 275 non-breaking spaces removed (kept next to &, → and after digits); they made lines wrap earlier than in Figma.

@@ -768,7 +768,7 @@ html[lang="ru"] .dfoot__title { font-family: var(--font); font-size: clamp(60px,
 /* Figma check (mobile + tablet): each contact row is 52px plus its 1px line */
 @media (max-width: 1279px) { .fcell { height: 53px; } }
 /* Figma check (mobile): 24px above the principles' swipe line; the tools text box is 346px wide */
-@media (max-width: 743px) { .principles .swipe { padding-top: 24px; } .split__text > div { max-width: 346px; } }
+@media (max-width: 743px) { .principles .swipe { padding-top: 24px; } html[lang="en"] .split__text > div { max-width: 346px; } }
 /* Figma check: space between the gallery and the previous/next links (mobile 54px, tablet 52px) */
 @media (max-width: 743px) { .pnav { margin-top: 54px; } }
 @media (min-width: 744px) and (max-width: 1279px) { .pnav { margin-top: 52px; } }
@@ -778,3 +778,16 @@ html[lang="ru"] .dfoot__title { font-family: var(--font); font-size: clamp(60px,
   html[lang="ru"] .xlist:not(.xlist--edu) .xrow__text { padding-top: 14px; }
   html[lang="ru"] .xlist:not(.xlist--edu) .xrow__text p + p { margin-top: 0; }
 }
+/* Figma check (mobile): browsers count the letter-spacing after the last letter, Figma doesn't, so a line that
+   exactly fills the 358px box in Figma wrapped one word early here. 2px of slack into the side margin fixes that. */
+@media (max-width: 743px) { .ahero__bio p, .hero__lede, .intro__head p, .xrow__text p, p.xrow__text, .cover-text p, .split__text p { margin-right: -2px; } }
+/* Figma check (mobile): 8px between the paragraphs of an education entry */
+@media (max-width: 743px) { .xlist--edu .xrow__text p + p { margin-top: 8px; } }
+/* Figma check (RU mobile): "Что для меня важно" wraps to two lines */
+@media (max-width: 743px) { html[lang="ru"] .principles .display { text-wrap: wrap; } }
+/* Figma check (RU mobile, Approach): heading 40/36, intro text box 276px wide */
+@media (max-width: 743px) { html[lang="ru"] .intro__head .display { line-height: 36px; } html[lang="ru"] .intro__head p { max-width: 276px; } }
+/* Figma check (RU mobile, Approach tools): paragraphs follow each other without a gap */
+@media (max-width: 743px) { html[lang="ru"] .split__text p + p { margin-top: 0; } }
+/* Figma check (RU mobile, About): 6px between bio paragraphs */
+@media (max-width: 743px) { html[lang="ru"] .ahero__bio p + p { margin-top: 6px; } }

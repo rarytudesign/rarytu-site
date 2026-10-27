@@ -27,7 +27,7 @@ Rule: one step at a time. Test, commit, push, then tick it here.
 ## C. Page editors
 - [x] C1 Site tab: name, taglines, menu labels, contacts (add/edit/remove), CV files, SEO texts
 - [x] C2 Work tab: hero texts, Selected work cards (order, show/hide)
-- [ ] C3 About tab: hero and bio, photos with captions, Work experience, Education, Tools and other lists
+- [x] C3 About tab: hero and bio, photos with captions, Work experience, Education, Tools and other lists
 - [ ] C4 Approach tab: every section
 - [ ] C5 Project tab: card, header, tags, hero media and colour, overview, gallery (images/videos, reorder)
 
@@ -62,6 +62,10 @@ Rule: one step at a time. Test, commit, push, then tick it here.
   go into each page's own JSON in A4–A6; case pages use the Work page tagline and their own title/description.
 
 ## Log
+- 2026-10-27: C3 done. ed-about.js: intro (heading, two bio columns × desktop / mobile+tablet, heading + paragraphs), photos (captions, order;
+  adding/replacing waits for D1), experience and education lists (+ add, years, role, company, paragraphs; logo note), tools (+ add, name,
+  optional SVG icon code), SEO + both taglines. F.pair(file, lang => keys) for values stored per language at different paths.
+  List rows update their collapsed title while typing.
 - 2026-10-27: C2 done. ed-work.js: intro (heading with variants, lede), Selected work (title, intro line, project order: list with fixed:true =
   no delete, links to each project tab), circles (fixed 2: heading, text, link text, target page), ring centre text (ring words are artwork),
   SEO (title, description, tagline). F.list got `fixed` (no delete button).

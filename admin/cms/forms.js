@@ -33,6 +33,15 @@
     };
   }
 
+  // bilingual accessor for values stored per language at different places: pair(file, (lang) => keys)
+  function pair(file, keysFor) {
+    const one = (lang) => at(file, keysFor(lang));
+    return { get: () => ({ en: one("en").get(), ru: one("ru").get() }),
+      set: (v) => Store.update(file, (copy) => { for (const lang of ["en", "ru"]) {
+        const val = typeof v === "string" || Array.isArray(v) ? v : v[lang];
+        const keys = keysFor(lang); let x = copy; for (const k of keys.slice(0, -1)) x = x[k] ?? (x[k] = {}); x[keys[keys.length - 1]] = val; } }) };
+  }
+
   // ---------- text conversions ----------
   const toBox = (s) => String(s == null ? "" : s).replace(/<br>/g, "\n");
   const fromBox = (s) => String(s).replace(/\r/g, "").replace(/\n/g, "<br>");
@@ -163,6 +172,9 @@
             h("button", { type: "button", class: "ibtn", title: "Move down", "aria-label": "Move down", disabled: i === arr.length - 1 || null, onclick: (e) => { e.preventDefault(); move(1); } }, "↓"),
             opts.fixed ? null : h("button", { type: "button", class: "ibtn ibtn--del", title: "Delete", "aria-label": "Delete", onclick: (e) => { e.preventDefault(); del(); } }, "✕")));
         d.append(sum);
+        // keep the title in the collapsed row in step with what's typed
+        d.addEventListener("input", () => { const t = sum.querySelector(".fitem__title"), v = b.sub(i).get();
+          t.textContent = (opts.summary ? opts.summary(v, i) : `Item ${i + 1}`).replace(/<br[^>]*>/g, " ").replace(/<[^>]+>/g, "") || `Item ${i + 1}`; });
         if (d.open) { d.dataset.filled = 1; d.append(h("div", { class: "fitem__body" }, opts.item(b.sub(i), i))); }
         wrap.append(d);
       });
@@ -182,5 +194,5 @@
   }
   const note = (txt) => h("p", { class: "field__hint" }, txt);
 
-  window.F = { h, at, text, input, select, list, group, note, esc, toBox, fromBox, parasToBox, parasFromBox, compact };
+  window.F = { h, at, pair, text, input, select, list, group, note, esc, toBox, fromBox, parasToBox, parasFromBox, compact };
 })();

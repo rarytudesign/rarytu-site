@@ -155,3 +155,4 @@ select.finput { appearance: auto; }
 .ibtn:hover:not(:disabled) { background: var(--muted); }
 .ibtn--del:hover:not(:disabled) { color: var(--err); }
 .flist__add { margin-top: 4px; }
+.thumb { display: block; width: 120px; height: 90px; object-fit: cover; border-radius: 8px; margin: 0 0 12px; background: var(--muted); }

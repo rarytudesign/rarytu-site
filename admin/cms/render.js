@@ -10,7 +10,7 @@
   // attribute / plain text: escape everything
   const esc = (s) => String(s == null ? "" : s).replace(/[&<>"]/g, (c) => ESC[c]);
   // Content text may contain a few inline tags; everything else is escaped.
-  const INLINE = /<(br|br class="[\w -]+"|span class="nw"|\/span|b|\/b|i|\/i|\/a|a href="[^"<>]*")>/g;
+  const INLINE = /<(br|br class="[\w -]+"|span class="[\w -]+"|\/span|b|\/b|i|\/i|\/a|a href="[^"<>]*")>/g;
   function rich(s) {
     const keep = [];
     const marked = String(s == null ? "" : s).replace(INLINE, (m) => "\u0000" + (keep.push(m) - 1) + "\u0000");
@@ -181,8 +181,8 @@ ${cells}
   const ICO_NE = '<svg class="ico-ne" viewBox="0 0 10 10" aria-hidden="true"><path d="M1.5 8.5 8.5 1.5M3 1.5h5.5V7" fill="none" stroke="currentColor" stroke-width="1.2"/></svg>';
   // paragraph that may have desktop and mobile+tablet versions
   function vp(v, lang, cls) {
-    const x = pick(v, lang), c = cls ? cls + " " : "";
-    if (x && typeof x === "object") return `<p class="${c}v-d">${rich(x.d)}</p><p class="${c}v-mt">${rich(x.mt)}</p>`;
+    const x = pick(v, lang), c = cls ? " " + cls : "";
+    if (x && typeof x === "object") return `<p class="v-d${c}">${rich(x.d)}</p><p class="v-mt${c}">${rich(x.mt)}</p>`;
     return `<p${cls ? ` class="${cls}"` : ""}>${rich(x)}</p>`;
   }
 
@@ -292,6 +292,70 @@ ${xrows(a.education.items, lang, r)}</ul>
 ${footer(ctx)}`;
   }
 
+  // ---------- Approach page ----------
+  const isVar = (x) => x && typeof x === "object" && !Array.isArray(x);
+  const paras = (list) => (list || []).map((x) => `<p>${rich(x)}</p>`).join("");
+  function approachMain(ctx, a) {
+    const { site, lang, path } = ctx, r = up(path), ui = site.ui[lang];
+    const steps = a.steps.map((st, k) => `    <li class="xrow"><p class="xrow__n">{ ${pad2(k + 1)} }</p><div class="xrow__role"><h3>${rich(tr(st.title, lang))}</h3></div>${vp(st.text, lang, "xrow__text")}</li>`).join("\n");
+    const items = a.principles.items.map((it) => {
+      const t = pick(it.title, lang), x = pick(it.text, lang);
+      if (isVar(t) || isVar(x)) return `    <li class="pcircle"><h3 class="v-d">${rich(variant(t, "d"))}</h3><p class="v-d">${rich(variant(x, "d"))}</p><h3 class="v-mt">${rich(variant(t, "mt"))}</h3><p class="v-mt">${rich(variant(x, "mt"))}</p></li>`;
+      return `    <li class="pcircle"><h3>${rich(t)}</h3><p>${rich(x)}</p></li>`; }).join("\n");
+    const tt = pick(a.tools.text, lang);
+    const toolsText = isVar(tt) ? `<div class="v-d">${paras(tt.d)}</div><div class="v-mt">${paras(tt.mt)}</div>` : `<div>${paras(tt)}</div>`;
+    const byId = {}; site.contacts.forEach((c) => { byId[c.id] = c; });
+    const btns = (site.approachButtons || site.contacts.map((c) => c.id)).map((id) => byId[id]).filter(Boolean).map((c) =>
+      `    <a class="sbtn" href="${esc(c.url)}" aria-label="${esc(tr(c.iconLabel || c.label, lang))}"${c.copy ? ` data-copy="${esc(c.copy)}"` : ' target="_blank" rel="noopener"'}>${c.icon || DEFAULT_ICON}<span class="sbtn__label">${esc(c.label)}</span></a>`).join("\n");
+    const media = (m) => `<video class="media" src="${r}${m.video}" poster="${r}${m.poster}" muted loop playsinline autoplay preload="metadata" width="${m.width}" height="${m.height}"></video>`;
+    return `<section class="intro">
+  <div class="intro__head">
+    <h1 class="display">${rich(tr(a.heading, lang))}</h1>
+    ${vp(a.intro, lang)}
+  </div>
+  <ol class="steps">
+${steps}
+  </ol>
+</section>
+
+<section class="wip">
+  ${pick(a.wip.dots, lang) || ""}
+  <figure class="wip__fig">
+    ${media(a.wip)}
+    <figcaption>${rich(tr(a.wip.caption, lang))}</figcaption>
+  </figure>
+</section>
+
+<section class="principles">
+  <h2 class="display">${rich(tr(a.principles.title, lang))}</h2>
+  <ul class="pgrid" data-carousel>
+${items}
+  </ul>
+  <div class="swipe" aria-hidden="true"><span class="swipe__n">01 / ${pad2(a.principles.items.length)}</span><span class="swipe__track"><i></i></span><span>${rich(tr(a.principles.swipe, lang))}</span></div>
+</section>
+
+<section class="split">
+  <div class="split__media">${media(a.tools)}</div>
+  <div class="split__text">
+    <h2>${rich(tr(a.tools.title, lang))}</h2>
+    ${toolsText}
+  </div>
+</section>
+
+${footer(ctx, { compact: true, title: tr(a.footerTitle, lang) })}
+
+<footer class="dfoot" id="contact" data-contact-target>
+  <canvas class="dfoot__canvas" aria-hidden="true"></canvas>
+  <h2 class="dfoot__title">${rich(tr(a.contactTitle, lang))}</h2>
+  <div class="dfoot__btns">
+${btns}
+  </div>
+</footer>
+<div class="fbottom dfoot-bottom only-t"><span>${esc(site.copyright)}</span><a class="fnext arrow-link" href="${r + pagePath(lang, "work")}"><span>${esc(ui.nav.work)}</span> <span class="arr arr--right" aria-hidden="true">→</span></a></div>`;
+  }
+  // icon for a contact that has none: a plain circle with an arrow, same size as the others
+  const DEFAULT_ICON = '<svg viewBox="0 0 52 52" width="52" height="52" aria-hidden="true"><circle cx="26" cy="26" r="26" fill="currentColor"/><path d="M20 32 32 20M23 20h9v9" fill="none" stroke="#fff" stroke-width="2"/></svg>';
+
   // ---------- pages ----------
   /* p: { lang, key: "work"|"about"|"approach"|"case", slug? , path }
      data: { site, read(file) → parsed JSON }  (read is sync in Node; the panel passes a cache) */
@@ -318,10 +382,16 @@ ${footer(ctx)}`;
         description: tr(a.description, lang), tagline: tr(a.tagline, lang), menuTagline: tr(a.menuTagline, lang) });
       return shell(ctx, aboutMain(ctx, a));
     }
-    throw new Error("page type not rendered yet: " + p.key);
+    if (p.key === "approach") {
+      const a = data.read("content/pages/approach.json");
+      Object.assign(ctx, { nav: "approach", bodyClass: "page-approach", title: tr(a.title, lang),
+        description: tr(a.description, lang), tagline: tr(a.tagline, lang), menuTagline: tr(a.menuTagline, lang) });
+      return shell(ctx, approachMain(ctx, a));
+    }
+    throw new Error("unknown page type: " + p.key);
   }
 
-  const api = { renderPage, aboutMain, caseMain, workMain, vp, esc, rich, pick, variant, tr, up, pagePath, casePath, shell, footer, SVG };
+  const api = { renderPage, approachMain, aboutMain, caseMain, workMain, vp, esc, rich, pick, variant, tr, up, pagePath, casePath, shell, footer, SVG };
   root.RarytuRender = api;
   if (typeof module !== "undefined" && module.exports) module.exports = api;
 })(typeof window !== "undefined" ? window : globalThis);

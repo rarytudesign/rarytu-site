@@ -14,7 +14,7 @@ Rule: one step at a time. Test, commit, push, then tick it here.
 - [x] A3 Case pages: `content/cases/*.json` for all 6 projects, renderer, 12 pages identical
 - [x] A4 Work (home) page: content + renderer, 2 pages identical
 - [x] A5 About page: content + renderer, 2 pages identical
-- [ ] A6 Approach page: content + renderer, 2 pages identical
+- [x] A6 Approach page: content + renderer, 2 pages identical
 - [ ] A7 Root `index.html`, full check of all 20 pages, screenshots at 390 / 834 / 1440
 
 ## B. Panel shell
@@ -60,6 +60,10 @@ Rule: one step at a time. Test, commit, push, then tick it here.
   go into each page's own JSON in A4–A6; case pages use the Work page tagline and their own title/description.
 
 ## Log
+- 2026-10-27: A6 done. approach.json = { title, description, tagline, menuTagline, heading, intro, steps [{title, text}] (numbers automatic),
+  wip { dots, video, poster, width, height, caption }, principles { title, swipe, items [{title, text}] }, tools { title, text (paragraphs or {d:[],mt:[]}), video, poster, width, height },
+  footerTitle (mobile/tablet footer), contactTitle (desktop dot-field footer) }. Desktop contact buttons come from site.contacts in site.approachButtons order;
+  a contact without its own icon gets DEFAULT_ICON. Test: 18/18 pages same.
 - 2026-10-27: A5 done. about.json = { title, description, tagline, menuTagline, heading, bio [2 columns: {en:{d:{heading,text[]},mt:{...}}, ru:...}],
   photos { dots, swipe, items [{image, caption}] }, experience/education { title, items [{date, role, company, text[], logo? per language {src,width,height}}] },
   tools { title, items [{icon (raw SVG markup), label}] } }. Section titles are stored without braces; renderer adds "{ … }" with nbsp before "}".

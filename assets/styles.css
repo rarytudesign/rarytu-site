@@ -748,10 +748,4 @@ html[lang="ru"] .dfoot__title { font-family: var(--font); font-size: clamp(60px,
 }
 
 /* Temporary: link to the backups page, right after the name */
-.brand-wrap { display: inline-flex; align-items: baseline; gap: 0.3em; white-space: nowrap; }
-.admin-link { opacity: 0.45; transition: opacity var(--t-fast); }
-@media (hover: hover) { .admin-link:hover { opacity: 1; } }
-.admin-link:focus-visible { opacity: 1; }
-.mmenu .admin-link { font-size: 16px; line-height: 20px; }
-@media (min-width: 1280px) { .sidebar .admin-link { text-box: trim-both cap alphabetic; } }
 .gitem, .chero { isolation: isolate; }

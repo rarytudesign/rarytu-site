@@ -1,0 +1,34 @@
+// End-to-end test of Site backups against the mock GitHub. Run: S=<scratch dir with b3.zip> MOCK_GIT=<bare clone> node tools/test-backups.js (serve the repo on :8811 first)
+const { chromium } = require('playwright'); const { execFileSync } = require('child_process');
+const S = process.env.S, mock = require(__dirname + '/mock-github.js');
+const git = (a, input) => execFileSync('git', ['--git-dir', process.env.MOCK_GIT, ...a], { input }).toString().trim();
+(async () => {
+  const b = await chromium.launch(); const ctx = await b.newContext({ acceptDownloads: true });
+  await ctx.route(/api\.github\.com|raw\.githubusercontent\.com/, mock.handle);
+  await ctx.addInitScript(() => { localStorage.setItem('rarytu-gh-token', 'test'); window.confirm = () => true; });
+  const pg = await ctx.newPage(); pg.on('pageerror', e => console.log('PAGEERR', e.message));
+  const open = async () => { await pg.goto('http://localhost:8811/admin/index.html'); await pg.waitForTimeout(800); };
+  const hist = async () => console.log('  LIVE:', await pg.textContent('#live'), '\n  ROWS:', (await pg.textContent('#history-rows')).replace(/\s+/g, ' ').trim());
+  const st = async () => console.log('  STATUS:', (await pg.textContent('#status')).replace(/\s+/g, ' ').trim());
+  const doBackup = async () => { const [dl] = await Promise.all([pg.waitForEvent('download', { timeout: 120000 }), pg.click('#backup')]); const f = S + '/' + dl.suggestedFilename(); await dl.saveAs(f); await pg.waitForFunction(() => /saved|failed/.test(document.querySelector('#status').textContent), null, { timeout: 60000 }); await pg.waitForTimeout(500); return f; };
+  const doRestore = async (f) => { await pg.setInputFiles('#file', f); await pg.waitForSelector('#do-restore'); await pg.click('#do-restore'); await pg.waitForFunction(() => /restored to|failed/i.test(document.querySelector('#status h2').textContent), null, { timeout: 120000 }); await pg.waitForTimeout(500); };
+  console.log('1. fresh'); await open(); await hist();
+  console.log('2. backup'); const z1 = await doBackup(); await st(); await hist();
+  console.log('3. second backup, same site'); await doBackup(); await st(); await hist();
+  console.log('4. Claude edits the site (adds a file, changes css)');
+  const head = git(['rev-parse', 'main']);
+  const idx = S + '/idx'; const env = { ...process.env, GIT_INDEX_FILE: idx };
+  execFileSync('git', ['--git-dir', process.env.MOCK_GIT, 'read-tree', head], { env });
+  const css = git(['hash-object', '-w', '--stdin'], git(['cat-file', 'blob', head + ':assets/styles.css']) + '\n/* edit */\n');
+  const nf = git(['hash-object', '-w', '--stdin'], 'new');
+  execFileSync('git', ['--git-dir', process.env.MOCK_GIT, 'update-index', '--add', '--cacheinfo', '100644,' + css + ',assets/styles.css', '--cacheinfo', '100644,' + nf + ',en/new.html'], { env });
+  const t = execFileSync('git', ['--git-dir', process.env.MOCK_GIT, 'write-tree'], { env }).toString().trim();
+  git(['update-ref', 'refs/heads/main', git(['commit-tree', t, '-p', head, '-m', 'edit'])]);
+  await open(); await hist();
+  console.log('5. restore v.1 zip'); await doRestore(z1); await st(); await hist();
+  const changed = git(['diff', '--stat', head, 'main', '--', '.', ':!admin']); console.log('  diff vs original site (excluding admin):', changed || 'none');
+  console.log('6. restore same again'); await doRestore(z1); await st(); await hist();
+  console.log('7. restore old-format zip (no backup.json / README)'); await doRestore(S + '/b3.zip'); await st(); await hist();
+  console.log('  files on main:', git(['ls-tree', '-r', '--name-only', 'main']).split('\n').filter(x => !x.startsWith('assets/')).join(' '));
+  await b.close();
+})();

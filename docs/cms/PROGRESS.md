@@ -64,6 +64,9 @@ Rule: one step at a time. Test, commit, push, then tick it here.
   go into each page's own JSON in A4–A6; case pages use the Work page tagline and their own title/description.
 
 ## Log
+- 2026-10-27: Live check: panel works on GitHub Pages (without a token, content loads from the site; with her token, from GitHub).
+  tools/build.js now also stamps admin asset versions (?v=hash). Waiting for Nastya's feedback; then G4 polish.
+  Open questions sent to her: em dashes in RU case texts (12 places), 6th contact wraps the footer.
 - 2026-10-27: G1–G3 done. G1 = tools/test-publish.js + test-backups.js + test-store.js. G2: iPhone 13 check, no horizontal scroll;
   preview defaults to Mobile width on narrow screens; panel opens on #work by default. G3: Russian guide "Панель управления" in README.md.
   Left: G4 polish (typography markup in text boxes, per-page change count) after Nastya's first feedback.

@@ -26,7 +26,7 @@ Rule: one step at a time. Test, commit, push, then tick it here.
 
 ## C. Page editors
 - [x] C1 Site tab: name, taglines, menu labels, contacts (add/edit/remove), CV files, SEO texts
-- [ ] C2 Work tab: hero texts, Selected work cards (order, show/hide)
+- [x] C2 Work tab: hero texts, Selected work cards (order, show/hide)
 - [ ] C3 About tab: hero and bio, photos with captions, Work experience, Education, Tools and other lists
 - [ ] C4 Approach tab: every section
 - [ ] C5 Project tab: card, header, tags, hero media and colour, overview, gallery (images/videos, reorder)
@@ -62,6 +62,9 @@ Rule: one step at a time. Test, commit, push, then tick it here.
   go into each page's own JSON in A4–A6; case pages use the Work page tagline and their own title/description.
 
 ## Log
+- 2026-10-27: C2 done. ed-work.js: intro (heading with variants, lede), Selected work (title, intro line, project order: list with fixed:true =
+  no delete, links to each project tab), circles (fixed 2: heading, text, link text, target page), ring centre text (ring words are artwork),
+  SEO (title, description, tagline). F.list got `fixed` (no delete button).
 - 2026-10-27: B5+C1 done. admin/cms/forms.js (window.F): at(file, keys) binding with get/set/sub; text(b, {label, hint, paragraphs, variants, big})
   = EN+RU boxes, optional "Different text on mobile and tablet" (d/mt), keeps plain strings when both languages match, line break = <br>,
   paragraphs separated by an empty line; input(b, {type: url|color|number|text}) with checks; select(); list(b, {item, summary, make, addLabel,

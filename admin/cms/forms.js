@@ -137,7 +137,7 @@
   }
 
   /* Editable list. b points at an array.
-     opts: { label, item(b, i) → element, summary(value, i) → string, make() → new item, addLabel, minItems, note } */
+     opts: { label, fixed (no delete), item(b, i) → element, summary(value, i) → string, make() → new item, addLabel, minItems, note } */
   function list(b, opts) {
     const wrap = h("div", { class: "flist" });
     const open = new Set();
@@ -161,7 +161,7 @@
           h("span", { class: "fitem__tools" },
             h("button", { type: "button", class: "ibtn", title: "Move up", "aria-label": "Move up", disabled: i === 0 || null, onclick: (e) => { e.preventDefault(); move(-1); } }, "↑"),
             h("button", { type: "button", class: "ibtn", title: "Move down", "aria-label": "Move down", disabled: i === arr.length - 1 || null, onclick: (e) => { e.preventDefault(); move(1); } }, "↓"),
-            h("button", { type: "button", class: "ibtn ibtn--del", title: "Delete", "aria-label": "Delete", onclick: (e) => { e.preventDefault(); del(); } }, "✕")));
+            opts.fixed ? null : h("button", { type: "button", class: "ibtn ibtn--del", title: "Delete", "aria-label": "Delete", onclick: (e) => { e.preventDefault(); del(); } }, "✕")));
         d.append(sum);
         if (d.open) { d.dataset.filled = 1; d.append(h("div", { class: "fitem__body" }, opts.item(b.sub(i), i))); }
         wrap.append(d);

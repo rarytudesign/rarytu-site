@@ -205,7 +205,7 @@ ${cells}
     <a class="circle__hit" href="${r + pagePath(lang, c.target)}" tabindex="-1" aria-hidden="true"></a>
     <h3>${rich(tr(c.title, lang))}</h3>
     ${vp(c.text, lang)}
-    <a class="circle__link" href="${r + pagePath(lang, c.target)}">${rich(tr(c.link, lang))} ${ICO_NE}</a>
+    <a class="circle__link" href="${r + pagePath(lang, c.target)}">${rich(tr(c.link, lang))} ${ICO_NE}</a>
   </div>`).join("\n");
     return `<section class="hero">
   ${pick(w.dots, lang) || ""}
@@ -222,8 +222,7 @@ ${cells}
     ${vp(w.workIntro, lang)}
   </div>
   <div class="grid">
-${cards}
-  </div>
+${cards}</div>
 </section>
 
 <section class="callouts">
@@ -391,7 +390,17 @@ ${btns}
     throw new Error("unknown page type: " + p.key);
   }
 
-  const api = { renderPage, approachMain, aboutMain, caseMain, workMain, vp, esc, rich, pick, variant, tr, up, pagePath, casePath, shell, footer, SVG };
+  // every page of the site, for building and publishing
+  function listPages(work) {
+    const out = [];
+    for (const lang of ["en", "ru"]) {
+      for (const key of ["work", "about", "approach"]) out.push({ lang, key, path: pagePath(lang, key) });
+      for (const slug of work.projects) out.push({ lang, key: "case", slug, path: casePath(lang, slug) });
+    }
+    return out;
+  }
+
+  const api = { listPages, renderPage, approachMain, aboutMain, caseMain, workMain, vp, esc, rich, pick, variant, tr, up, pagePath, casePath, shell, footer, SVG };
   root.RarytuRender = api;
   if (typeof module !== "undefined" && module.exports) module.exports = api;
 })(typeof window !== "undefined" ? window : globalThis);

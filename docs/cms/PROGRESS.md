@@ -15,7 +15,7 @@ Rule: one step at a time. Test, commit, push, then tick it here.
 - [x] A4 Work (home) page: content + renderer, 2 pages identical
 - [x] A5 About page: content + renderer, 2 pages identical
 - [x] A6 Approach page: content + renderer, 2 pages identical
-- [ ] A7 Root `index.html`, full check of all 20 pages, screenshots at 390 / 834 / 1440
+- [x] A7 Root `index.html`, full check of all 20 pages, screenshots at 390 / 834 / 1440
 
 ## B. Panel shell
 - [ ] B1 Panel layout with tabs: Site, Work, About, Approach, one per project, "+ New project", Site backups (backups moved in as is)
@@ -60,6 +60,11 @@ Rule: one step at a time. Test, commit, push, then tick it here.
   go into each page's own JSON in A4–A6; case pages use the Work page tagline and their own title/description.
 
 ## Log
+- 2026-10-27: A7 done. All 18 pages are now generated: `node tools/build.js` writes them from content/ (root index.html stays hand-made: it only redirects).
+  Strict test (whitespace-sensitive, nbsp = space): 18/18. Visual check old vs new at 1440/834/390: identical except one intended fix
+  (callout link on the RU home page had a non-breaking space before the arrow, now a normal space like the others; nbsp inside flex links widens the gap).
+  Lesson: in render.js write non-breaking spaces as the escape \u00a0 inside JS strings, never as a literal character.
+  Lesson: never `pkill -f` a pattern that also appears in the same shell command (it kills the shell).
 - 2026-10-27: A6 done. approach.json = { title, description, tagline, menuTagline, heading, intro, steps [{title, text}] (numbers automatic),
   wip { dots, video, poster, width, height, caption }, principles { title, swipe, items [{title, text}] }, tools { title, text (paragraphs or {d:[],mt:[]}), video, poster, width, height },
   footerTitle (mobile/tablet footer), contactTitle (desktop dot-field footer) }. Desktop contact buttons come from site.contacts in site.approachButtons order;

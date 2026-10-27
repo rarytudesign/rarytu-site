@@ -31,12 +31,12 @@
   }
 
   function markCurrent() {
-    const hash = "#" + (decodeURIComponent(location.hash.slice(1)) || "backups");
+    const hash = "#" + (decodeURIComponent(location.hash.slice(1)) || "work");
     document.querySelectorAll("#tabs a").forEach((a) => a.getAttribute("href") === hash ? a.setAttribute("aria-current", "page") : a.removeAttribute("aria-current"));
   }
 
   function route() {
-    const hash = decodeURIComponent(location.hash.slice(1)) || "backups";
+    const hash = decodeURIComponent(location.hash.slice(1)) || "work";
     markCurrent();
     const isBackups = hash === "backups";
     $("view-backups").hidden = !isBackups;

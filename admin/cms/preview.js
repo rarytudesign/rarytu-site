@@ -32,7 +32,7 @@
 
   function draw() {
     if (!current) return;
-    const { el, page } = current, lang = pref("lang", "en"), w = +pref("width", "1440");
+    const { el, page } = current, lang = pref("lang", "en"), w = +pref("width", innerWidth < 900 ? "390" : "1440");
     el.querySelectorAll("[data-lang]").forEach((b) => b.setAttribute("aria-pressed", b.dataset.lang === lang));
     el.querySelectorAll("[data-w]").forEach((b) => b.setAttribute("aria-pressed", +b.dataset.w === w));
     el.querySelector(".pv__open").href = new URL(pagePath(page, lang), SITE).href;
@@ -72,7 +72,7 @@
     off = Store.on(() => { clearTimeout(timer); timer = setTimeout(draw, 300); });
     draw();
   }
-  addEventListener("resize", () => { if (current) fit(current.el.querySelector(".pv__stage"), current.el.querySelector("iframe"), +pref("width", "1440")); });
+  addEventListener("resize", () => { if (current) fit(current.el.querySelector(".pv__stage"), current.el.querySelector("iframe"), +pref("width", innerWidth < 900 ? "390" : "1440")); });
 
   window.Preview = { mount, lang: () => pref("lang", "en"), setLang: (l) => { setPref("lang", l); draw(); }, redraw: draw };
 })();

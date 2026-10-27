@@ -47,9 +47,9 @@ Rule: one step at a time. Test, commit, push, then tick it here.
   content/ and say so (offer: restore a newer backup, or rebuild content from the pages with Claude) instead of breaking.
 
 ## G. Check and hand over
-- [ ] G1 End-to-end test on the mock GitHub: edit text, add project with media, publish, backup, restore
-- [ ] G2 Check the panel on a phone-sized screen
-- [ ] G3 Short guide for Nastya in README ("How to use the panel")
+- [x] G1 End-to-end test on the mock GitHub: edit text, add project with media, publish, backup, restore
+- [x] G2 Check the panel on a phone-sized screen
+- [x] G3 Short guide for Nastya in README ("How to use the panel")
 - [ ] G4 Polish: hide typography markup in text boxes (e.g. auto-wrap hyphenated RU words in <span class="nw"> in the renderer and strip
   them from content; show <br class="br-m"> etc. in a friendlier way); count draft changes per page, not per file
 
@@ -64,6 +64,9 @@ Rule: one step at a time. Test, commit, push, then tick it here.
   go into each page's own JSON in A4–A6; case pages use the Work page tagline and their own title/description.
 
 ## Log
+- 2026-10-27: G1–G3 done. G1 = tools/test-publish.js + test-backups.js + test-store.js. G2: iPhone 13 check, no horizontal scroll;
+  preview defaults to Mobile width on narrow screens; panel opens on #work by default. G3: Russian guide "Панель управления" in README.md.
+  Left: G4 polish (typography markup in text boxes, per-page change count) after Nastya's first feedback.
 - 2026-10-27: F1+F2 done. admin/cms/publish.js (window.Publish): dialog lists changed pages and new files; blocks on missing cover / empty title /
   gallery or About photo without a file; soft warning for a project without a top image; conflict warning (pages changed on the site since the draft
   started) with "Publish anyway". run(): fresh snapshot → content JSON (2-space + newline) + media + all pages rendered → upload only changed blobs

@@ -66,6 +66,8 @@ commit content + pages together. A hand edit of a page would be overwritten by t
 Also: Nastya may have an unpublished draft in her browser. Before changing content files she might be editing, tell her,
 so she can publish first; otherwise her Publish will show a conflict warning for those pages.
 Changes to styles.css / main.js are safe (the panel never writes them).
+After changing any admin/cms file, run `node tools/build.js` too: it stamps `?v=<hash>` on the panel's scripts and styles
+so GitHub Pages' 10-minute cache never serves old panel code with a new panel page.
 
 ## Writing to GitHub from the panel
 

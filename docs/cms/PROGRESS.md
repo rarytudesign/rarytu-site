@@ -18,8 +18,8 @@ Rule: one step at a time. Test, commit, push, then tick it here.
 - [x] A7 Root `index.html`, full check of all 20 pages, screenshots at 390 / 834 / 1440
 
 ## B. Panel shell
-- [ ] B1 Panel layout with tabs: Site, Work, About, Approach, one per project, "+ New project", Site backups (backups moved in as is)
-- [ ] B2 Shared GitHub module (token, snapshot, blobs, commit) used by backups and publishing
+- [x] B1 Panel layout with tabs: Site, Work, About, Approach, one per project, "+ New project", Site backups (backups moved in as is)
+- [x] B2 Shared GitHub module (token, snapshot, blobs, commit) used by backups and publishing
 - [ ] B3 Loading content from GitHub + draft storage in the browser (IndexedDB), "unsaved changes" marker, Discard draft
 - [ ] B4 Live preview: iframe with the rendered page, EN/RU switch, 390 / 834 / 1440 switch
 - [ ] B5 Form kit: EN/RU text, desktop vs mobile+tablet text, paragraphs, link, colour, list editor (add, remove, reorder)
@@ -42,7 +42,9 @@ Rule: one step at a time. Test, commit, push, then tick it here.
 
 ## F. Publish
 - [ ] F1 Publish: render all pages, one commit with content + HTML + media, verify, history event "published" with version
-- [ ] F2 Errors and conflicts: offline, token expired, site changed meanwhile, large files; clear messages, nothing half-written
+- [ ] F2 Errors and conflicts: offline, token expired, site changed meanwhile, large files; clear messages, nothing half-written.
+  Also: a backup made before the panel existed has no content/ folder; restoring it removes content/. The panel must detect a missing
+  content/ and say so (offer: restore a newer backup, or rebuild content from the pages with Claude) instead of breaking.
 
 ## G. Check and hand over
 - [ ] G1 End-to-end test on the mock GitHub: edit text, add project with media, publish, backup, restore
@@ -60,6 +62,11 @@ Rule: one step at a time. Test, commit, push, then tick it here.
   go into each page's own JSON in A4–A6; case pages use the Work page tagline and their own title/description.
 
 ## Log
+- 2026-10-27: B1+B2 done. Panel files: admin/index.html (shell: top bar with Publish/Discard, tabs, global GitHub token box, views),
+  admin/cms/admin.css, admin/cms/github.js (window.GH: token, gh(), snapshot, versions, history log, commitTree, getFile),
+  admin/cms/backups.js (window.Backups.open()), admin/cms/app.js (routing: #site #work #about #approach #project/<slug> #new-project #backups;
+  default #backups for now). Page tabs show a placeholder. Backups e2e test (tools/test-backups.js) passes on the new shell.
+  Mobile: tabs become a horizontal strip.
 - 2026-10-27: A7 done. All 18 pages are now generated: `node tools/build.js` writes them from content/ (root index.html stays hand-made: it only redirects).
   Strict test (whitespace-sensitive, nbsp = space): 18/18. Visual check old vs new at 1440/834/390: identical except one intended fix
   (callout link on the RU home page had a non-breaking space before the arrow, now a normal space like the others; nbsp inside flex links widens the gap).

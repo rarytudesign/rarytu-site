@@ -1,0 +1,98 @@
+/* Admin panel styles. Brand colours and type follow the site. */
+:root {
+  --brand: #541725; --surface: #ffffff; --muted: #f6f6f6; --line: rgba(84, 23, 37, 0.18);
+  --ok: #2f6b3a; --warn: #8a5a00; --err: #a3192c;
+  color-scheme: light;
+}
+*, *::before, *::after { box-sizing: border-box; }
+html, body { margin: 0; }
+body { background: var(--surface); color: var(--brand); font: 400 16px/22px "Inter Tight", system-ui, sans-serif; letter-spacing: 0.1px; -webkit-font-smoothing: antialiased; }
+a { color: inherit; }
+h1 { font-weight: 500; font-size: 52px; line-height: 54px; letter-spacing: -0.6px; margin: 0 0 16px; }
+.lede { margin: 0 0 40px; max-width: 560px; }
+.actions { display: flex; flex-wrap: wrap; gap: 12px; }
+button { font: inherit; font-weight: 500; letter-spacing: 0; cursor: pointer; height: 52px; padding: 0 26px; border-radius: 100px; border: 1px solid var(--brand); transition: background-color 200ms, color 200ms, opacity 200ms; }
+button.sm { height: 36px; padding: 0 14px; font-size: 14px; }
+.primary { background: var(--brand); color: var(--surface); }
+.secondary { background: transparent; color: var(--brand); }
+.secondary:hover:not(:disabled) { background: var(--brand); color: var(--surface); }
+.primary:hover:not(:disabled) { opacity: 0.85; }
+button:disabled { opacity: 0.4; cursor: default; }
+button:focus-visible, input:focus-visible { outline: 2px solid var(--brand); outline-offset: 3px; }
+.status { margin-top: 28px; padding: 20px 22px; border-radius: 16px; background: var(--muted); }
+.status[hidden], .history[hidden], .token[hidden] { display: none; }
+.live { margin: 0 0 20px; font-weight: 500; }
+.tag--off { background: transparent; color: var(--brand); border: 1px solid var(--line); }
+td.v { font-weight: 500; white-space: nowrap; }
+.status h2 { font-size: 20px; line-height: 24px; letter-spacing: -0.2px; font-weight: 500; margin: 0 0 8px; }
+.status p { margin: 0; }
+.status p + p { margin-top: 6px; }
+.progress { height: 4px; background: var(--line); border-radius: 4px; overflow: hidden; margin-top: 14px; }
+.progress i { display: block; height: 100%; width: 0; background: var(--brand); transition: width 200ms; }
+.checks { list-style: none; padding: 0; margin: 12px 0 0; }
+.checks li { padding-left: 24px; position: relative; }
+.checks li::before { position: absolute; left: 0; }
+.checks .ok::before { content: "✓"; color: var(--ok); }
+.checks .bad::before { content: "✕"; color: var(--err); }
+.note { color: var(--warn); }
+.error { color: var(--err); }
+.small { font-size: 14px; line-height: 20px; opacity: 0.75; }
+.row { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 16px; }
+.token { margin-top: 40px; padding: 20px 22px; border: 1px solid var(--line); border-radius: 16px; }
+.token h2 { font-size: 20px; line-height: 24px; font-weight: 500; margin: 0 0 8px; }
+.token ol { margin: 8px 0 0; padding-left: 20px; }
+.token input { font: inherit; width: 100%; max-width: 520px; height: 44px; padding: 0 14px; border: 1px solid var(--line); border-radius: 10px; color: var(--brand); }
+.history { margin-top: 64px; }
+.history h2 { font-size: 32px; line-height: 34px; letter-spacing: -1px; font-weight: 500; margin: 0 0 8px; }
+.history .small { margin: 0 0 20px; }
+table { width: 100%; border-collapse: collapse; font-variant-numeric: tabular-nums; }
+th, td { text-align: left; padding: 12px 12px 12px 0; border-bottom: 1px solid var(--line); vertical-align: middle; }
+th { font-weight: 500; font-size: 14px; }
+td.act { white-space: nowrap; text-align: right; padding-right: 0; }
+td.act a, td.act button { margin-left: 8px; }
+td.act a { font-size: 14px; }
+.tag { display: inline-block; font-size: 12px; line-height: 18px; padding: 0 8px; border-radius: 100px; background: var(--brand); color: var(--surface); margin-left: 6px; vertical-align: 1px; }
+.sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
+@media (max-width: 640px) {
+  h1 { font-size: 40px; line-height: 44px; }
+  .actions button { width: 100%; }
+  th:nth-child(3), td:nth-child(3) { display: none; }
+  td.act { white-space: normal; }
+}
+
+/* ---------- shell ---------- */
+html, body { height: 100%; }
+.top { position: sticky; top: 0; z-index: 10; display: flex; align-items: center; gap: 16px; height: 60px; padding: 0 24px; background: var(--muted); font-weight: 500; }
+.top__brand { text-decoration: none; }
+.top__brand:hover { text-decoration: underline; text-underline-offset: 3px; }
+.top__draft { margin-left: auto; font-size: 14px; font-weight: 400; opacity: 0.75; }
+.top button { height: 40px; }
+.shell { display: grid; grid-template-columns: 220px minmax(0, 1fr); min-height: calc(100% - 60px); }
+.tabs { position: sticky; top: 60px; align-self: start; max-height: calc(100vh - 60px); overflow: auto; padding: 24px 12px 40px 24px; border-right: 1px solid var(--line); }
+.tabs__group { margin: 20px 0 6px; font-size: 12px; line-height: 16px; letter-spacing: 0.4px; text-transform: uppercase; opacity: 0.6; }
+.tabs__group:first-child { margin-top: 0; }
+.tabs a { display: flex; justify-content: space-between; gap: 8px; padding: 7px 10px; margin: 0 0 2px -10px; border-radius: 8px; text-decoration: none; }
+.tabs a:hover { background: var(--muted); }
+.tabs a[aria-current="page"] { background: var(--brand); color: var(--surface); }
+.tabs a .dot { width: 8px; height: 8px; border-radius: 50%; background: currentColor; align-self: center; }
+.tabs__add { opacity: 0.75; }
+#tabs-projects { display: contents; }
+.content { min-width: 0; }
+.view[hidden] { display: none; }
+.view--doc { max-width: 860px; padding: 48px 40px 80px; }
+.view--doc .token { margin: 0 0 32px; }
+.content > .token { margin: 24px 40px 0; max-width: 780px; }
+.placeholder { padding: 48px 40px; max-width: 640px; }
+.placeholder h1 { font-size: 40px; line-height: 44px; }
+
+@media (max-width: 900px) {
+  .shell { grid-template-columns: minmax(0, 1fr); }
+  .tabs { position: sticky; top: 60px; z-index: 5; display: flex; gap: 4px; max-height: none; overflow-x: auto; padding: 8px 16px; background: var(--surface); border-right: 0; border-bottom: 1px solid var(--line); white-space: nowrap; }
+  .tabs__group { display: none; }
+  .tabs a { margin: 0; flex: none; }
+  .top { padding: 0 16px; gap: 10px; }
+  .top__draft { display: none; }
+  .top > span:first-child { flex: 1; }
+  .view--doc, .placeholder { padding: 32px 16px 64px; }
+  .content > .token { margin: 16px; }
+}

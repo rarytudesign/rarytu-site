@@ -391,7 +391,7 @@
       const active = log.versions.find((x) => x.fp === snap.fp);
       const last = log.versions.reduce((m, x) => Math.max(m, x.v), 0);
       live.innerHTML = active ? `Live now: v.${active.v}`
-        : last ? `Live now: a newer version with changes made after v.${last}. Back it up to save it as v.${last + 1}.`
+        : last ? `Live now: a newer version with changes made after v.${last}. Save a backup to keep it as v.${last + 1}.`
         : "No backups yet.";
       let marked = false;
       rows.innerHTML = log.events.length ? log.events.slice().reverse().map((e) => {

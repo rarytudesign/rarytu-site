@@ -96,3 +96,25 @@ html, body { height: 100%; }
   .view--doc, .placeholder { padding: 32px 16px 64px; }
   .content > .token { margin: 16px; }
 }
+
+/* ---------- editor: form + preview ---------- */
+.view--editor { height: calc(100vh - 60px); }
+.ed { display: grid; grid-template-columns: minmax(360px, 440px) minmax(0, 1fr); height: 100%; }
+.ed__form { overflow: auto; padding: 32px 28px 80px 32px; border-right: 1px solid var(--line); }
+.ed__title { font-size: 40px; line-height: 44px; letter-spacing: -0.6px; margin: 0 0 12px; }
+.ed__preview { min-width: 0; display: flex; }
+.pv { flex: 1; display: flex; flex-direction: column; min-width: 0; background: var(--muted); }
+.pv__bar { display: flex; align-items: center; flex-wrap: wrap; gap: 10px 16px; padding: 12px 16px; border-bottom: 1px solid var(--line); background: var(--surface); }
+.pv__open { margin-left: auto; font-size: 14px; }
+.pv__err { margin: 12px 16px 0; }
+.pv__stage { position: relative; flex: 1; overflow: hidden; }
+.pv__stage iframe { position: absolute; top: 0; left: 0; border: 0; transform-origin: 0 0; background: #fff; }
+.seg { display: inline-flex; border: 1px solid var(--line); border-radius: 100px; padding: 2px; }
+.seg button { height: 30px; padding: 0 12px; border: 0; border-radius: 100px; background: transparent; color: var(--brand); font-size: 14px; }
+.seg button[aria-pressed="true"] { background: var(--brand); color: var(--surface); }
+@media (max-width: 900px) {
+  .view--editor { height: auto; }
+  .ed { grid-template-columns: minmax(0, 1fr); height: auto; }
+  .ed__form { overflow: visible; padding: 24px 16px 32px; border-right: 0; border-bottom: 1px solid var(--line); }
+  .ed__preview { height: 80vh; position: sticky; top: 104px; }
+}

@@ -21,7 +21,7 @@ Rule: one step at a time. Test, commit, push, then tick it here.
 - [x] B1 Panel layout with tabs: Site, Work, About, Approach, one per project, "+ New project", Site backups (backups moved in as is)
 - [x] B2 Shared GitHub module (token, snapshot, blobs, commit) used by backups and publishing
 - [x] B3 Loading content from GitHub + draft storage in the browser (IndexedDB), "unsaved changes" marker, Discard draft
-- [ ] B4 Live preview: iframe with the rendered page, EN/RU switch, 390 / 834 / 1440 switch
+- [x] B4 Live preview: iframe with the rendered page, EN/RU switch, 390 / 834 / 1440 switch
 - [ ] B5 Form kit: EN/RU text, desktop vs mobile+tablet text, paragraphs, link, colour, list editor (add, remove, reorder)
 
 ## C. Page editors
@@ -62,6 +62,11 @@ Rule: one step at a time. Test, commit, push, then tick it here.
   go into each page's own JSON in A4–A6; case pages use the Work page tagline and their own title/description.
 
 ## Log
+- 2026-10-27: B4 done. admin/cms/preview.js (window.Preview.mount(el, {key, slug?})): renders the page from the draft into an iframe
+  (srcdoc + <base> of the real page URL), EN/RU and Mobile 390 / Tablet 834 / Desktop 1440 switches (remembered), scaled to fit,
+  keeps scroll position, blocks link navigation, turns off skeleton/reveal animations, draft media shown via blob URLs.
+  admin/cms/editors.js (window.Editors.open/register/pageFor): form column + preview; tabs without fields yet show a note.
+  Open question for Nastya: em dashes in the first sentence of each RU case overview + description ("Lumo — …"), 12 places.
 - 2026-10-27: B3 done. admin/cms/store.js (window.Store): load() reads content/*.json from GitHub at HEAD via raw URLs
   (falls back to the published site without GitHub); error code "no-content" when content/ is missing.
   get(path) / read(path) / set(path, obj) / update(path, fn) / addMedia(path, blob) / removeMedia / changed() / mediaChanged() /

@@ -10,7 +10,7 @@ const site = JSON.parse(read("content/site.json"));
 const ENT = { amp: "&", lt: "<", gt: ">", quot: '"', nbsp: " ", "#39": "'" };
 const norm = (s) => s
   .replace(/&(#x[0-9a-f]+|#\d+|\w+);/gi, (m, e) => e[0] === "#" ? String.fromCodePoint(e[1] === "x" ? parseInt(e.slice(2), 16) : +e.slice(1)) : (ENT[e] ?? m))
-  .replace(/\s+/g, " ").replace(/> </g, "><").trim();
+  .replace(/[\s\u00a0]+/g, " ").replace(/> </g, "><").trim();
 
 function firstDiff(a, b) {
   let i = 0; while (i < a.length && a[i] === b[i]) i++;

@@ -177,6 +177,66 @@ ${cells}
 </article>`;
   }
 
+  // ---------- shared bits ----------
+  const ICO_NE = '<svg class="ico-ne" viewBox="0 0 10 10" aria-hidden="true"><path d="M1.5 8.5 8.5 1.5M3 1.5h5.5V7" fill="none" stroke="currentColor" stroke-width="1.2"/></svg>';
+  // paragraph that may have desktop and mobile+tablet versions
+  function vp(v, lang, cls) {
+    const x = pick(v, lang), c = cls ? cls + " " : "";
+    if (x && typeof x === "object") return `<p class="${c}v-d">${rich(x.d)}</p><p class="${c}v-mt">${rich(x.mt)}</p>`;
+    return `<p${cls ? ` class="${cls}"` : ""}>${rich(x)}</p>`;
+  }
+
+  // ---------- Work (home) page ----------
+  function workMain(ctx, w, cases) {
+    const { lang, path } = ctx, r = up(path);
+    const head = pick(w.heading, lang);
+    const cards = w.projects.map((slug, k) => {
+      const c = cases[slug];
+      return `    <a class="card" href="${r + casePath(lang, slug)}">
+      <div class="card__cover" style="--bg:${esc(c.hero.bg)}">
+        <img ${imgSet(r, c.cover, 678, 1356)} sizes="(max-width: 743px) 100vw, (max-width: 1279px) 50vw, 36vw" width="678" height="420" alt="" ${k === 0 ? 'fetchpriority="high"' : 'loading="lazy"'} decoding="async">
+      </div>
+      <div class="card__meta">
+        <p class="tags">${rich(tr(c.tags, lang))}</p>
+        <h3 class="card__title"><span class="card__arr" aria-hidden="true">→</span>${rich(tr(c.title, lang))}</h3>
+      </div>
+    </a>`; }).join("\n");
+    const circles = w.callouts.map((c) => `  <div class="circle">
+    <a class="circle__hit" href="${r + pagePath(lang, c.target)}" tabindex="-1" aria-hidden="true"></a>
+    <h3>${rich(tr(c.title, lang))}</h3>
+    ${vp(c.text, lang)}
+    <a class="circle__link" href="${r + pagePath(lang, c.target)}">${rich(tr(c.link, lang))} ${ICO_NE}</a>
+  </div>`).join("\n");
+    return `<section class="hero">
+  ${pick(w.dots, lang) || ""}
+  <div class="hero__text">
+    <h1 class="display"><span class="only-d">${rich(variant(head, "d"))}</span><span class="only-mt">${rich(variant(head, "mt"))}</span></h1>
+    <p class="hero__lede">${rich(tr(w.lede, lang))}</p>
+  </div>
+</section>
+
+<section class="section">
+  <div class="work-head">
+    <h2 class="display">${rich(tr(w.workTitle, lang))}</h2>
+    <hr class="rule">
+    ${vp(w.workIntro, lang)}
+  </div>
+  <div class="grid">
+${cards}
+  </div>
+</section>
+
+<section class="callouts">
+${circles}
+  <div class="circle circle--ring" aria-hidden="true">
+    ${pick(w.ring.svg, lang)}
+    <p class="ring__center">${rich(tr(w.ring.center, lang))}</p>
+  </div>
+</section>
+
+${footer(ctx)}`;
+  }
+
   // ---------- pages ----------
   /* p: { lang, key: "work"|"about"|"approach"|"case", slug? , path }
      data: { site, read(file) → parsed JSON }  (read is sync in Node; the panel passes a cache) */
@@ -191,10 +251,16 @@ ${cells}
         description: tr(c.description, lang), tagline: tr(work.tagline, lang) });
       return shell(ctx, caseMain(ctx, c, work.projects, cases));
     }
+    if (p.key === "work") {
+      const cases = {}; for (const s of work.projects) cases[s] = data.read(`content/cases/${s}.json`);
+      Object.assign(ctx, { nav: "work", bodyClass: "page-work", title: tr(work.title, lang),
+        description: tr(work.description, lang), tagline: tr(work.tagline, lang) });
+      return shell(ctx, workMain(ctx, work, cases));
+    }
     throw new Error("page type not rendered yet: " + p.key);
   }
 
-  const api = { renderPage, caseMain, esc, rich, pick, variant, tr, up, pagePath, casePath, shell, footer, SVG };
+  const api = { renderPage, caseMain, workMain, vp, esc, rich, pick, variant, tr, up, pagePath, casePath, shell, footer, SVG };
   root.RarytuRender = api;
   if (typeof module !== "undefined" && module.exports) module.exports = api;
 })(typeof window !== "undefined" ? window : globalThis);

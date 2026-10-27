@@ -11,7 +11,7 @@ Rule: one step at a time. Test, commit, push, then tick it here.
 ## A. Content model and renderer (site looks exactly the same afterwards)
 - [x] A1 `content/site.json`: shared shell data (name, taglines, nav, contacts, CV, footer, meta)
 - [x] A2 `admin/cms/render.js`: shared shell (head, sidebar, tablet bar, mobile bar and menu, footer) + Node test harness that diffs against current HTML
-- [ ] A3 Case pages: `content/cases/*.json` for all 6 projects, renderer, 12 pages identical
+- [x] A3 Case pages: `content/cases/*.json` for all 6 projects, renderer, 12 pages identical
 - [ ] A4 Work (home) page: content + renderer, 2 pages identical
 - [ ] A5 About page: content + renderer, 2 pages identical
 - [ ] A6 Approach page: content + renderer, 2 pages identical
@@ -60,6 +60,11 @@ Rule: one step at a time. Test, commit, push, then tick it here.
   go into each page's own JSON in A4–A6; case pages use the Work page tagline and their own title/description.
 
 ## Log
+- 2026-10-27: A3 done. content/cases/<slug>.json = { slug, name (short, used in prev/next links), title, tags, description (SEO),
+  overview { heading, text: { en:[paragraphs], ru:[...] } }, hero { bg, image? (base path without -sm/.webp), video?, poster? },
+  gallery [ {image, ar} | {video, poster, ar} ] } (gallery is shared by both languages). Gallery: first 2 items load eagerly.
+  content/pages/work.json so far: { tagline, projects: [slugs in Selected work order] }; prev/next is cyclic over that order.
+  Test: 12/12 case pages same; Work/About/Approach still "not rendered yet" (A4–A6).
 - 2026-10-27: A2 done. render.js has esc/rich/tr helpers, shell(), footer(). `node tools/test-render.js --shell` = 18/18 same; footer() checked on 4 variants. Next: A3 needs `renderPage(p, {site, read})` in render.js (the test calls it without --shell).
 - 2026-10-27: A1 done (content/site.json).
 - 2026-10-27: plan approved. Decisions: forms + live preview; drafts + Publish; "(Admin)" link removed from the site; backups become a tab.

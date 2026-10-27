@@ -1,0 +1,92 @@
+{
+  "slug": "lumo",
+  "name": {
+    "en": "Lumo",
+    "ru": "Lumo"
+  },
+  "title": {
+    "en": "Lumo / Gadget marketplace",
+    "ru": "Lumo / Интернет-магазин"
+  },
+  "tags": {
+    "en": "Web Design • UX/UI Design",
+    "ru": "<span class=\"nw\">Веб-дизайн</span> • UX/UI"
+  },
+  "description": {
+    "en": "Lumo is an online store offering a curated selection of workspace gadgets.",
+    "ru": "Lumo — кураторский маркетплейс гаджетов для рабочего пространства. Задача сайта заключалась в том, чтобы раскрыть ценность отобранного ассортимента и особенности каждого продукта."
+  },
+  "overview": {
+    "heading": {
+      "en": "Project overview",
+      "ru": "О проекте"
+    },
+    "text": {
+      "en": [
+        "Lumo is an online store offering a curated selection of workspace gadgets.",
+        "I designed the storefront to help customers browse the catalogue, explore products and understand how they were selected. The task was to make a small, carefully chosen range the reason to shop there."
+      ],
+      "ru": [
+        "Lumo — кураторский маркетплейс гаджетов для рабочего пространства. Задача сайта заключалась в том, чтобы раскрыть ценность отобранного ассортимента и особенности каждого продукта.",
+        "Я разработала каталог и карточки товаров с акцентом на визуальную подачу, характеристики и удобство выбора."
+      ]
+    }
+  },
+  "hero": {
+    "bg": "#ff3d00",
+    "image": "assets/img/lumo/1"
+  },
+  "gallery": [
+    {
+      "video": "assets/video/lumo-01.mp4",
+      "poster": "assets/video/lumo-01-poster.webp",
+      "ar": 0.5628
+    },
+    {
+      "image": "assets/img/lumo/2",
+      "ar": 1.5591
+    },
+    {
+      "image": "assets/img/lumo/3",
+      "ar": 0.6839
+    },
+    {
+      "image": "assets/img/lumo/4",
+      "ar": 0.6642
+    },
+    {
+      "video": "assets/video/lumo-interface.mp4",
+      "poster": "assets/video/lumo-interface-poster.webp",
+      "ar": 0.562
+    },
+    {
+      "image": "assets/img/lumo/6",
+      "ar": 1.1058
+    },
+    {
+      "video": "assets/video/lumo-02.mp4",
+      "poster": "assets/video/lumo-02-poster.webp",
+      "ar": 0.562
+    },
+    {
+      "image": "assets/img/lumo/8",
+      "ar": 1.1175
+    },
+    {
+      "image": "assets/img/lumo/9",
+      "ar": 0.7044
+    },
+    {
+      "image": "assets/img/lumo/10",
+      "ar": 0.6431
+    },
+    {
+      "image": "assets/img/lumo/11",
+      "ar": 0.6431
+    },
+    {
+      "image": "assets/img/lumo/12b",
+      "ar": 0.7073
+    }
+  ]
+}

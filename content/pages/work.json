@@ -1,0 +1,14 @@
+{
+  "tagline": {
+    "en": "Websites, visual systems & art direction",
+    "ru": "Сайты, айдентика, <span class=\"nw\">арт-дирекшен</span>"
+  },
+  "projects": [
+    "hevy",
+    "dom",
+    "lumo",
+    "nomi",
+    "kodan",
+    "talktoast"
+  ]
+}

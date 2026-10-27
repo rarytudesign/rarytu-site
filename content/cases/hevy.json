@@ -1,0 +1,84 @@
+{
+  "slug": "hevy",
+  "name": {
+    "en": "HEVY",
+    "ru": "HEVY"
+  },
+  "title": {
+    "en": "HEVY / Influencer marketing",
+    "ru": "HEVY / Инфлюенс-маркетинг"
+  },
+  "tags": {
+    "en": "Brand Identity • Social Media • Art Direction",
+    "ru": "Айдентика • Соцсети • <span class=\"nw\">Арт-дирекшен</span>"
+  },
+  "description": {
+    "en": "HEVY is an influencer marketing agency connecting brands with creators. The initial brief was to create reusable social media templates, but the agency had no established visual identity.",
+    "ru": "HEVY Media — агентство инфлюенс-маркетинга. Изначально задача состояла в разработке шаблонов для соцсетей. Поскольку у агентства не было визуальной системы, я создала айдентику, разработала на её основе шаблоны и подготовила контент на месяц."
+  },
+  "overview": {
+    "heading": {
+      "en": "Project overview",
+      "ru": "О проекте"
+    },
+    "text": {
+      "en": [
+        "HEVY is an influencer marketing agency connecting brands with creators. The initial brief was to create reusable social media templates, but the agency had no established visual identity.",
+        "I developed the identity and a reusable template system, produced a month’s worth of content and prepared an asset library for the internal team. The collaboration grew into ongoing art direction, design reviews and new formats for social posts and video."
+      ],
+      "ru": [
+        "HEVY Media — агентство инфлюенс-маркетинга. Изначально задача состояла в разработке шаблонов для соцсетей. Поскольку у агентства не было визуальной системы, я создала айдентику, разработала на её основе шаблоны и подготовила контент на месяц.",
+        "Сейчас сотрудничество продолжается в формате <span class=\"nw\">арт-дирекшена</span>: я курирую дизайн и развиваю библиотеку графических материалов для соцсетей, видео и других каналов коммуникации."
+      ]
+    }
+  },
+  "hero": {
+    "bg": "#fbfcff",
+    "video": "assets/video/hevy-01.mp4",
+    "poster": "assets/video/hevy-01-poster.webp"
+  },
+  "gallery": [
+    {
+      "image": "assets/img/hevy/stories",
+      "ar": 1.1029
+    },
+    {
+      "image": "assets/img/hevy/mockup",
+      "ar": 0.5752
+    },
+    {
+      "image": "assets/img/hevy/mini-posts-animation",
+      "ar": 1.0781
+    },
+    {
+      "image": "assets/img/hevy/image-photo-graphics",
+      "ar": 0.5752
+    },
+    {
+      "image": "assets/img/hevy/video-kit",
+      "ar": 0.6445
+    },
+    {
+      "video": "assets/video/hevy-02.mp4",
+      "poster": "assets/video/hevy-02-poster.webp",
+      "ar": 0.5752
+    },
+    {
+      "image": "assets/img/hevy/image-photo-graphics-1",
+      "ar": 0.5752
+    },
+    {
+      "video": "assets/video/hevy-03.mp4",
+      "poster": "assets/video/hevy-03-poster.webp",
+      "ar": 0.5752
+    },
+    {
+      "image": "assets/img/hevy/mockup-1",
+      "ar": 1.0015
+    },
+    {
+      "image": "assets/img/hevy/image-photo-graphics-2",
+      "ar": 0.5752
+    }
+  ]
+}

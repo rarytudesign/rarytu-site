@@ -1,0 +1,77 @@
+{
+  "slug": "talktoast",
+  "name": {
+    "en": "Talk & Toast",
+    "ru": "Talk & Toast"
+  },
+  "title": {
+    "en": "Talk & Toast / Conversation club",
+    "ru": "Talk & Toast / Английский клуб"
+  },
+  "tags": {
+    "en": "Brand Identity • Print Design",
+    "ru": "Айдентика • Полиграфия"
+  },
+  "description": {
+    "en": "Talk & Toast brings people together for English conversations over breakfast.",
+    "ru": "Talk & Toast — английский разговорный клуб, встречи которого проходят за завтраком."
+  },
+  "overview": {
+    "heading": {
+      "en": "Project overview",
+      "ru": "О проекте"
+    },
+    "text": {
+      "en": [
+        "Talk & Toast brings people together for English conversations over breakfast.",
+        "I developed the brand identity and materials for promoting and hosting the gatherings, including posters, cards and stickers. The task was to communicate a relaxed social experience rather than a traditional language class."
+      ],
+      "ru": [
+        "Talk & Toast — английский разговорный клуб, встречи которого проходят за завтраком.",
+        "Я разработала айдентику, афиши, карточки и стикеры для встреч. Визуальный стиль передаёт атмосферу дружеского общения и поддерживает идею клуба: практиковать язык в непринуждённой обстановке."
+      ]
+    }
+  },
+  "hero": {
+    "bg": "#0b0a0a",
+    "image": "assets/img/talktoast/1"
+  },
+  "gallery": [
+    {
+      "image": "assets/img/talktoast/2",
+      "ar": 0.5628
+    },
+    {
+      "image": "assets/img/talktoast/3",
+      "ar": 0.5628
+    },
+    {
+      "image": "assets/img/talktoast/4",
+      "ar": 0.5628
+    },
+    {
+      "image": "assets/img/talktoast/5",
+      "ar": 0.5628
+    },
+    {
+      "image": "assets/img/talktoast/6",
+      "ar": 0.635
+    },
+    {
+      "image": "assets/img/talktoast/7",
+      "ar": 0.5628
+    },
+    {
+      "image": "assets/img/talktoast/8",
+      "ar": 0.5628
+    },
+    {
+      "image": "assets/img/talktoast/9",
+      "ar": 0.5628
+    },
+    {
+      "image": "assets/img/talktoast/10",
+      "ar": 0.5628
+    }
+  ]
+}

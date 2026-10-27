@@ -139,7 +139,62 @@ ${cells}
 </footer>`;
   }
 
-  const api = { esc, rich, pick, variant, tr, up, pagePath, casePath, shell, footer, SVG };
+  // ---------- media ----------
+  const imgSet = (r, base, w1, w2) => `src="${r}${base}-sm.webp" srcset="${r}${base}-sm.webp ${w1}w, ${r}${base}.webp ${w2}w"`;
+
+  // ---------- case page ----------
+  function caseMain(ctx, c, order, cases) {
+    const { site, lang, path } = ctx, r = up(path), ui = site.ui[lang];
+    const i = order.indexOf(c.slug), n = order.length;
+    const prev = cases[order[(i - 1 + n) % n]], next = cases[order[(i + 1) % n]];
+    const title = tr(c.title, lang), h = c.hero || {};
+    const heroImg = h.image ? `<img class="" ${imgSet(r, h.image, 960, 1920)} sizes="(max-width: 743px) 320px, (max-width: 1279px) 100vw, 72vw" alt="${esc(title)}" fetchpriority="high" decoding="async">` : "";
+    const heroVid = h.video ? `<video class="chero__v" src="${r}${h.video}" poster="${r}${h.poster}" muted loop playsinline autoplay preload="auto"></video>` : "";
+    const gallery = (c.gallery || []).map((g, k) => g.video
+      ? `<div class="gitem gitem--video" style="--ar:${g.ar}"><video class="gitem__v" src="${r}${g.video}" poster="${r}${g.poster}" muted loop playsinline autoplay preload="metadata"></video></div>`
+      : `<div class="gitem" style="--ar:${g.ar}"><img class="" ${imgSet(r, g.image, 960, 1920)} sizes="(max-width: 743px) 320px, (max-width: 1279px) 100vw, 1370px" alt="" ${k < 2 ? 'fetchpriority="high"' : 'loading="lazy"'} decoding="async"></div>`).join("");
+    const paras = (pick(c.overview.text, lang) || []).map((p) => `<p>${rich(p)}</p>`).join("");
+    return `<article class="case">
+  <header class="chead">
+    <a class="chead__back arrow-link" href="${r + pagePath(lang, "work")}"><span class="arr arr--left" aria-hidden="true">←</span> <span>${esc(ui.allWork)}</span></a>
+    <h1 class="chead__title">${rich(title)}</h1>
+    <p class="tags">${rich(tr(c.tags, lang))}</p>
+  </header>
+  <div class="chero" style="--bg:${esc(h.bg || "#f6f6f6")}">
+      ${heroImg}
+      ${heroVid}
+    </div>
+  <section class="cover-text">
+    <h2>${rich(tr(c.overview.heading, lang))}</h2>
+    <div>${paras}</div>
+  </section>
+  <div class="gallery">${gallery}</div>
+  <nav class="pnav" aria-label="${esc(ui.moreProjects)}">
+    <a class="arrow-link" href="${r + casePath(lang, prev.slug)}" rel="prev"><span class="arr arr--left" aria-hidden="true">←</span> <span>${rich(tr(prev.name, lang))}</span></a>
+    <a class="arrow-link" href="${r + casePath(lang, next.slug)}" rel="next"><span>${rich(tr(next.name, lang))}</span> <span class="arr arr--right" aria-hidden="true">→</span></a>
+  </nav>
+  <div class="case__top"><a class="back-top arrow-link" href="#top" data-top><span>${esc(ui.backToTop)}</span> <span class="arr arr--up" aria-hidden="true">↑</span></a></div>
+</article>`;
+  }
+
+  // ---------- pages ----------
+  /* p: { lang, key: "work"|"about"|"approach"|"case", slug? , path }
+     data: { site, read(file) → parsed JSON }  (read is sync in Node; the panel passes a cache) */
+  function renderPage(p, data) {
+    const { site } = data, lang = p.lang, other = lang === "en" ? "ru" : "en";
+    const work = data.read("content/pages/work.json");
+    const ctx = { site, lang, path: p.path, altPath: p.path.replace(/^(en|ru)\//, other + "/") };
+    if (p.key === "case") {
+      const cases = {}; for (const s of work.projects) cases[s] = data.read(`content/cases/${s}.json`);
+      const c = cases[p.slug] || data.read(`content/cases/${p.slug}.json`);
+      Object.assign(ctx, { nav: "work", bodyClass: "page-case", title: `${tr(c.title, lang)} · ${site.name}`,
+        description: tr(c.description, lang), tagline: tr(work.tagline, lang) });
+      return shell(ctx, caseMain(ctx, c, work.projects, cases));
+    }
+    throw new Error("page type not rendered yet: " + p.key);
+  }
+
+  const api = { renderPage, caseMain, esc, rich, pick, variant, tr, up, pagePath, casePath, shell, footer, SVG };
   root.RarytuRender = api;
   if (typeof module !== "undefined" && module.exports) module.exports = api;
 })(typeof window !== "undefined" ? window : globalThis);

@@ -1,0 +1,92 @@
+{
+  "slug": "nomi",
+  "name": {
+    "en": "Nomi",
+    "ru": "Nomi"
+  },
+  "title": {
+    "en": "Nomi / Payment service",
+    "ru": "Nomi / Платёжный сервис"
+  },
+  "tags": {
+    "en": "Web Design • UX/UI Design",
+    "ru": "<span class=\"nw\">Веб-дизайн</span> • UX/UI"
+  },
+  "description": {
+    "en": "Nomi is a payment service for freelancers working with international clients, combining invoicing, currency conversion and compliance.",
+    "ru": "Nomi — платёжный сервис для фрилансеров, которые работают с зарубежными клиентами. Он объединяет выставление счетов, конвертацию валют и проверку соответствия нормативным требованиям."
+  },
+  "overview": {
+    "heading": {
+      "en": "Project overview",
+      "ru": "О проекте"
+    },
+    "text": {
+      "en": [
+        "Nomi is a payment service for freelancers working with international clients, combining invoicing, currency conversion and compliance.",
+        "I designed a marketing website to explain how the service works, including its AI exchange-rate feature, pricing and security. The focus was on helping freelancers understand what the service offers before signing up."
+      ],
+      "ru": [
+        "Nomi — платёжный сервис для фрилансеров, которые работают с зарубежными клиентами. Он объединяет выставление счетов, конвертацию валют и проверку соответствия нормативным требованиям.",
+        "Я разработала сайт, который знакомит с возможностями сервиса: подбором курса с помощью ИИ, тарифами и защитой платежей. Важно было показать пользу Nomi и ответить на вопросы пользователя до регистрации."
+      ]
+    }
+  },
+  "hero": {
+    "bg": "#0e171c",
+    "image": "assets/img/nomi/1"
+  },
+  "gallery": [
+    {
+      "video": "assets/video/nomi-home.mp4",
+      "poster": "assets/video/nomi-home-poster.webp",
+      "ar": 0.5628
+    },
+    {
+      "image": "assets/img/nomi/3",
+      "ar": 0.9453
+    },
+    {
+      "image": "assets/img/nomi/4",
+      "ar": 1.2985
+    },
+    {
+      "video": "assets/video/nomi-security.mp4",
+      "poster": "assets/video/nomi-security-poster.webp",
+      "ar": 0.5628
+    },
+    {
+      "image": "assets/img/nomi/6",
+      "ar": 0.6664
+    },
+    {
+      "image": "assets/img/nomi/7",
+      "ar": 1.2854
+    },
+    {
+      "image": "assets/img/nomi/8",
+      "ar": 0.5628
+    },
+    {
+      "image": "assets/img/nomi/9",
+      "ar": 0.8642
+    },
+    {
+      "image": "assets/img/nomi/10",
+      "ar": 0.6328
+    },
+    {
+      "video": "assets/video/nomi-ai.mp4",
+      "poster": "assets/video/nomi-ai-poster.webp",
+      "ar": 0.5628
+    },
+    {
+      "image": "assets/img/nomi/12",
+      "ar": 1.4942
+    },
+    {
+      "image": "assets/img/nomi/13",
+      "ar": 0.5628
+    }
+  ]
+}

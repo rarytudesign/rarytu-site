@@ -1,0 +1,99 @@
+{
+  "slug": "kodan",
+  "name": {
+    "en": "Kōdan",
+    "ru": "Kōdan"
+  },
+  "title": {
+    "en": "Kōdan / Property investment",
+    "ru": "Kōdan / Инвестиции"
+  },
+  "tags": {
+    "en": "Web Design • UX/UI Design",
+    "ru": "<span class=\"nw\">Веб-дизайн</span> • UX/UI"
+  },
+  "description": {
+    "en": "Kōdan is a platform for fractional real estate investment.",
+    "ru": "Kōdan — платформа для инвестиций в доли объектов недвижимости."
+  },
+  "overview": {
+    "heading": {
+      "en": "Project overview",
+      "ru": "О проекте"
+    },
+    "text": {
+      "en": [
+        "Kōdan is a platform for fractional real estate investment.",
+        "I designed a website that explains the ownership model, presents properties and outlines the investment process. The task was to make an unfamiliar service understandable without oversimplifying the decision to invest."
+      ],
+      "ru": [
+        "Kōdan — платформа для инвестиций в доли объектов недвижимости.",
+        "Я разработала сайт, который знакомит с моделью долевого владения, представляет объекты и объясняет этапы инвестирования. Продумала структуру и последовательность подачи информации, чтобы помочь пользователю принять решение."
+      ]
+    }
+  },
+  "hero": {
+    "bg": "#282828",
+    "image": "assets/img/kodan/1"
+  },
+  "gallery": [
+    {
+      "video": "assets/video/kodan-01.mp4",
+      "poster": "assets/video/kodan-01-poster.webp",
+      "ar": 0.635
+    },
+    {
+      "image": "assets/img/kodan/3",
+      "ar": 1.5175
+    },
+    {
+      "image": "assets/img/kodan/4",
+      "ar": 0.9139
+    },
+    {
+      "image": "assets/img/kodan/5",
+      "ar": 0.635
+    },
+    {
+      "video": "assets/video/kodan-02.mp4",
+      "poster": "assets/video/kodan-02-poster.webp",
+      "ar": 0.635
+    },
+    {
+      "image": "assets/img/kodan/7",
+      "ar": 1.3562
+    },
+    {
+      "image": "assets/img/kodan/8",
+      "ar": 0.7212
+    },
+    {
+      "image": "assets/img/kodan/9",
+      "ar": 1.0774
+    },
+    {
+      "image": "assets/img/kodan/10",
+      "ar": 0.635
+    },
+    {
+      "image": "assets/img/kodan/11",
+      "ar": 1.4102
+    },
+    {
+      "image": "assets/img/kodan/12",
+      "ar": 0.5628
+    },
+    {
+      "image": "assets/img/kodan/13",
+      "ar": 1.0299
+    },
+    {
+      "image": "assets/img/kodan/14",
+      "ar": 0.6431
+    },
+    {
+      "image": "assets/img/kodan/15",
+      "ar": 0.5416
+    }
+  ]
+}

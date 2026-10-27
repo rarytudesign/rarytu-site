@@ -1,0 +1,85 @@
+{
+  "slug": "dom",
+  "name": {
+    "en": "DOM",
+    "ru": "DOM"
+  },
+  "title": {
+    "en": "DOM Cyprus / Real estate",
+    "ru": "DOM Cyprus / Недвижимость"
+  },
+  "tags": {
+    "en": "Brand Identity • Web Design • Campaign Design",
+    "ru": "Айдентика • <span class=\"nw\">Веб-дизайн</span> • Реклама"
+  },
+  "description": {
+    "en": "DOM brings together several businesses in Cyprus, including real estate, business investment, car sales and legal services. The brief was to unite its six business areas through a consistent, recognisable visual identity.",
+    "ru": "DOM — компания на рынке недвижимости Кипра, объединившая несколько направлений бизнеса. Задача состояла в том, чтобы связать их единой визуальной системой."
+  },
+  "overview": {
+    "heading": {
+      "en": "Project overview",
+      "ru": "О проекте"
+    },
+    "text": {
+      "en": [
+        "DOM brings together several businesses in Cyprus, including real estate, business investment, car sales and legal services. The brief was to unite its six business areas through a consistent, recognisable visual identity.",
+        "I developed the identity and documented it in brand guidelines. The next stage was a separate advertising campaign. I designed the landing page, outdoor advertising and digital materials."
+      ],
+      "ru": [
+        "DOM — компания на рынке недвижимости Кипра, объединившая несколько направлений бизнеса. Задача состояла в том, чтобы связать их единой визуальной системой.",
+        "Я разработала айдентику для шести направлений и гайдлайны по её использованию. Система подчёркивает принадлежность к одному бренду и сохраняет различия между направлениями.",
+        "Следующим этапом стала работа над отдельной рекламной кампанией: я разработала лендинг, наружную рекламу и материалы для диджитал-каналов."
+      ]
+    }
+  },
+  "hero": {
+    "bg": "#e30b13",
+    "image": "assets/img/dom/6",
+    "video": "assets/video/dom-hero.mp4",
+    "poster": "assets/video/dom-hero-poster.webp"
+  },
+  "gallery": [
+    {
+      "image": "assets/img/dom/2",
+      "ar": 0.5752
+    },
+    {
+      "image": "assets/img/dom/3",
+      "ar": 0.5752
+    },
+    {
+      "image": "assets/img/dom/4",
+      "ar": 0.5752
+    },
+    {
+      "video": "assets/video/dom-site.mp4",
+      "poster": "assets/video/dom-site-poster.webp",
+      "ar": 0.5752
+    },
+    {
+      "image": "assets/img/dom/gallery-image-8-2",
+      "ar": 0.5752
+    },
+    {
+      "image": "assets/img/dom/7",
+      "ar": 0.6226
+    },
+    {
+      "image": "assets/img/dom/8",
+      "ar": 0.5752
+    },
+    {
+      "image": "assets/img/dom/9",
+      "ar": 0.7912
+    },
+    {
+      "image": "assets/img/dom/10",
+      "ar": 0.5752
+    },
+    {
+      "image": "assets/img/dom/11",
+      "ar": 0.6474
+    }
+  ]
+}

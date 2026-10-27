@@ -204,11 +204,18 @@
   }
 
   /* Collapsible group of fields */
+  // groups remember whether they were open (per page, for this browser session), so a rebuilt form looks the same
+  const openGroups = (() => { try { return JSON.parse(sessionStorage.getItem("rarytu-groups") || "{}"); } catch { return {}; } })();
   function group(title, ...kids) {
-    const d = h("details", { class: "fgroup", open: true }, h("summary", {}, title), h("div", { class: "fgroup__body" }, ...kids));
+    const key = location.hash + "|" + title;
+    const d = h("details", { class: "fgroup" }, h("summary", {}, title), h("div", { class: "fgroup__body" }, ...kids));
+    d.dataset.key = key;
+    d.addEventListener("toggle", () => { openGroups[key] = d.open; try { sessionStorage.setItem("rarytu-groups", JSON.stringify(openGroups)); } catch {} });
     return d;
   }
+  // open the first group by default, or whatever was open before
+  function restoreGroups(el) { el.querySelectorAll(".fgroup").forEach((d, i) => { const k = d.dataset.key; d.open = k in openGroups ? openGroups[k] : i === 0; }); }
   const note = (txt) => h("p", { class: "field__hint" }, txt);
 
-  window.F = { h, at, pair, image, video, mediaUrl, text, input, select, list, group, note, esc, toBox, fromBox, parasToBox, parasFromBox, compact };
+  window.F = { restoreGroups, h, at, pair, image, video, mediaUrl, text, input, select, list, group, note, esc, toBox, fromBox, parasToBox, parasFromBox, compact };
 })();

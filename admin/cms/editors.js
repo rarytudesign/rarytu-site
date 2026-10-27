@@ -20,5 +20,12 @@
     Preview.mount(box.querySelector("#ed-preview"), page);
     return true;
   }
-  window.Editors = { open, register: (name, ed) => { EDITORS[name] = ed; }, pageFor };
+  // rebuild the current form (after adding items from outside a list), keeping the scroll position
+  function refresh() {
+    const f = document.getElementById("ed-form"), y = f ? f.scrollTop : 0, wy = scrollY;
+    const hash = decodeURIComponent(location.hash.slice(1)), ed = EDITORS[hash.startsWith("project/") ? "project" : hash];
+    if (!f || !ed) return;
+    f.innerHTML = ""; ed.form(f, hash); f.scrollTop = y; scrollTo(0, wy);
+  }
+  window.Editors = { open, refresh, register: (name, ed) => { EDITORS[name] = ed; }, pageFor };
 })();

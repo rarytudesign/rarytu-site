@@ -32,9 +32,9 @@ Rule: one step at a time. Test, commit, push, then tick it here.
 - [x] C5 Project tab: card, header, tags, hero media and colour, overview, gallery (images/videos, reorder)
 
 ## D. Media
-- [ ] D1 Image upload: WebP conversion, two sizes, aspect ratio
-- [ ] D2 Video upload: MP4, poster from first frame, size limits
-- [ ] D3 Files (CV and others): upload, replace
+- [x] D1 Image upload: WebP conversion, two sizes, aspect ratio
+- [x] D2 Video upload: MP4, poster from first frame, size limits
+- [x] D3 Files (CV and others): upload, replace
 
 ## E. New pages
 - [ ] E1 "+ New project": slug, titles EN/RU, creates the case page and its card on Work, prev/next links update
@@ -50,6 +50,8 @@ Rule: one step at a time. Test, commit, push, then tick it here.
 - [ ] G1 End-to-end test on the mock GitHub: edit text, add project with media, publish, backup, restore
 - [ ] G2 Check the panel on a phone-sized screen
 - [ ] G3 Short guide for Nastya in README ("How to use the panel")
+- [ ] G4 Polish: hide typography markup in text boxes (e.g. auto-wrap hyphenated RU words in <span class="nw"> in the renderer and strip
+  them from content; show <br class="br-m"> etc. in a friendlier way); count draft changes per page, not per file
 
 ## Notes for next steps
 - Text format in content JSON: plain text, entities decoded (`&` not `&amp;`, real non-breaking spaces).
@@ -62,6 +64,14 @@ Rule: one step at a time. Test, commit, push, then tick it here.
   go into each page's own JSON in A4–A6; case pages use the Work page tagline and their own title/description.
 
 ## Log
+- 2026-10-27: D1–D3 done. admin/cms/media.js (window.Media: pick, image(file, folder, widths) → {base, ar}, video(file, folder, prefix)
+  → {video, poster, ar, width, height}, file(f, folder) → path) and upload versions of F.image / F.video (Replace / Upload / Remove).
+  Names: <folder>/<slug-of-filename>-<4 random chars>; images WebP 960/1920 (covers 678/1356), no upscaling; video MP4 only, warn > 25 MB,
+  refuse > 95 MB, poster = first frame WebP; CV keeps its file name (overwrites on publish, same link). Wired into: project (cover, hero image,
+  hero video add/remove, gallery + Add images (multiple) / + Add video), About photos (+ Add photo), Approach videos, Site CVs.
+  F.group remembers open/closed per page (sessionStorage); F.restoreGroups(el); Editors.refresh() rebuilds the form keeping scroll.
+  Test note: Playwright's Chromium can't play H.264, so tests use a VP9-in-MP4 clip; real Chrome/Safari play H.264.
+  Publish must block empty images (an added About photo without upload) – handle in F1 validation.
 - 2026-10-27: C5 done. ed-project.js (#project/<slug>): card + header (title, tags, short name, cover, bg colour), hero image/video (display),
   overview (heading, paragraphs), gallery list with thumbnails in collapsed rows (F.list opts.thumb), proportions (ar), SEO description.
   forms.js got display-only F.image(b) (b = base path, shows -sm.webp) and F.video(bVideo, bPoster), F.mediaUrl(path) (draft blobs or site file).

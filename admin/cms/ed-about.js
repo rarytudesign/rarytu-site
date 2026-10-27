@@ -34,8 +34,10 @@
         h("p", { class: "field__label" }, "Right column"), col(1)),
       group("Photos",
         list(b("photos", "items"), { label: "Photos", summary: (p, i) => enOf(p.caption) || `Photo ${i + 1}`,
-          note: "Captions and order. Adding and replacing photos comes with uploads (a later step).",
-          item: (ib) => h("div", {}, h("img", { class: "thumb", src: "../" + ib.sub("image").get() + "-sm.webp", alt: "" }), text(ib.sub("caption"), { label: "Caption" })) }),
+          note: "Shown as a carousel. Portrait photos work best; at least 1920 px on the long side.",
+          thumb: (p) => h("img", { class: "mini", src: F.mediaUrl(p.image + "-sm.webp"), alt: "", loading: "lazy" }),
+          make: () => ({ image: "", caption: { en: "", ru: "" } }), addLabel: "+ Add photo",
+          item: (ib) => h("div", {}, F.image(ib.sub("image"), { label: "Photo", folder: "assets/img/about" }), text(ib.sub("caption"), { label: "Caption" })) }),
         text(b("photos", "swipe"), { label: "Swipe hint (mobile)" })),
       group("Work experience",
         text(b("experience", "title"), { label: "Section title", hint: "Curly brackets are added automatically." }),
@@ -55,6 +57,6 @@
         text(b("tagline"), { label: "Line under your name (desktop left column)" }),
         text(b("menuTagline"), { label: "Line under your name (mobile menu)" })),
     );
-    el.querySelectorAll(".fgroup").forEach((d, i) => { if (i > 0) d.open = false; });
+    F.restoreGroups(el);
   } });
 })();

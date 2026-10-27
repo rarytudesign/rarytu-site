@@ -10,6 +10,18 @@
     const navUi = (k, label) => text({ get: () => { const s = Store.get(FILE).ui; return { en: s.en.nav[k], ru: s.ru.nav[k] }; },
       set: (v) => Store.update(FILE, (s) => { s.ui.en.nav[k] = typeof v === "string" ? v : v.en; s.ui.ru.nav[k] = typeof v === "string" ? v : v.ru; }) }, { label });
 
+    const cv = (lang, label) => {
+      const wrap = h("div", { class: "field" });
+      const draw = () => { const path = Store.get(FILE).cv[lang]; wrap.innerHTML = "";
+        wrap.append(h("div", { class: "field__head" }, h("span", { class: "field__label" }, label)),
+          h("div", { class: "media-row" }, h("a", { href: F.mediaUrl(path), target: "_blank", rel: "noopener" }, path.split("/").pop()),
+            h("button", { type: "button", class: "secondary sm", onclick: async () => {
+              const [f] = await Media.pick("application/pdf,.pdf"); if (!f) return;
+              try { const p = await Media.file(f, "assets/cv"); Store.update(FILE, (s) => { s.cv[lang] = p; }); draw(); }
+              catch (e) { alert(e.message); }
+            } }, "Upload new PDF"))); };
+      draw(); return wrap;
+    };
     el.append(
       h("h1", { class: "ed__title" }, "Site"),
       h("p", { class: "ed__lede" }, "Things every page shares: your name, contacts, CV and the small interface texts."),
@@ -38,9 +50,7 @@
           label: "Buttons", summary: (id) => { const c = Store.get(FILE).contacts.find((x) => x.id === id); return c ? contactName(c) : "(removed contact)"; },
           item: (ib) => { const opts = Store.get(FILE).contacts.map((c) => [c.id, contactName(c)]); return F.select(ib, { label: "Contact", options: opts }); },
           make: () => (Store.get(FILE).contacts[0] || {}).id, addLabel: "+ Add button" })),
-      group("CV files",
-        input(b("cv", "en"), { label: "English CV", hint: "Path of the PDF on the site. Uploading a new file comes in a later step." }),
-        input(b("cv", "ru"), { label: "Russian CV" })),
+      group("CV files", cv("en", "English CV"), cv("ru", "Russian CV")),
       group("Menu",
         navUi("work", "Work page"), navUi("about", "About page"), navUi("approach", "Approach page"),
         ui("contact", "Contact link"), ui("downloadCV", "Download CV link")),
@@ -50,6 +60,6 @@
         ui("copied", "Message after copying the email"), ui("skip", "Skip link", "For keyboard users, appears on Tab."),
         ui("menu", "Menu button name", "Read aloud by screen readers."), ui("closeMenu", "Close menu button name")),
     );
-    el.querySelectorAll(".fgroup").forEach((d, i) => { if (i > 1) d.open = false; });
+    F.restoreGroups(el);
   } });
 })();

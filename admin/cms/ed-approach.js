@@ -17,8 +17,8 @@
           make: () => ({ title: { en: "", ru: "" }, text: { en: "", ru: "" } }),
           item: (ib) => h("div", {}, text(ib.sub("title"), { label: "Title" }), text(ib.sub("text"), { label: "Text", variants: true, big: true, hint: "Starts with → on the site; type it if you want it." })) })),
       group("Work in progress video",
-        text(b("wip", "caption"), { label: "Caption" }),
-        note("Replacing the video comes with uploads (a later step).")),
+        F.video(b("wip", "video"), b("wip", "poster"), { label: "Video", folder: "assets/video", prefix: "approach", onUpload: (r) => { b("wip", "width").set(r.width); b("wip", "height").set(r.height); } }),
+        text(b("wip", "caption"), { label: "Caption" })),
       group("What matters to me",
         text(b("principles", "title"), { label: "Section title", hint: "<span class=\"v-d\">:</span> shows the colon on desktop only." }),
         list(b("principles", "items"), { label: "Principles", summary: (p) => enOf(p.title) || "New principle", addLabel: "+ Add principle",
@@ -28,7 +28,7 @@
       group("Tools",
         text(b("tools", "title"), { label: "Heading" }),
         text(b("tools", "text"), { label: "Text", paragraphs: true, variants: true }),
-        note("Replacing the video comes with uploads (a later step).")),
+        F.video(b("tools", "video"), b("tools", "poster"), { label: "Video", folder: "assets/video", prefix: "approach", onUpload: (r) => { b("tools", "width").set(r.width); b("tools", "height").set(r.height); } })),
       group("Contact block",
         text(b("contactTitle"), { label: "Heading above the round buttons (desktop)" }),
         text(b("footerTitle"), { label: "Heading above the contacts (mobile and tablet)" }),
@@ -39,6 +39,6 @@
         text(b("tagline"), { label: "Line under your name (desktop left column)" }),
         text(b("menuTagline"), { label: "Line under your name (mobile menu)" })),
     );
-    el.querySelectorAll(".fgroup").forEach((d, i) => { if (i > 0) d.open = false; });
+    F.restoreGroups(el);
   } });
 })();

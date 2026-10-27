@@ -31,6 +31,6 @@
         text(b("description"), { label: "Description", big: true, hint: "Shown under the title in Google and in link previews. About 150 characters." }),
         text(b("tagline"), { label: "Line under your name (left column)", hint: "Also used on project pages." })),
     );
-    el.querySelectorAll(".fgroup").forEach((d, i) => { if (i > 1) d.open = false; });
+    F.restoreGroups(el);
   } });
 })();

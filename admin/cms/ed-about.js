@@ -11,7 +11,7 @@
       item: (ib) => h("div", {},
         text(ib.sub("date"), { label: "Years", hint: "e.g. 2024–2025 or 2026–Present" }),
         text(ib.sub("role"), { label: key === "experience" ? "Role" : "Title" }),
-        text(ib.sub("company"), { label: key === "experience" ? "Company" : "Second line (optional)", hint: "Leave empty to hide." }),
+        text(ib.sub("company"), { label: key === "experience" ? "Company" : "Second line (optional)", hint: key === "experience" ? "Leave empty to hide. Not shown on Russian phones, as in the layout." : "Leave empty to hide." }),
         text(ib.sub("text"), { label: "Description", paragraphs: true }),
         ib.sub("logo").get() ? note("Has a company logo on the " + Object.keys(ib.sub("logo").get()).map((l) => l.toUpperCase()).join(" and ") + " page. Logo upload comes in a later step.") : null) });
   }

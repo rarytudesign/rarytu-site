@@ -75,7 +75,8 @@ Rule: one step at a time. Test, commit, push, then tick it here.
   Dots: main.js placeDots() moves a decorative dot to the nearest free spot when its designed spot covers text, links, buttons,
   covers, gallery or other media (About photos and Approach video edges allowed, as in Figma); hides it if no free spot within 480px.
   Checked 390/834/1024/1440/1920 × 6 pages: 0 overlaps.
-  Open for Nastya: RU Figma has no company line under roles in Work experience (site has it); RU About/Approach differ by a few px.
+  RU mobile Work experience now as in Figma: company line hidden (<744, RU only; tablet/desktop keep it), description 14px below
+  the role, no gap between paragraphs. Entries match Figma within 0–2px.
 - 2026-10-27: Feedback round 2 done. (a) No dashes: RU case openings rewritten ("Компания DOM работает…", "Lumo: кураторский…").
   (b) One contacts list: approachButtons removed from site.json; Approach round buttons follow site.contacts order (email now last).
   (c) Line breaks: text boxes show breaks as plain new lines; Shift+Enter = new line, Enter = new paragraph in paragraph boxes

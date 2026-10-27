@@ -772,3 +772,9 @@ html[lang="ru"] .dfoot__title { font-family: var(--font); font-size: clamp(60px,
 /* Figma check: space between the gallery and the previous/next links (mobile 54px, tablet 52px) */
 @media (max-width: 743px) { .pnav { margin-top: 54px; } }
 @media (min-width: 744px) and (max-width: 1279px) { .pnav { margin-top: 52px; } }
+/* Figma (RU mobile): no company line under the role in Work experience; RU tablet and desktop keep it */
+@media (max-width: 743px) {
+  html[lang="ru"] .xlist:not(.xlist--edu) .xrow__role p { display: none; }
+  html[lang="ru"] .xlist:not(.xlist--edu) .xrow__text { padding-top: 14px; }
+  html[lang="ru"] .xlist:not(.xlist--edu) .xrow__text p + p { margin-top: 0; }
+}

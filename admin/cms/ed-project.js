@@ -5,6 +5,7 @@
 
   Editors.register("project", { form(el, hash) {
     const slug = hash.slice(8), FILE = Store.caseFile(slug), b = (...k) => at(FILE, k);
+    const hidden = (Store.get("content/pages/work.json").hidden || []).includes(slug);
     if (!Store.get(FILE)) { el.append(h("h1", { class: "ed__title" }, "Project not found"), h("p", {}, `There is no project “${slug}”.`)); return; }
     const folder = `assets/img/${slug}`, vfolder = "assets/video";
     const setAr = (ib) => (r) => ib.sub("ar").set(r.ar);
@@ -18,6 +19,7 @@
     };
     el.append(
       h("h1", { class: "ed__title" }, enOf(Store.get(FILE).name) || slug),
+      hidden ? h("p", { class: "note" }, "Hidden from the site. Show it again at the bottom of this tab.") : null,
       h("p", { class: "ed__lede" }, h("span", {}, "Page address: "), h("a", { href: `../en/work/${slug}/index.html`, target: "_blank", rel: "noopener" }, `/work/${slug}/`)),
       group("Card on Work and page header",
         text(b("title"), { label: "Title", hint: "On the card and as the page heading, e.g. “Lumo / Gadget marketplace”." }),
@@ -57,6 +59,7 @@
         h("p", { class: "field__hint gal-status" })),
       group("Search engines and sharing",
         text(b("description"), { label: "Description", big: true, hint: "Shown under the title in Google and in link previews. Usually the first sentence of the overview." })),
+      ProjectActions(slug),
     );
     F.restoreGroups(el);
   } });

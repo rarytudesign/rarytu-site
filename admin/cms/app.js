@@ -12,7 +12,8 @@
     const changed = new Set(Store.changed());
     const mark = (files) => files.some((f) => changed.has(f)) ? '<i class="dot" title="Changed in the draft"></i>' : "";
     $("tabs-projects").innerHTML = work ? work.projects.map((slug) =>
-      `<a href="#project/${slug}"><span>${GH.esc(projectName(slug))}</span>${mark([Store.caseFile(slug)])}</a>`).join("") : "";
+      `<a href="#project/${slug}"><span>${GH.esc(projectName(slug))}</span>${mark([Store.caseFile(slug)])}</a>`).join("")
+      + (work.hidden || []).map((slug) => `<a href="#project/${slug}" class="tabs__hidden" title="Hidden from the site"><span>${GH.esc(projectName(slug))}</span>${mark([Store.caseFile(slug)])}</a>`).join("") : "";
     const pageFiles = { site: ["content/site.json"], work: ["content/pages/work.json"], about: ["content/pages/about.json"], approach: ["content/pages/approach.json"] };
     for (const [k, files] of Object.entries(pageFiles)) {
       const a = document.querySelector(`#tabs a[href="#${k}"]`);

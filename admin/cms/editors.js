@@ -10,9 +10,13 @@
     return null;
   };
   function open(hash, box) {
+    const ed = EDITORS[hash.startsWith("project/") ? "project" : hash];
+    if (hash === "new-project" && ed) {
+      box.innerHTML = `<div class="ed ed--single"><div class="ed__form" id="ed-form"></div></div>`;
+      ed.form(box.querySelector("#ed-form"), hash); return true;
+    }
     const page = pageFor(hash);
     if (!page) return false;
-    const ed = EDITORS[hash.startsWith("project/") ? "project" : hash];
     box.innerHTML = `<div class="ed"><div class="ed__form" id="ed-form"></div><div class="ed__preview" id="ed-preview"></div></div>`;
     const form = box.querySelector("#ed-form");
     if (ed) ed.form(form, hash);

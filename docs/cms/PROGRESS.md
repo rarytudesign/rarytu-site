@@ -37,8 +37,8 @@ Rule: one step at a time. Test, commit, push, then tick it here.
 - [x] D3 Files (CV and others): upload, replace
 
 ## E. New pages
-- [ ] E1 "+ New project": slug, titles EN/RU, creates the case page and its card on Work, prev/next links update
-- [ ] E2 Hide or delete a project (with confirmation; files stay in history)
+- [x] E1 "+ New project": slug, titles EN/RU, creates the case page and its card on Work, prev/next links update
+- [x] E2 Hide or delete a project (with confirmation; files stay in history)
 
 ## F. Publish
 - [ ] F1 Publish: render all pages, one commit with content + HTML + media, verify, history event "published" with version
@@ -64,6 +64,12 @@ Rule: one step at a time. Test, commit, push, then tick it here.
   go into each page's own JSON in A4–A6; case pages use the Work page tagline and their own title/description.
 
 ## Log
+- 2026-10-27: E1+E2 done. admin/cms/ed-projects.js: "+ New project" (short name, title, address/slug auto from the name, checked for
+  format and duplicates, background colour) → creates content/cases/<slug>.json in the draft, adds it first in work.projects, opens its tab.
+  window.ProjectActions(slug) at the bottom of a project tab: Hide (moves slug to work.hidden; its pages are removed on publish), Show again
+  (appends to the end), Delete (removes from lists, Store.set(caseFile, null) = delete on publish). Hidden projects show struck through in tabs.
+  Store.set(path, null) for a file that was never published drops out of the draft. Renderer: a hidden project's preview links prev/next to visible ones.
+  Publish (F1) must: render pages for work.projects only, delete en|ru/work/<slug>/index.html for slugs no longer listed, delete content files set to null.
 - 2026-10-27: D1–D3 done. admin/cms/media.js (window.Media: pick, image(file, folder, widths) → {base, ar}, video(file, folder, prefix)
   → {video, poster, ar, width, height}, file(f, folder) → path) and upload versions of F.image / F.video (Replace / Upload / Remove).
   Names: <folder>/<slug-of-filename>-<4 random chars>; images WebP 960/1920 (covers 678/1356), no upscaling; video MP4 only, warn > 25 MB,

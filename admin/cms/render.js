@@ -145,8 +145,9 @@ ${cells}
   // ---------- case page ----------
   function caseMain(ctx, c, order, cases) {
     const { site, lang, path } = ctx, r = up(path), ui = site.ui[lang];
-    const i = order.indexOf(c.slug), n = order.length;
-    const prev = cases[order[(i - 1 + n) % n]], next = cases[order[(i + 1) % n]];
+    let i = order.indexOf(c.slug), n = order.length;
+    if (i < 0) i = -1;   // a hidden project (preview only): link to the first and last visible ones
+    const prev = cases[order[((i < 0 ? 0 : i) - 1 + n) % n]] || c, next = cases[order[(i + 1) % n]] || c;
     const title = tr(c.title, lang), h = c.hero || {};
     const heroImg = h.image ? `<img class="" ${imgSet(r, h.image, 960, 1920)} sizes="(max-width: 743px) 320px, (max-width: 1279px) 100vw, 72vw" alt="${esc(title)}" fetchpriority="high" decoding="async">` : "";
     const heroVid = h.video ? `<video class="chero__v" src="${r}${h.video}" poster="${r}${h.poster}" muted loop playsinline autoplay preload="auto"></video>` : "";

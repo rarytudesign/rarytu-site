@@ -83,7 +83,7 @@
     if (!(path in state.draft.base)) state.draft.base[path] = state.published[path] === undefined ? null : clone(state.published[path]);
     state.draft.files[path] = clone(value);
     // a file edited back to its published state is no longer part of the draft
-    if (same(state.draft.files[path], state.published[path])) { delete state.draft.files[path]; delete state.draft.base[path]; }
+    if (same(state.draft.files[path], state.published[path]) || (value === null && state.published[path] === undefined)) { delete state.draft.files[path]; delete state.draft.base[path]; }
     state.draft.updatedAt = new Date().toISOString();
     persist(); emit();
   }

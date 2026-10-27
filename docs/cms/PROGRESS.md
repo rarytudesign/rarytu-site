@@ -22,10 +22,10 @@ Rule: one step at a time. Test, commit, push, then tick it here.
 - [x] B2 Shared GitHub module (token, snapshot, blobs, commit) used by backups and publishing
 - [x] B3 Loading content from GitHub + draft storage in the browser (IndexedDB), "unsaved changes" marker, Discard draft
 - [x] B4 Live preview: iframe with the rendered page, EN/RU switch, 390 / 834 / 1440 switch
-- [ ] B5 Form kit: EN/RU text, desktop vs mobile+tablet text, paragraphs, link, colour, list editor (add, remove, reorder)
+- [x] B5 Form kit: EN/RU text, desktop vs mobile+tablet text, paragraphs, link, colour, list editor (add, remove, reorder)
 
 ## C. Page editors
-- [ ] C1 Site tab: name, taglines, menu labels, contacts (add/edit/remove), CV files, SEO texts
+- [x] C1 Site tab: name, taglines, menu labels, contacts (add/edit/remove), CV files, SEO texts
 - [ ] C2 Work tab: hero texts, Selected work cards (order, show/hide)
 - [ ] C3 About tab: hero and bio, photos with captions, Work experience, Education, Tools and other lists
 - [ ] C4 Approach tab: every section
@@ -62,6 +62,12 @@ Rule: one step at a time. Test, commit, push, then tick it here.
   go into each page's own JSON in A4–A6; case pages use the Work page tagline and their own title/description.
 
 ## Log
+- 2026-10-27: B5+C1 done. admin/cms/forms.js (window.F): at(file, keys) binding with get/set/sub; text(b, {label, hint, paragraphs, variants, big})
+  = EN+RU boxes, optional "Different text on mobile and tablet" (d/mt), keeps plain strings when both languages match, line break = <br>,
+  paragraphs separated by an empty line; input(b, {type: url|color|number|text}) with checks; select(); list(b, {item, summary, make, addLabel,
+  minItems, note}) with collapse, ↑ ↓ ✕ (confirm); group(title, ...). Editors live in admin/cms/ed-<name>.js and call Editors.register(name, {form(el, hash)}).
+  C1: ed-site.js (name, copyright, contacts list, Approach round buttons order, CV paths (upload in D3), menu labels, small UI texts).
+  Note for Nastya: the footer grid fits 5 contacts; a 6th wraps the email to a new row.
 - 2026-10-27: B4 done. admin/cms/preview.js (window.Preview.mount(el, {key, slug?})): renders the page from the draft into an iframe
   (srcdoc + <base> of the real page URL), EN/RU and Mobile 390 / Tablet 834 / Desktop 1440 switches (remembered), scaled to fit,
   keeps scroll position, blocks link navigation, turns off skeleton/reveal animations, draft media shown via blob URLs.

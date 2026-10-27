@@ -148,7 +148,7 @@
     return r.status === 204 ? null : r.json();
   }
   let pendingAfterToken = null;
-  function askToken(then) { pendingAfterToken = then || null; $("token").hidden = false; $("token-input").focus(); $("token").scrollIntoView({ block: "center", behavior: "smooth" }); }
+  function askToken(then) { pendingAfterToken = then || null; $("token").hidden = false; $("token-msg").textContent = ""; $("token-input").focus(); $("token").scrollIntoView({ block: "center", behavior: "smooth" }); }
   $("token-change").addEventListener("click", () => askToken());
   $("token-save").addEventListener("click", async () => {
     const t = $("token-input").value.trim(); const msg = $("token-msg");
@@ -157,6 +157,10 @@
     try {
       const repo = await gh("");
       if (!repo.permissions || !repo.permissions.push) throw new Error("This token can read the repository but can’t write to it. Give it Contents: Read and write.");
+      // repo.permissions shows the account's rights, not the token's: try a harmless write (an empty file object nothing points to)
+      await gh("/git/blobs", { method: "POST", body: JSON.stringify({ content: "", encoding: "utf-8" }) }).catch((e) => {
+        throw new Error(e.status === 403 || e.status === 404 ? "This token can’t write to rarytu-site. Check step 2 (rarytu-site is selected) and step 3 (Contents: Read and write), or make a new token." : e.message);
+      });
       msg.textContent = "Connected. Restore is ready on this computer."; $("token-input").value = "";
       setTimeout(() => { $("token").hidden = true; const f = pendingAfterToken; pendingAfterToken = null; if (f) f(); }, 700);
     } catch (e) { setToken(""); msg.innerHTML = `<span class="error">${esc(e.status === 401 ? "GitHub didn’t accept this token. Check that it was copied whole." : e.message)}</span>`; }

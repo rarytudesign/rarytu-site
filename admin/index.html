@@ -7,11 +7,15 @@
 <title>Admin · Anastasia Rarytu</title>
 <link rel="icon" href="../assets/favicon.svg" type="image/svg+xml">
 <link rel="stylesheet" href="../assets/fonts.css">
-<link rel="stylesheet" href="cms/admin.css?v=32120077">
+<link rel="stylesheet" href="cms/admin.css?v=90a6d5dd">
 </head>
 <body>
 <header class="top">
   <span><a class="top__brand" href="../index.html">Anastasia Rarytu</a> <span class="small">(Admin)</span></span>
+  <span class="top__hist">
+    <button class="ibtn ibtn--hist" id="undo" type="button" title="Undo (Ctrl+Z)" aria-label="Undo" disabled><svg viewBox="0 0 20 20" width="20" height="20" aria-hidden="true"><path d="M8 5 4 9l4 4M4.5 9H12a4 4 0 0 1 0 8h-2" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+    <button class="ibtn ibtn--hist" id="redo" type="button" title="Redo (Ctrl+Shift+Z)" aria-label="Redo" disabled><svg viewBox="0 0 20 20" width="20" height="20" aria-hidden="true"><path d="m12 5 4 4-4 4M15.5 9H8a4 4 0 0 0 0 8h2" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+  </span>
   <span class="top__draft" id="draft-state"></span>
   <button class="secondary sm" id="discard" type="button" hidden>Discard draft</button>
   <button class="primary sm" id="publish" type="button" disabled>Publish</button>
@@ -77,21 +81,21 @@
 </div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
-<script src="cms/render.js?v=9b70fd86"></script>
+<script src="cms/render.js?v=8378bb3c"></script>
 <script src="cms/github.js?v=01c6cb9b"></script>
 <script src="cms/backups.js?v=d09b0715"></script>
-<script src="cms/store.js?v=efb96c19"></script>
+<script src="cms/store.js?v=5b2efcb7"></script>
 <script src="cms/preview.js?v=226430ad"></script>
-<script src="cms/editors.js?v=e1a8b392"></script>
-<script src="cms/forms.js?v=1db89834"></script>
+<script src="cms/editors.js?v=a56132e8"></script>
+<script src="cms/forms.js?v=81e81c9f"></script>
 <script src="cms/media.js?v=adccaf75"></script>
-<script src="cms/ed-site.js?v=56718fe4"></script>
-<script src="cms/ed-work.js?v=ed10aeb3"></script>
-<script src="cms/ed-about.js?v=e9533e0f"></script>
+<script src="cms/ed-site.js?v=95caefa3"></script>
+<script src="cms/ed-work.js?v=738d3024"></script>
+<script src="cms/ed-about.js?v=f92fe447"></script>
 <script src="cms/ed-approach.js?v=e548dfd8"></script>
 <script src="cms/ed-project.js?v=05a3d549"></script>
 <script src="cms/ed-projects.js?v=2991c94b"></script>
-<script src="cms/app.js?v=da652c64"></script>
+<script src="cms/app.js?v=a4c7af08"></script>
 <script src="cms/publish.js?v=0b5582dd"></script>
 </body>
 </html>

@@ -43,14 +43,29 @@
   }
 
   // ---------- text conversions ----------
-  // In text boxes: Enter = line break; [phone break] / [mobile break] = line break on phones only / on phones and tablets.
-  // Hyphenated words are kept together automatically on Russian pages, so <span class="nw"> isn't needed (old ones are hidden).
-  const toBox = (s) => String(s == null ? "" : s).replace(/<span class="nw">([^<]*)<\/span>/g, "$1")
-    .replace(/<br class="br-m">/g, "[phone break]").replace(/<br class="v-mt">/g, "[mobile break]").replace(/<br>/g, "\n");
-  const fromBox = (s) => String(s).replace(/\r/g, "").replace(/\[phone break\]/gi, '<br class="br-m">').replace(/\[mobile break\]/gi, '<br class="v-mt">').replace(/\n/g, "<br>");
-  const BREAKS_HINT = "Enter starts a new line. [phone break] starts a new line on phones only, [mobile break] on phones and tablets.";
+  // Text boxes show plain text: a line break is a new line (Shift+Enter), no markup.
+  // The site has three kinds of line break: <br> (all screens), <br class="v-mt"> (phones and tablets),
+  // <br class="br-m"> (phones only). Breaks that already exist keep their kind by position; new ones are <br>.
+  // Hyphenated words are kept together automatically on Russian pages, so <span class="nw"> is hidden too.
+  const BR = /<br(?: class="[\w -]+")?>/g;
+  const toBox = (s) => String(s == null ? "" : s).replace(/<span class="nw">([^<]*)<\/span>/g, "$1").replace(BR, "\n");
+  function fromBox(s, prev) {
+    // an old break keeps its kind when the text right before it, or right after it, is unchanged
+    const old = String(prev == null ? "" : prev), kinds = old.match(BR) || [];
+    const oldSegs = old.split(BR).map(toBox), segs = String(s).replace(/\r/g, "").split("\n"), used = new Set();
+    let out = segs[0];
+    for (let j = 0; j < segs.length - 1; j++) {
+      let k = oldSegs.findIndex((x, i) => i < kinds.length && !used.has(i) && x === segs[j]);
+      if (k < 0) k = oldSegs.findIndex((x, i) => i > 0 && !used.has(i - 1) && x === segs[j + 1]) - 1;
+      if (k >= 0) used.add(k);
+      out += (k >= 0 ? kinds[k] : "<br>") + segs[j + 1];
+    }
+    return out;
+  }
+  const BREAKS_HINT = "Shift+Enter starts a new line. Without it, the text wraps on its own.";
   const parasToBox = (list) => (list || []).map(toBox).join("\n\n");
-  const parasFromBox = (s) => String(s).replace(/\r/g, "").split(/\n\s*\n/).map((p) => p.trim()).filter(Boolean).map(fromBox);
+  const parasFromBox = (s, prev) => String(s).replace(/\r/g, "").split(/\n\s*\n/).map((p) => p.trim()).filter(Boolean)
+    .map((p, i) => fromBox(p, Array.isArray(prev) ? prev[i] : ""));
 
   // value helpers for the bilingual shapes
   const langVal = (v, lang) => (isObj(v) && ("en" in v || "ru" in v)) ? v[lang] : v;
@@ -60,9 +75,19 @@
   }
 
   function autosize(t) { t.style.height = "auto"; t.style.height = (t.scrollHeight + 2) + "px"; }
+  // Keys: Shift+Enter = new line. Enter = new paragraph in paragraph boxes, nothing in one-line boxes.
+  function insert(t, str) {
+    const a = t.selectionStart, z = t.selectionEnd;
+    t.setRangeText(str, a, z, "end"); t.dispatchEvent(new Event("input", { bubbles: true }));
+  }
   function box(value, oninput, opts = {}) {
     const t = h("textarea", { rows: opts.rows || 1, class: "fbox" + (opts.big ? " fbox--big" : ""), spellcheck: "true", lang: opts.lang || null });
     t.value = value; t.addEventListener("input", () => { autosize(t); oninput(t.value); });
+    t.addEventListener("keydown", (e) => {
+      if (e.key !== "Enter" || e.isComposing) return;
+      e.preventDefault();
+      if (e.shiftKey) insert(t, "\n"); else if (opts.paragraphs) insert(t, "\n\n");
+    });
     requestAnimationFrame(() => autosize(t));
     return t;
   }
@@ -93,8 +118,8 @@
           const cur = k ? variantOf(b.get(), lang, k) : langVal(b.get(), lang);
           const shown = opts.paragraphs ? parasToBox(cur) : toBox(cur);
           const t = box(shown, (val) => {
-            const parsed = opts.paragraphs ? parasFromBox(val) : fromBox(val);
-            const now = b.get();
+            const now = b.get(), prev = k ? variantOf(now, lang, k) : langVal(now, lang);
+            const parsed = opts.paragraphs ? parasFromBox(val, prev) : fromBox(val, prev);
             const other = lang === "en" ? "ru" : "en";
             if (k) {
               const next = { en: { ...variantObj(now, "en") }, ru: { ...variantObj(now, "ru") } };
@@ -103,11 +128,12 @@
               const o = langVal(now, other);
               b.set(lang === "en" ? compact(parsed, o ?? parsed) : compact(o ?? parsed, parsed));
             }
-          }, { big: opts.big || opts.paragraphs, rows: opts.paragraphs ? 4 : 1, lang });
+          }, { big: opts.big || opts.paragraphs, rows: opts.paragraphs ? 4 : 1, lang, paragraphs: opts.paragraphs });
           wrap.append(h("div", { class: "field__row" }, h("span", { class: "lang-chip" }, lang.toUpperCase()), t));
         }
       }
-      if (opts.paragraphs) wrap.append(h("p", { class: "field__hint" }, "Leave an empty line between paragraphs."));
+      if (opts.paragraphs) wrap.append(h("p", { class: "field__hint" }, "Enter starts a new paragraph, Shift+Enter a new line inside it."));
+      else if (/<br/.test(JSON.stringify(b.get() ?? ""))) wrap.append(h("p", { class: "field__hint" }, BREAKS_HINT));
     };
     draw();
     return wrap;

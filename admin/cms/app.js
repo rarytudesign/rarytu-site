@@ -57,7 +57,27 @@
     await Store.discard(); route();
   });
 
-  Store.on(() => { renderTabs(); renderDraftState(); });
+  // ---------- undo / redo ----------
+  function afterHistory() {
+    // keep the cursor in the same field if possible
+    const form = document.getElementById("ed-form"), boxes = form ? [...form.querySelectorAll("textarea, input")] : [];
+    const i = boxes.indexOf(document.activeElement);
+    if (window.Editors && document.getElementById("ed-form")) Editors.refresh(); else route();
+    if (i >= 0) { const nb = [...document.getElementById("ed-form").querySelectorAll("textarea, input")][i]; if (nb) { nb.focus(); try { nb.setSelectionRange(nb.value.length, nb.value.length); } catch {} } }
+  }
+  const doUndo = () => { if (Store.undo()) afterHistory(); };
+  const doRedo = () => { if (Store.redo()) afterHistory(); };
+  $("undo").addEventListener("click", doUndo);
+  $("redo").addEventListener("click", doRedo);
+  document.addEventListener("keydown", (e) => {
+    if (!(e.ctrlKey || e.metaKey) || e.altKey) return;
+    const k = e.key.toLowerCase();
+    if (k === "z") { e.preventDefault(); e.shiftKey ? doRedo() : doUndo(); }
+    else if (k === "y" && !e.metaKey) { e.preventDefault(); doRedo(); }
+  }, true);
+  const renderHistory = () => { $("undo").disabled = !Store.canUndo(); $("redo").disabled = !Store.canRedo(); };
+
+  Store.on(() => { renderTabs(); renderDraftState(); renderHistory(); });
   addEventListener("hashchange", route);
   addEventListener("beforeunload", () => {});  // drafts are saved continuously, nothing to warn about
 

@@ -14,7 +14,7 @@
   },
   "description": {
     "en": "Kōdan is a platform for fractional real estate investment.",
-    "ru": "Kōdan - платформа для инвестиций в доли объектов недвижимости."
+    "ru": "Kōdan: платформа для инвестиций в доли объектов недвижимости."
   },
   "overview": {
     "heading": {
@@ -27,7 +27,7 @@
         "I designed a website that explains the ownership model, presents properties and outlines the investment process. The task was to make an unfamiliar service understandable without oversimplifying the decision to invest."
       ],
       "ru": [
-        "Kōdan - платформа для инвестиций в доли объектов недвижимости.",
+        "Kōdan: платформа для инвестиций в доли объектов недвижимости.",
         "Я разработала сайт, который знакомит с моделью долевого владения, представляет объекты и объясняет этапы инвестирования. Продумала структуру и последовательность подачи информации, чтобы помочь пользователю принять решение."
       ]
     }

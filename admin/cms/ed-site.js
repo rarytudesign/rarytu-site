@@ -30,7 +30,7 @@
         input(b("copyright"), { label: "Copyright line", placeholder: "© 2020–2026" })),
       group("Contacts",
         list(b("contacts"), {
-          label: "Contacts", note: "Shown in the footer of every page, in this order.",
+          label: "Contacts", note: "One list for the whole site: the footer of every page and the round buttons on Approach, in this order. Up to 10.",
           summary: contactName, addLabel: "+ Add contact", maxItems: 10,
           make: () => ({ id: "c" + Date.now().toString(36), label: "", url: "https://", iconLabel: { en: "", ru: "" } }),
           item: (ib) => {
@@ -44,12 +44,6 @@
                 " Clicking copies the email address (for email links)"),
               ib.sub("icon").get() ? note("Has its own icon on Approach.") : note("No icon yet: Approach shows a plain round button with an arrow."));
           } })),
-      group("Round buttons on Approach (desktop)",
-        note("Which contacts appear as round buttons at the bottom of Approach, and in what order."),
-        list(b("approachButtons"), {
-          label: "Buttons", summary: (id) => { const c = Store.get(FILE).contacts.find((x) => x.id === id); return c ? contactName(c) : "(removed contact)"; },
-          item: (ib) => { const opts = Store.get(FILE).contacts.map((c) => [c.id, contactName(c)]); return F.select(ib, { label: "Contact", options: opts }); },
-          make: () => (Store.get(FILE).contacts[0] || {}).id, addLabel: "+ Add button" })),
       group("CV files", cv("en", "English CV"), cv("ru", "Russian CV")),
       group("Menu",
         navUi("work", "Work page"), navUi("about", "About page"), navUi("approach", "Approach page"),

@@ -178,3 +178,7 @@ select.finput { appearance: auto; }
 .probs li { margin-bottom: 4px; }
 .btnlink { display: inline-flex; align-items: center; height: 52px; padding: 0 26px; border-radius: 100px; text-decoration: none; font-weight: 500; }
 a.primary { background: var(--brand); color: var(--surface); }
+.top__hist { display: inline-flex; gap: 2px; margin-left: 4px; }
+.ibtn--hist { width: 36px; height: 36px; border-radius: 10px; display: inline-flex; align-items: center; justify-content: center; }
+.ibtn--hist:disabled { opacity: 0.3; cursor: default; }
+@media (max-width: 900px) { .top > span:first-child { flex: none; } .top__hist { flex: 1; } }

@@ -79,7 +79,30 @@
   }
   // replace a whole file in the draft (editors pass a modified copy of get(path))
   const ensureDraft = () => state.draft || (state.draft = { startedAt: new Date().toISOString(), head: state.head, files: {}, base: {}, media: {} });
+  // ---------- undo / redo ----------
+  // Each step is a snapshot of the draft (texts as JSON, new files by reference). Typing in one field
+  // within a second counts as one step; an upload and the change that uses it count as one step.
+  const past = [], future = [], LIMIT = 200;
+  let lastKey = null, lastAt = 0;
+  const snap = () => state.draft ? { files: clone(state.draft.files), base: clone(state.draft.base), media: { ...(state.draft.media || {}) },
+    startedAt: state.draft.startedAt, head: state.draft.head } : null;
+  function record(key) {
+    const now = Date.now(), el = document.activeElement;
+    const typing = el && /^(TEXTAREA|INPUT)$/.test(el.tagName) && el.type !== "checkbox" && el.type !== "file";
+    const merge = (key === lastKey && now - lastAt < 1000 && typing) || (lastKey === "media" && now - lastAt < 4000);
+    if (!merge) { past.push(snap()); if (past.length > LIMIT) past.shift(); }
+    future.length = 0; lastKey = key; lastAt = now;
+  }
+  function restore(sn) {
+    state.draft = sn ? { ...sn, files: clone(sn.files), base: clone(sn.base), media: { ...sn.media }, updatedAt: new Date().toISOString() } : null;
+    if (state.draft) persist(); else { clearTimeout(saveTimer); kvDel("draft").catch(() => {}); }
+    lastKey = null; emit();
+  }
+  function undo() { if (!past.length) return false; future.push(snap()); restore(past.pop()); return true; }
+  function redo() { if (!future.length) return false; past.push(snap()); restore(future.pop()); return true; }
+
   function set(path, value) {
+    record(path);
     ensureDraft();
     if (!(path in state.draft.base)) state.draft.base[path] = state.published[path] === undefined ? null : clone(state.published[path]);
     state.draft.files[path] = clone(value);
@@ -91,7 +114,7 @@
   // edit helper: Store.update(path, (copy) => { copy.x = 1; })
   function update(path, fn) { const copy = clone(get(path)); fn(copy); set(path, copy); }
   // new or replaced media files (images, videos, documents) waiting to be published
-  function addMedia(path, blob) { ensureDraft().media[path] = blob; state.draft.updatedAt = new Date().toISOString(); persist(); emit(); }
+  function addMedia(path, blob) { record("media"); ensureDraft().media[path] = blob; state.draft.updatedAt = new Date().toISOString(); persist(); emit(); }
   function removeMedia(path) { if (state.draft && state.draft.media) { delete state.draft.media[path]; persist(); emit(); } }
 
   const changed = () => state.draft ? Object.keys(state.draft.files) : [];
@@ -100,10 +123,11 @@
   // files whose published version moved on since the draft copied them
   const conflicts = () => changed().filter((p) => !same(state.draft.base[p] === null ? undefined : state.draft.base[p], state.published[p]));
 
-  async function discard() { clearTimeout(saveTimer); state.draft = null; await kvDel("draft").catch(() => {}); emit(); }
+  async function discard() { if (state.draft) { past.push(snap()); future.length = 0; lastKey = null; }
+    clearTimeout(saveTimer); state.draft = null; await kvDel("draft").catch(() => {}); emit(); }
   // after a successful publish: what was published becomes the new base
-  async function published(newHead, files) { state.head = newHead; Object.assign(state.published, clone(files)); await discard(); }
+  async function published(newHead, files) { state.head = newHead; Object.assign(state.published, clone(files)); await discard(); past.length = 0; future.length = 0; emit(); }
 
-  window.Store = { load, get, read, set, update, addMedia, removeMedia, changed, mediaChanged, isDirty, conflicts, discard, published,
+  window.Store = { undo, redo, canUndo: () => past.length > 0, canRedo: () => future.length > 0, load, get, read, set, update, addMedia, removeMedia, changed, mediaChanged, isDirty, conflicts, discard, published,
     on: (f) => (listeners.add(f), () => listeners.delete(f)), state, caseFile, FILES, clone, same };
 })();

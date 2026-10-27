@@ -59,13 +59,6 @@
       }
     }
   ],
-  "approachButtons": [
-    "email",
-    "telegram",
-    "linkedin",
-    "instagram",
-    "behance"
-  ],
   "ui": {
     "en": {
       "skip": "Skip to content",

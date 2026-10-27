@@ -29,7 +29,7 @@
       h("h1", { class: "ed__title" }, "About"),
       h("p", { class: "ed__lede" }, "Your intro, photos, experience, education and tools."),
       group("Intro",
-        text(b("heading"), { label: "Big heading", hint: F.BREAKS_HINT }),
+        text(b("heading"), { label: "Big heading" }),
         h("p", { class: "field__label" }, "Left column"), col(0),
         h("p", { class: "field__label" }, "Right column"), col(1)),
       group("Photos",

@@ -305,7 +305,7 @@ ${footer(ctx)}`;
     const tt = pick(a.tools.text, lang);
     const toolsText = isVar(tt) ? `<div class="v-d">${paras(tt.d)}</div><div class="v-mt">${paras(tt.mt)}</div>` : `<div>${paras(tt)}</div>`;
     const byId = {}; site.contacts.forEach((c) => { byId[c.id] = c; });
-    const btns = (site.approachButtons || site.contacts.map((c) => c.id)).map((id) => byId[id]).filter(Boolean).map((c) =>
+    const btns = site.contacts.map((c) =>
       `    <a class="sbtn" href="${esc(c.url)}" aria-label="${esc(tr(c.iconLabel || c.label, lang))}"${c.copy ? ` data-copy="${esc(c.copy)}"` : ' target="_blank" rel="noopener"'}>${c.icon || DEFAULT_ICON}<span class="sbtn__label">${esc(c.label)}</span></a>`).join("\n");
     const media = (m) => `<video class="media" src="${r}${m.video}" poster="${r}${m.poster}" muted loop playsinline autoplay preload="metadata" width="${m.width}" height="${m.height}"></video>`;
     return `<section class="intro">

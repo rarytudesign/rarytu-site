@@ -19,7 +19,8 @@
     if (!page) return false;
     box.innerHTML = `<div class="ed"><div class="ed__form" id="ed-form"></div><div class="ed__preview" id="ed-preview"></div></div>`;
     const form = box.querySelector("#ed-form");
-    if (ed) ed.form(form, hash);
+    if (ed) { ed.form(form, hash); const lede = form.querySelector(".ed__lede");
+      if (lede) lede.after(F.h("p", { class: "field__hint ed__tip" }, "Tip: Shift+Enter starts a new line in any text. Ctrl+Z / Ctrl+Shift+Z undo and redo.")); }
     else form.innerHTML = `<h1 class="ed__title">${GH.esc(document.title.replace(" · Admin", ""))}</h1><p>The fields for this page are being built. The preview on the right already shows your draft.</p>`;
     Preview.mount(box.querySelector("#ed-preview"), page);
     return true;
@@ -29,7 +30,9 @@
     const f = document.getElementById("ed-form"), y = f ? f.scrollTop : 0, wy = scrollY;
     const hash = decodeURIComponent(location.hash.slice(1)), ed = EDITORS[hash.startsWith("project/") ? "project" : hash];
     if (!f || !ed) return;
-    f.innerHTML = ""; ed.form(f, hash); f.scrollTop = y; scrollTo(0, wy);
+    f.innerHTML = ""; ed.form(f, hash); const lede = f.querySelector(".ed__lede");
+    if (lede) lede.after(F.h("p", { class: "field__hint ed__tip" }, "Tip: Shift+Enter starts a new line in any text. Ctrl+Z / Ctrl+Shift+Z undo and redo."));
+    f.scrollTop = y; scrollTo(0, wy);
   }
   window.Editors = { open, refresh, register: (name, ed) => { EDITORS[name] = ed; }, pageFor };
 })();

@@ -55,7 +55,8 @@ Rule: one step at a time. Test, commit, push, then tick it here.
 
 ## Notes for next steps
 - Text format in content JSON: plain text, entities decoded (`&` not `&amp;`, real non-breaking spaces).
-  Allowed inline tags kept as is: `<br>`, `<br class="br-m">`, `<span class="nw">`, `<b>`, `<i>`, `<a href>`.
+  Allowed inline tags: `<br>`, `<br class="br-m">` (phones only), `<br class="v-mt">` (phones+tablets), `<b>`, `<i>`, `<a href>`, `<span class="v-d">`.
+  `<span class="nw">` is no longer stored: the renderer adds it to hyphenated words on RU pages.
   The renderer escapes everything else.
 - "Identical" for the renderer test = same after decoding entities and collapsing whitespace.
 - site.json has: name, copyright, shareImage, cv per language, contacts (footer order; `icon` = full SVG for the
@@ -64,6 +65,13 @@ Rule: one step at a time. Test, commit, push, then tick it here.
   go into each page's own JSON in A4–A6; case pages use the Work page tagline and their own title/description.
 
 ## Log
+- 2026-10-27: Feedback round 2 done. (a) No dashes: RU case openings rewritten ("Компания DOM работает…", "Lumo: кураторский…").
+  (b) One contacts list: approachButtons removed from site.json; Approach round buttons follow site.contacts order (email now last).
+  (c) Line breaks: text boxes show breaks as plain new lines; Shift+Enter = new line, Enter = new paragraph in paragraph boxes
+  and nothing in one-line boxes. fromBox(text, prev) keeps each existing break's kind (<br>, v-mt, br-m) when the text before or
+  after it is unchanged; new breaks are <br>. [phone break]/[mobile break] tokens removed. Hint shown once per editor + on fields with breaks.
+  (d) Undo/Redo: Store.undo/redo/canUndo/canRedo, snapshots of the draft (max 200), typing in one field within 1 s = one step,
+  upload + its change = one step, Discard is undoable, history cleared after Publish. Buttons next to the name; Ctrl/Cmd+Z, Ctrl/Cmd+Shift+Z, Ctrl+Y.
 - 2026-10-27: Nastya's feedback done (G4):
   1) "—" → "-" in all content. 2) Contacts: max 10 in the panel; renderer adds data-n to .frow when not 5 (5 = designed grid, unchanged);
   data-n grid = copyright max-content + equal columns; main.js fitFooter() adds .footer--stack (mobile-style list) on desktop when the row

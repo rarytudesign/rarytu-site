@@ -10,7 +10,7 @@
   // attribute / plain text: escape everything
   const esc = (s) => String(s == null ? "" : s).replace(/[&<>"]/g, (c) => ESC[c]);
   // Content text may contain a few inline tags; everything else is escaped.
-  const INLINE = /<(br|br class="br-m"|span class="nw"|\/span|b|\/b|i|\/i|\/a|a href="[^"<>]*")>/g;
+  const INLINE = /<(br|br class="[\w -]+"|span class="nw"|\/span|b|\/b|i|\/i|\/a|a href="[^"<>]*")>/g;
   function rich(s) {
     const keep = [];
     const marked = String(s == null ? "" : s).replace(INLINE, (m) => "\u0000" + (keep.push(m) - 1) + "\u0000");
@@ -237,6 +237,61 @@ ${circles}
 ${footer(ctx)}`;
   }
 
+  // ---------- About page ----------
+  const secTitle = (v, lang) => `<h2 class="sec-title">{ ${rich(tr(v, lang))} }</h2>`;
+  const pad2 = (n) => String(n).padStart(2, "0");
+  function xrows(items, lang, r) {
+    return items.map((it) => {
+      const logo = pick(it.logo, lang), company = tr(it.company, lang);
+      return `      <li class="xrow">
+        <p class="xrow__date">${rich(tr(it.date, lang))}</p>
+        <div class="xrow__role">${logo && logo.src ? `<img class="xrow__logo" src="${r}${esc(logo.src)}" width="${esc(logo.width)}" height="${esc(logo.height)}" alt="" loading="lazy">` : ""}<h3>${rich(tr(it.role, lang))}</h3>${company ? `<p>${rich(company)}</p>` : ""}</div>
+        <div class="xrow__text">${(pick(it.text, lang) || []).map((x) => `<p>${rich(x)}</p>`).join("")}</div>
+      </li>`; }).join("\n");
+  }
+  function aboutMain(ctx, a) {
+    const { site, lang, path } = ctx, r = up(path), ui = site.ui[lang];
+    const bio = a.bio.map((col) => { const c = pick(col, lang);
+      return "<div>" + ["d", "mt"].map((k) => `<div class="v-${k}"><h2>${rich(c[k].heading)}</h2>${c[k].text.map((x) => `<p>${rich(x)}</p>`).join("")}</div>`).join("") + "</div>"; }).join("");
+    const photos = a.photos.items.map((ph) => `
+      <figure class="photo">
+        <img class="" ${imgSet(r, ph.image, 960, 1920)} sizes="(max-width: 743px) 80vw, (max-width: 1279px) 45vw, 22vw" alt="" loading="lazy" decoding="async">
+        <figcaption>${rich(tr(ph.caption, lang))}</figcaption>
+      </figure>`).join("");
+    const chips = a.tools.items.map((c) => `<li class="chip">${c.icon || ""}<span>${rich(tr(c.label, lang))}</span></li>`).join("");
+    return `<section class="ahero">
+  <h1 class="ahero__title">${rich(tr(a.heading, lang))}</h1>
+  <div class="ahero__bio">
+    ${bio}
+  </div>
+</section>
+
+<section class="photos">
+  ${pick(a.photos.dots, lang) || ""}
+  <div class="photos__grid" data-carousel>${photos}</div>
+  <div class="swipe" aria-hidden="true"><span class="swipe__n">01 / ${pad2(a.photos.items.length)}</span><span class="swipe__track"><i></i></span><span>${rich(tr(a.photos.swipe, lang))}</span></div>
+</section>
+
+<section class="xlist">
+  <div class="xlist__head">${secTitle(a.experience.title, lang)}<a class="u-link" href="${r}${site.cv[lang]}" download data-cv>${esc(ui.downloadCV)}</a></div>
+  <ul>
+${xrows(a.experience.items, lang, r)}</ul>
+</section>
+
+<section class="xlist xlist--edu">
+  <div class="xlist__head">${secTitle(a.education.title, lang)}</div>
+  <ul>
+${xrows(a.education.items, lang, r)}</ul>
+</section>
+
+<section class="tools">
+  ${secTitle(a.tools.title, lang)}
+  <ul class="chips">${chips}</ul>
+</section>
+
+${footer(ctx)}`;
+  }
+
   // ---------- pages ----------
   /* p: { lang, key: "work"|"about"|"approach"|"case", slug? , path }
      data: { site, read(file) → parsed JSON }  (read is sync in Node; the panel passes a cache) */
@@ -257,10 +312,16 @@ ${footer(ctx)}`;
         description: tr(work.description, lang), tagline: tr(work.tagline, lang) });
       return shell(ctx, workMain(ctx, work, cases));
     }
+    if (p.key === "about") {
+      const a = data.read("content/pages/about.json");
+      Object.assign(ctx, { nav: "about", bodyClass: "page-about", title: tr(a.title, lang),
+        description: tr(a.description, lang), tagline: tr(a.tagline, lang), menuTagline: tr(a.menuTagline, lang) });
+      return shell(ctx, aboutMain(ctx, a));
+    }
     throw new Error("page type not rendered yet: " + p.key);
   }
 
-  const api = { renderPage, caseMain, workMain, vp, esc, rich, pick, variant, tr, up, pagePath, casePath, shell, footer, SVG };
+  const api = { renderPage, aboutMain, caseMain, workMain, vp, esc, rich, pick, variant, tr, up, pagePath, casePath, shell, footer, SVG };
   root.RarytuRender = api;
   if (typeof module !== "undefined" && module.exports) module.exports = api;
 })(typeof window !== "undefined" ? window : globalThis);

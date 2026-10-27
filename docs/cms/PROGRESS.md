@@ -13,7 +13,7 @@ Rule: one step at a time. Test, commit, push, then tick it here.
 - [x] A2 `admin/cms/render.js`: shared shell (head, sidebar, tablet bar, mobile bar and menu, footer) + Node test harness that diffs against current HTML
 - [x] A3 Case pages: `content/cases/*.json` for all 6 projects, renderer, 12 pages identical
 - [x] A4 Work (home) page: content + renderer, 2 pages identical
-- [ ] A5 About page: content + renderer, 2 pages identical
+- [x] A5 About page: content + renderer, 2 pages identical
 - [ ] A6 Approach page: content + renderer, 2 pages identical
 - [ ] A7 Root `index.html`, full check of all 20 pages, screenshots at 390 / 834 / 1440
 
@@ -60,6 +60,10 @@ Rule: one step at a time. Test, commit, push, then tick it here.
   go into each page's own JSON in A4–A6; case pages use the Work page tagline and their own title/description.
 
 ## Log
+- 2026-10-27: A5 done. about.json = { title, description, tagline, menuTagline, heading, bio [2 columns: {en:{d:{heading,text[]},mt:{...}}, ru:...}],
+  photos { dots, swipe, items [{image, caption}] }, experience/education { title, items [{date, role, company, text[], logo? per language {src,width,height}}] },
+  tools { title, items [{icon (raw SVG markup), label}] } }. Section titles are stored without braces; renderer adds "{ … }" with nbsp before "}".
+  Logos are only on the RU page today (per-language field). Lists are shared by both languages (same items, per-field translations).
 - 2026-10-27: A4 done. work.json = { title, description, tagline, dots (decorative markup per language, not for editing),
   heading {d, mt}, lede, workTitle, workIntro, callouts [ {target page, title, text, link} ×2 ], ring { svg (shared), center }, projects }.
   Cards use the case's title, tags, hero.bg and `cover` (added to each case JSON). First card loads eagerly.

@@ -9,7 +9,7 @@
       h("h1", { class: "ed__title" }, "Work"),
       h("p", { class: "ed__lede" }, "The home page: intro, the order of projects and the two circles at the bottom."),
       group("Intro",
-        text(b("heading"), { label: "Big heading", variants: true, hint: "On mobile, <br class=\"br-m\"> breaks the line only on phones." }),
+        text(b("heading"), { label: "Big heading", variants: true, hint: F.BREAKS_HINT }),
         text(b("lede"), { label: "Text under the heading", big: true })),
       group("Selected work",
         text(b("workTitle"), { label: "Section title" }),

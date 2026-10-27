@@ -20,7 +20,7 @@
         F.video(b("wip", "video"), b("wip", "poster"), { label: "Video", folder: "assets/video", prefix: "approach", onUpload: (r) => { b("wip", "width").set(r.width); b("wip", "height").set(r.height); } }),
         text(b("wip", "caption"), { label: "Caption" })),
       group("What matters to me",
-        text(b("principles", "title"), { label: "Section title", hint: "<span class=\"v-d\">:</span> shows the colon on desktop only." }),
+        text(b("principles", "title"), { label: "Section title", variants: true }),
         list(b("principles", "items"), { label: "Principles", summary: (p) => enOf(p.title) || "New principle", addLabel: "+ Add principle",
           make: () => ({ title: { en: "", ru: "" }, text: { en: "", ru: "" } }),
           item: (ib) => h("div", {}, text(ib.sub("title"), { label: "Title", variants: true }), text(ib.sub("text"), { label: "Text", variants: true, big: true })) }),

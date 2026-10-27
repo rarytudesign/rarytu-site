@@ -43,8 +43,12 @@
   }
 
   // ---------- text conversions ----------
-  const toBox = (s) => String(s == null ? "" : s).replace(/<br>/g, "\n");
-  const fromBox = (s) => String(s).replace(/\r/g, "").replace(/\n/g, "<br>");
+  // In text boxes: Enter = line break; [phone break] / [mobile break] = line break on phones only / on phones and tablets.
+  // Hyphenated words are kept together automatically on Russian pages, so <span class="nw"> isn't needed (old ones are hidden).
+  const toBox = (s) => String(s == null ? "" : s).replace(/<span class="nw">([^<]*)<\/span>/g, "$1")
+    .replace(/<br class="br-m">/g, "[phone break]").replace(/<br class="v-mt">/g, "[mobile break]").replace(/<br>/g, "\n");
+  const fromBox = (s) => String(s).replace(/\r/g, "").replace(/\[phone break\]/gi, '<br class="br-m">').replace(/\[mobile break\]/gi, '<br class="v-mt">').replace(/\n/g, "<br>");
+  const BREAKS_HINT = "Enter starts a new line. [phone break] starts a new line on phones only, [mobile break] on phones and tablets.";
   const parasToBox = (list) => (list || []).map(toBox).join("\n\n");
   const parasFromBox = (s) => String(s).replace(/\r/g, "").split(/\n\s*\n/).map((p) => p.trim()).filter(Boolean).map(fromBox);
 
@@ -179,7 +183,8 @@
         if (d.open) { d.dataset.filled = 1; d.append(h("div", { class: "fitem__body" }, opts.item(b.sub(i), i))); }
         wrap.append(d);
       });
-      if (opts.make) wrap.append(h("button", { type: "button", class: "secondary sm flist__add", onclick: () => {
+      if (opts.make && opts.maxItems && arr.length >= opts.maxItems) wrap.append(h("p", { class: "field__hint" }, `That’s the maximum of ${opts.maxItems}.`));
+      else if (opts.make) wrap.append(h("button", { type: "button", class: "secondary sm flist__add", onclick: () => {
         const a = (b.get() || []).slice(); a.push(opts.make()); b.set(a); open.add(a.length - 1); draw();
         const last = wrap.querySelectorAll(".fitem"); last[last.length - 1]?.scrollIntoView({ block: "nearest", behavior: "smooth" });
       } }, opts.addLabel || "+ Add"));
@@ -217,5 +222,5 @@
   function restoreGroups(el) { el.querySelectorAll(".fgroup").forEach((d, i) => { const k = d.dataset.key; d.open = k in openGroups ? openGroups[k] : i === 0; }); }
   const note = (txt) => h("p", { class: "field__hint" }, txt);
 
-  window.F = { restoreGroups, h, at, pair, image, video, mediaUrl, text, input, select, list, group, note, esc, toBox, fromBox, parasToBox, parasFromBox, compact };
+  window.F = { BREAKS_HINT, restoreGroups, h, at, pair, image, video, mediaUrl, text, input, select, list, group, note, esc, toBox, fromBox, parasToBox, parasFromBox, compact };
 })();

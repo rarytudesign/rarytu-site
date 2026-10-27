@@ -31,7 +31,7 @@
       group("Contacts",
         list(b("contacts"), {
           label: "Contacts", note: "Shown in the footer of every page, in this order.",
-          summary: contactName, addLabel: "+ Add contact",
+          summary: contactName, addLabel: "+ Add contact", maxItems: 10,
           make: () => ({ id: "c" + Date.now().toString(36), label: "", url: "https://", iconLabel: { en: "", ru: "" } }),
           item: (ib) => {
             const isMail = () => /^mailto:/.test(ib.sub("url").get() || "");

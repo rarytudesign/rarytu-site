@@ -437,6 +437,17 @@ html[lang="ru"] .footer--compact .footer__title { font-size: 40px; line-height: 
   .fcell__arrow { display: inline-block; font-size: 14px; opacity: 0; transform: translate(-4px, 4px); transition: opacity 200ms var(--easy), transform 300ms var(--ease); }
 }
 @media (min-width: 1280px) and (hover: hover) { .fcell:hover .fcell__arrow { opacity: 1; transform: none; } }
+/* Contacts row: the designed grid fits 5; any other number gets equal columns after the copyright.
+   When the labels don't fit in one row, main.js adds .footer--stack and the desktop footer uses the mobile list. */
+@media (min-width: 1280px) {
+  .frow[data-n] { grid-template-columns: max-content; grid-auto-flow: column; grid-auto-columns: minmax(max-content, 1fr); }
+  .footer--stack .frow { display: flex; flex-direction: column; border-bottom: 0; }
+  .footer--stack .frow .frow__copy { display: none; }
+  .footer--stack .fcell { height: 52px; border-left: 0; border-bottom: 1px solid var(--brand); padding-left: 0; justify-content: space-between; white-space: normal; }
+  .footer--stack .fcell__arrow { opacity: 1; transform: none; font-size: inherit; }
+  .footer--stack .fbottom { height: 52px; padding-top: 0; justify-content: space-between; }
+  .footer--stack .fbottom .frow__copy { display: inline; }
+}
 
 /* =========================================================
    About

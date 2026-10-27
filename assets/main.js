@@ -503,6 +503,19 @@
   fitTitles(); document.fonts?.ready.then(fitTitles);
   { let ft; addEventListener("resize", () => { clearTimeout(ft); ft = setTimeout(fitTitles, 100); }); }
 
+  /* Footer contacts: one row on desktop while the labels fit; otherwise the mobile list. */
+  function fitFooter() {
+    document.querySelectorAll(".footer").forEach((f) => {
+      f.classList.remove("footer--stack");
+      if (innerWidth < 1280) return;
+      const row = f.querySelector(".frow");
+      if ((row && row.scrollWidth > row.clientWidth + 1) || [...f.querySelectorAll(".fcell")].some((c) => c.scrollWidth > c.clientWidth + 1)) f.classList.add("footer--stack");
+    });
+  }
+  fitFooter();
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(fitFooter);
+  { let fft; addEventListener("resize", () => { clearTimeout(fft); fft = setTimeout(fitFooter, 100); }); }
+
   /* ---------- Videos: load ahead of time, play only while visible ---------- */
   // In the claude.ai preview the files come from the artifact's asset store, which some browsers
   // (Safari) won't stream; there the whole file is fetched first and played from memory.

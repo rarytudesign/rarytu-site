@@ -131,7 +131,7 @@ ${main}
       `    <a class="fcell" href="${esc(c.url)}"${c.copy ? ` data-copy="${esc(c.copy)}"` : ' target="_blank" rel="noopener"'}><span class="fcell__label">${esc(c.label)}</span><span class="fcell__arrow" aria-hidden="true">↗</span></a>`).join("\n");
     return `<footer class="footer ${opts.compact ? "footer--compact" : ""}" id="${opts.compact ? "contact-m" : "contact"}" data-contact-target>
   <h2 class="footer__title">${rich(opts.title != null ? opts.title : ui.footerTitle)}</h2>
-  <div class="frow">
+  <div class="frow"${site.contacts.length !== 5 ? ` data-n="${site.contacts.length}"` : ""}>
     <span class="frow__copy">${esc(site.copyright)}</span>
 ${cells}
   </div>
@@ -327,7 +327,7 @@ ${steps}
 </section>
 
 <section class="principles">
-  <h2 class="display">${rich(tr(a.principles.title, lang))}</h2>
+  <h2 class="display">${headingVar(a.principles.title, lang)}</h2>
   <ul class="pgrid" data-carousel>
 ${items}
   </ul>
@@ -356,10 +356,39 @@ ${btns}
   // icon for a contact that has none: a plain circle with an arrow, same size as the others
   const DEFAULT_ICON = '<svg viewBox="0 0 52 52" width="52" height="52" aria-hidden="true"><circle cx="26" cy="26" r="26" fill="currentColor"/><path d="M20 32 32 20M23 20h9v9" fill="none" stroke="#fff" stroke-width="2"/></svg>';
 
+  // Russian typography: a word with a hyphen (веб-дизайн, CRM-коммуникаций) never breaks at the hyphen.
+  // Applied to the text of <body> on Russian pages, outside tags, scripts and SVG.
+  const HYPH = /(^|[^\p{L}\p{N}-])([\p{L}\p{N}]+(?:-[\p{L}\p{N}]+)+)(?=$|[^\p{L}\p{N}-])/gu;
+  function keepHyphens(html) {
+    const at = html.indexOf("<body"); if (at < 0) return html;
+    let skip = 0, nw = 0;
+    const body = html.slice(at).split(/(<[^>]+>)/).map((part) => {
+      if (part.startsWith("<")) {
+        if (/^<(script|svg|style)\b/i.test(part)) skip++; else if (/^<\/(script|svg|style)>/i.test(part)) skip = Math.max(0, skip - 1);
+        if (/^<span class="nw">/.test(part)) nw++; else if (nw && part === "</span>") nw--;
+        return part;
+      }
+      return skip || nw ? part : part.replace(HYPH, '$1<span class="nw">$2</span>');
+    }).join("");
+    return html.slice(0, at) + body;
+  }
+  // heading with a desktop and a mobile+tablet version; when mobile is the start of desktop
+  // (e.g. a colon only on desktop), only the extra part is wrapped
+  function headingVar(v, lang) {
+    const x = pick(v, lang);
+    if (!x || typeof x !== "object") return rich(x);
+    if (x.d.startsWith(x.mt)) return rich(x.mt) + (x.d.length > x.mt.length ? `<span class="v-d">${rich(x.d.slice(x.mt.length))}</span>` : "");
+    return `<span class="v-d">${rich(x.d)}</span><span class="v-mt">${rich(x.mt)}</span>`;
+  }
+
   // ---------- pages ----------
   /* p: { lang, key: "work"|"about"|"approach"|"case", slug? , path }
      data: { site, read(file) → parsed JSON }  (read is sync in Node; the panel passes a cache) */
   function renderPage(p, data) {
+    const html = renderRaw(p, data);
+    return p.lang === "ru" ? keepHyphens(html) : html;
+  }
+  function renderRaw(p, data) {
     const { site } = data, lang = p.lang, other = lang === "en" ? "ru" : "en";
     const work = data.read("content/pages/work.json");
     const ctx = { site, lang, path: p.path, altPath: p.path.replace(/^(en|ru)\//, other + "/") };
@@ -401,7 +430,7 @@ ${btns}
     return out;
   }
 
-  const api = { listPages, renderPage, approachMain, aboutMain, caseMain, workMain, vp, esc, rich, pick, variant, tr, up, pagePath, casePath, shell, footer, SVG };
+  const api = { keepHyphens, headingVar, listPages, renderPage, approachMain, aboutMain, caseMain, workMain, vp, esc, rich, pick, variant, tr, up, pagePath, casePath, shell, footer, SVG };
   root.RarytuRender = api;
   if (typeof module !== "undefined" && module.exports) module.exports = api;
 })(typeof window !== "undefined" ? window : globalThis);

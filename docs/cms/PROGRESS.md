@@ -20,7 +20,7 @@ Rule: one step at a time. Test, commit, push, then tick it here.
 ## B. Panel shell
 - [x] B1 Panel layout with tabs: Site, Work, About, Approach, one per project, "+ New project", Site backups (backups moved in as is)
 - [x] B2 Shared GitHub module (token, snapshot, blobs, commit) used by backups and publishing
-- [ ] B3 Loading content from GitHub + draft storage in the browser (IndexedDB), "unsaved changes" marker, Discard draft
+- [x] B3 Loading content from GitHub + draft storage in the browser (IndexedDB), "unsaved changes" marker, Discard draft
 - [ ] B4 Live preview: iframe with the rendered page, EN/RU switch, 390 / 834 / 1440 switch
 - [ ] B5 Form kit: EN/RU text, desktop vs mobile+tablet text, paragraphs, link, colour, list editor (add, remove, reorder)
 
@@ -62,6 +62,14 @@ Rule: one step at a time. Test, commit, push, then tick it here.
   go into each page's own JSON in A4–A6; case pages use the Work page tagline and their own title/description.
 
 ## Log
+- 2026-10-27: B3 done. admin/cms/store.js (window.Store): load() reads content/*.json from GitHub at HEAD via raw URLs
+  (falls back to the published site without GitHub); error code "no-content" when content/ is missing.
+  get(path) / read(path) / set(path, obj) / update(path, fn) / addMedia(path, blob) / removeMedia / changed() / mediaChanged() /
+  isDirty() / conflicts() (draft files whose published version moved since the draft copied them) / discard() / published(head, files) / on(fn).
+  Draft lives in IndexedDB "rarytu-admin" key "draft": { startedAt, updatedAt, head, files, base, media }. A file edited back to
+  its published state drops out of the draft. Hidden projects: work.json may get `hidden: [slugs]` (E2); store already loads them.
+  Tabs show a dot for pages with unpublished changes; top bar shows "Draft: N changes not published", Discard, Publish (enabled when dirty).
+  App calls Editors.open(hash, box) if window.Editors exists (B5/C steps). Test: tools/test-store.js (7 checks pass).
 - 2026-10-27: B1+B2 done. Panel files: admin/index.html (shell: top bar with Publish/Discard, tabs, global GitHub token box, views),
   admin/cms/admin.css, admin/cms/github.js (window.GH: token, gh(), snapshot, versions, history log, commitTree, getFile),
   admin/cms/backups.js (window.Backups.open()), admin/cms/app.js (routing: #site #work #about #approach #project/<slug> #new-project #backups;

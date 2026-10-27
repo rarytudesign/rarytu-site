@@ -9,7 +9,7 @@ Rule: one step at a time. Test, commit, push, then tick it here.
 - [x] 0.3 Move the mock GitHub API and test scripts into `tools/` so they live with the repo
 
 ## A. Content model and renderer (site looks exactly the same afterwards)
-- [ ] A1 `content/site.json`: shared shell data (name, taglines, nav, contacts, CV, footer, meta)
+- [x] A1 `content/site.json`: shared shell data (name, taglines, nav, contacts, CV, footer, meta)
 - [ ] A2 `admin/cms/render.js`: shared shell (head, sidebar, tablet bar, mobile bar and menu, footer) + Node test harness that diffs against current HTML
 - [ ] A3 Case pages: `content/cases/*.json` for all 6 projects, renderer, 12 pages identical
 - [ ] A4 Work (home) page: content + renderer, 2 pages identical
@@ -49,5 +49,16 @@ Rule: one step at a time. Test, commit, push, then tick it here.
 - [ ] G2 Check the panel on a phone-sized screen
 - [ ] G3 Short guide for Nastya in README ("How to use the panel")
 
+## Notes for next steps
+- Text format in content JSON: plain text, entities decoded (`&` not `&amp;`, real non-breaking spaces).
+  Allowed inline tags kept as is: `<br>`, `<br class="br-m">`, `<span class="nw">`, `<b>`, `<i>`, `<a href>`.
+  The renderer escapes everything else.
+- "Identical" for the renderer test = same after decoding entities and collapsing whitespace.
+- site.json has: name, copyright, shareImage, cv per language, contacts (footer order; `icon` = full SVG for the
+  Approach buttons, `iconLabel` per language, `copy` for email), `approachButtons` (button order on Approach), `ui` strings per language.
+- Page-specific shell values (title, description, sidebar tagline, mobile menu tagline, footer title on Approach)
+  go into each page's own JSON in A4–A6; case pages use the Work page tagline and their own title/description.
+
 ## Log
+- 2026-10-27: A1 done (content/site.json).
 - 2026-10-27: plan approved. Decisions: forms + live preview; drafts + Publish; "(Admin)" link removed from the site; backups become a tab.

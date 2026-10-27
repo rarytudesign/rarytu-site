@@ -1,0 +1,202 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Site backups · Anastasia Rarytu</title>
+<link rel="icon" href="../assets/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="../assets/fonts.css">
+<style>
+  :root {
+    --brand: #541725; --surface: #ffffff; --muted: #f6f6f6; --line: rgba(84, 23, 37, 0.18);
+    --ok: #2f6b3a; --warn: #8a5a00; --err: #a3192c;
+    color-scheme: light;
+  }
+  *, *::before, *::after { box-sizing: border-box; }
+  html, body { margin: 0; }
+  body { background: var(--surface); color: var(--brand); font: 400 16px/22px "Inter Tight", system-ui, sans-serif; letter-spacing: 0.1px; -webkit-font-smoothing: antialiased; }
+  a { color: inherit; }
+  .bar { display: flex; justify-content: space-between; align-items: center; gap: 16px; padding: 18px 32px; background: var(--muted); font-weight: 500; }
+  .bar a { text-decoration: none; }
+  .bar a:hover { text-decoration: underline; text-underline-offset: 3px; }
+  main { max-width: 760px; padding: 56px 32px 80px; }
+  h1 { font-weight: 500; font-size: 52px; line-height: 54px; letter-spacing: -0.6px; margin: 0 0 16px; }
+  .lede { margin: 0 0 40px; max-width: 520px; }
+  .actions { display: flex; flex-wrap: wrap; gap: 12px; }
+  button { font: inherit; font-weight: 500; letter-spacing: 0; cursor: pointer; height: 52px; padding: 0 26px; border-radius: 100px; border: 1px solid var(--brand); transition: background-color 200ms, color 200ms, opacity 200ms; }
+  .primary { background: var(--brand); color: var(--surface); }
+  .secondary { background: transparent; color: var(--brand); }
+  .secondary:hover { background: var(--brand); color: var(--surface); }
+  .primary:hover { opacity: 0.85; }
+  button:disabled { opacity: 0.4; cursor: default; }
+  button:focus-visible { outline: 2px solid var(--brand); outline-offset: 3px; }
+  .status { margin-top: 28px; padding: 20px 22px; border-radius: 16px; background: var(--muted); }
+  .status[hidden] { display: none; }
+  .status h2 { font-size: 20px; line-height: 24px; letter-spacing: -0.2px; font-weight: 500; margin: 0 0 8px; }
+  .status p { margin: 0; }
+  .status p + p { margin-top: 6px; }
+  .progress { height: 4px; background: var(--line); border-radius: 4px; overflow: hidden; margin-top: 14px; }
+  .progress i { display: block; height: 100%; width: 0; background: var(--brand); transition: width 200ms; }
+  .checks { list-style: none; padding: 0; margin: 12px 0 0; }
+  .checks li { padding-left: 24px; position: relative; }
+  .checks li::before { position: absolute; left: 0; }
+  .checks .ok::before { content: "✓"; color: var(--ok); }
+  .checks .bad::before { content: "✕"; color: var(--err); }
+  .note { color: var(--warn); }
+  .error { color: var(--err); }
+  .small { font-size: 14px; line-height: 20px; opacity: 0.75; }
+  .history { margin-top: 64px; }
+  .history[hidden] { display: none; }
+  .history h2 { font-size: 32px; line-height: 34px; letter-spacing: -1px; font-weight: 500; margin: 0 0 20px; }
+  table { width: 100%; border-collapse: collapse; font-variant-numeric: tabular-nums; }
+  th, td { text-align: left; padding: 12px 12px 12px 0; border-bottom: 1px solid var(--line); vertical-align: middle; }
+  th { font-weight: 500; font-size: 14px; }
+  .sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
+  @media (max-width: 600px) {
+    .bar { padding: 14px 16px; }
+    main { padding: 32px 16px 64px; }
+    h1 { font-size: 40px; line-height: 44px; }
+    button { width: 100%; }
+  }
+</style>
+</head>
+<body>
+<header class="bar">
+  <span>Anastasia Rarytu <span class="small">(Admin)</span></span>
+  <a href="../en/index.html">← Back to the site</a>
+</header>
+
+<main>
+  <h1>Site backups</h1>
+  <p class="lede">A backup is a ZIP with the whole site: every page in both languages, styles, scripts, fonts, images, videos and CVs. You can upload it to any hosting as it is.</p>
+
+  <div class="actions">
+    <button class="primary" id="backup" type="button">Back up the site</button>
+    <button class="secondary" id="restore" type="button">Restore the site from backup</button>
+    <input class="sr" id="file" type="file" accept=".zip,application/zip" tabindex="-1" aria-hidden="true">
+  </div>
+
+  <section class="status" id="status" hidden aria-live="polite"></section>
+
+  <!-- Backup history: switched on once the site runs on hosting that keeps the backups -->
+  <section class="history" id="history" hidden>
+    <h2>Backup history</h2>
+    <table>
+      <thead><tr><th>Date</th><th>Size</th><th>Files</th><th>Made by</th><th><span class="sr">Actions</span></th></tr></thead>
+      <tbody id="history-rows"></tbody>
+    </table>
+  </section>
+</main>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+<script>
+(() => {
+  const ROOT = new URL("../", location.href);          // the site root, wherever it is hosted
+  const $ = (id) => document.getElementById(id);
+  const status = $("status");
+  const fmtSize = (b) => b > 1048576 ? (b / 1048576).toFixed(1) + " MB" : Math.max(1, Math.round(b / 1024)) + " KB";
+  const pad = (n) => String(n).padStart(2, "0");
+  const stamp = (d = new Date()) => `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}-${pad(d.getHours())}${pad(d.getMinutes())}`;
+  const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+  const show = (html) => { status.innerHTML = html; status.hidden = false; };
+  const bar = () => status.querySelector(".progress i");
+
+  // ---------- Back up ----------
+  async function fetchFile(entry) {
+    let r = await fetch(new URL(entry.p, ROOT), { cache: "no-store" });
+    if (!r.ok && entry.b) r = await fetch(entry.b, { cache: "no-store" });   // preview: videos live in the asset store
+    if (!r.ok) throw new Error(entry.p + " (" + r.status + ")");
+    return r;
+  }
+  // HTML in the preview points videos at the asset store; the backup gets the real file paths
+  function portableHtml(text, path, blobs) {
+    const depth = path.split("/").length - 1, up = "../".repeat(depth);
+    text = text.replace(/\/_blob\/([0-9a-f]{32})/g, (m, id) => blobs[id] ? up + blobs[id] : m);
+    if ((text.match(/<!doctype html>/gi) || []).length > 1) {             // preview wrapper around the root page
+      const i = text.toLowerCase().indexOf("<!doctype html>", 10);
+      text = text.slice(i, text.lastIndexOf("</body></html>")).trim();
+    }
+    return text;
+  }
+
+  $("backup").addEventListener("click", async () => {
+    const btn = $("backup"); btn.disabled = true;
+    show('<h2>Making a backup…</h2><p id="b-step">Reading the file list</p><div class="progress"><i></i></div>');
+    try {
+      const manifest = await (await fetch(new URL("admin/manifest.json", ROOT), { cache: "no-store" })).json();
+      const blobs = {}; manifest.files.forEach((f) => { if (f.b) blobs[f.b.split("/").pop()] = f.p; });
+      const zip = new JSZip(); let done = 0, bytes = 0; const failed = [];
+      const queue = manifest.files.slice(), N = queue.length;
+      const worker = async () => {
+        for (let f; (f = queue.shift()); ) {
+          try {
+            const r = await fetchFile(f);
+            if (/\.html$/.test(f.p)) { const t = portableHtml(await r.text(), f.p, blobs); bytes += t.length; zip.file(f.p, t); }
+            else { const buf = await r.arrayBuffer(); bytes += buf.byteLength; zip.file(f.p, buf); }
+          } catch (e) { failed.push(f.p); }
+          done++; bar().style.width = (done / N * 85).toFixed(1) + "%";
+          $("b-step").textContent = "Collecting files: " + done + " of " + N;
+        }
+      };
+      await Promise.all(Array.from({ length: 6 }, worker));
+      if (failed.length) throw new Error("Some files could not be read: " + failed.slice(0, 5).join(", ") + (failed.length > 5 ? "…" : ""));
+      const info = { site: "rarytu", created: new Date().toISOString(), files: N, bytes, source: location.origin };
+      zip.file("backup.json", JSON.stringify(info, null, 2));
+      $("b-step").textContent = "Packing the archive";
+      const blob = await zip.generateAsync({ type: "blob", compression: "DEFLATE", compressionOptions: { level: 6 } },
+        (m) => { bar().style.width = (85 + m.percent * 0.15).toFixed(1) + "%"; });
+      const name = "rarytu-backup-" + stamp() + ".zip";
+      await save(name, blob);
+      show(`<h2>Backup ready</h2><p>${esc(name)}</p><p class="small">${N} files, ${fmtSize(blob.size)}. Keep it somewhere safe, e.g. in your cloud drive.</p>`);
+    } catch (e) {
+      if (e && e.code === "declined") show("<h2>Backup not saved</h2><p>You cancelled the download. Press the button again to make a new one.</p>");
+      else show(`<h2 class="error">Backup failed</h2><p>${esc(e.message || e)}</p>`);
+    } finally { btn.disabled = false; }
+  });
+
+  async function save(filename, blob) {
+    const downloads = window.claude ? await window.claude.use("downloads").catch(() => null) : null;
+    if (downloads) return downloads.save({ filename, data: blob });     // claude.ai preview
+    const a = document.createElement("a");                               // any normal hosting
+    a.href = URL.createObjectURL(blob); a.download = filename;
+    document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(() => URL.revokeObjectURL(a.href), 60000);
+  }
+
+  // ---------- Restore ----------
+  $("restore").addEventListener("click", () => $("file").click());
+  $("file").addEventListener("change", async (ev) => {
+    const file = ev.target.files[0]; ev.target.value = "";
+    if (!file) return;
+    show('<h2>Checking the backup…</h2><p>' + esc(file.name) + '</p><div class="progress"><i style="width:30%"></i></div>');
+    try {
+      const zip = await JSZip.loadAsync(file);
+      let names = Object.keys(zip.files).filter((n) => !zip.files[n].dir);
+      // accept archives with everything inside one top folder too
+      const top = names[0] && names[0].includes("/") ? names[0].split("/")[0] + "/" : "";
+      const prefix = top && names.every((n) => n.startsWith(top)) ? top : "";
+      const has = (p) => !!zip.file(prefix + p);
+      const pages = names.filter((n) => n.endsWith("index.html")).length;
+      let info = null; try { info = JSON.parse(await zip.file(prefix + "backup.json").async("string")); } catch {}
+      const checks = [
+        ["Home page", has("index.html")],
+        ["English pages", has("en/index.html") && has("en/about/index.html") && has("en/approach/index.html")],
+        ["Russian pages", has("ru/index.html") && has("ru/about/index.html") && has("ru/approach/index.html")],
+        ["Styles and scripts", has("assets/styles.css") && has("assets/main.js")],
+        ["Images", names.some((n) => n.startsWith(prefix + "assets/img/"))],
+      ];
+      const valid = checks.every((c) => c[1]);
+      show(`<h2>${valid ? "This backup looks complete" : "This doesn’t look like a full site backup"}</h2>
+        <p>${esc(file.name)}: ${names.length} files, ${pages} pages, ${fmtSize(file.size)}${info && info.created ? ", made " + esc(new Date(info.created).toLocaleString()) : ""}</p>
+        <ul class="checks">${checks.map((c) => `<li class="${c[1] ? "ok" : "bad"}">${c[0]}</li>`).join("")}</ul>
+        <p class="note" style="margin-top:14px">Restoring will replace the live site with this backup. It turns on once the site runs on hosting: a page alone can’t overwrite the site’s files.</p>
+        <p style="margin-top:14px"><button class="primary" type="button" disabled>Restore this backup</button></p>`);
+    } catch (e) {
+      show(`<h2 class="error">Can’t open this file</h2><p>${esc(file.name)} is not a readable ZIP archive.</p>`);
+    }
+  });
+})();
+</script>
+</body>
+</html>

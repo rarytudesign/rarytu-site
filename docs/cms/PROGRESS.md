@@ -28,7 +28,7 @@ Rule: one step at a time. Test, commit, push, then tick it here.
 - [x] C1 Site tab: name, taglines, menu labels, contacts (add/edit/remove), CV files, SEO texts
 - [x] C2 Work tab: hero texts, Selected work cards (order, show/hide)
 - [x] C3 About tab: hero and bio, photos with captions, Work experience, Education, Tools and other lists
-- [ ] C4 Approach tab: every section
+- [x] C4 Approach tab: every section
 - [ ] C5 Project tab: card, header, tags, hero media and colour, overview, gallery (images/videos, reorder)
 
 ## D. Media
@@ -62,6 +62,10 @@ Rule: one step at a time. Test, commit, push, then tick it here.
   go into each page's own JSON in A4–A6; case pages use the Work page tagline and their own title/description.
 
 ## Log
+- 2026-10-27: C4 done. ed-approach.js: intro (heading, text with variants), steps (+ add; numbers automatic; the "→ " is typed text),
+  WIP caption (video replace waits for D2), principles (+ add, title/text with variants, swipe), tools (heading, paragraphs with variants),
+  contact block headings (desktop and mobile/tablet), SEO + taglines. Note: when one language uses desktop/mobile variants, the form shows
+  variants for both; saving writes {d, mt} for both (renders identically).
 - 2026-10-27: C3 done. ed-about.js: intro (heading, two bio columns × desktop / mobile+tablet, heading + paragraphs), photos (captions, order;
   adding/replacing waits for D1), experience and education lists (+ add, years, role, company, paragraphs; logo note), tools (+ add, name,
   optional SVG icon code), SEO + both taglines. F.pair(file, lang => keys) for values stored per language at different paths.

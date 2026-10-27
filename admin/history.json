@@ -12,6 +12,12 @@
       "type": "backup",
       "at": "2026-10-27T16:11:39.826Z",
       "file": "rarytu-backup-v1-2026-10-27-1911.zip"
+    },
+    {
+      "v": 1,
+      "type": "restore",
+      "at": "2026-10-27T16:12:05.841Z",
+      "file": "rarytu-backup-v1-2026-10-27-1911.zip"
     }
   ]
 }

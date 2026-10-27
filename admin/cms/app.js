@@ -23,9 +23,10 @@
   }
 
   function renderDraftState() {
-    const n = Store.changed().length + Store.mediaChanged().length, dirty = Store.isDirty();
+    const pages = Store.changed().length, files = Store.mediaChanged().length, dirty = Store.isDirty();
+    const parts = [pages && `${pages} page${pages === 1 ? "" : "s"} changed`, files && `${files} new file${files === 1 ? "" : "s"}`].filter(Boolean).join(", ");
     $("draft-state").textContent = !ready ? (loadError ? "Content not loaded" : "Loading…")
-      : dirty ? `Draft: ${n} change${n === 1 ? "" : "s"} not published` : "All changes published";
+      : dirty ? `Draft: ${parts}, not published` : "All changes published";
     $("discard").hidden = !dirty;
     $("publish").disabled = !dirty;
   }

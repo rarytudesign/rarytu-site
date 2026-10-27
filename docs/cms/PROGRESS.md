@@ -50,7 +50,7 @@ Rule: one step at a time. Test, commit, push, then tick it here.
 - [x] G1 End-to-end test on the mock GitHub: edit text, add project with media, publish, backup, restore
 - [x] G2 Check the panel on a phone-sized screen
 - [x] G3 Short guide for Nastya in README ("How to use the panel")
-- [ ] G4 Polish: hide typography markup in text boxes (e.g. auto-wrap hyphenated RU words in <span class="nw"> in the renderer and strip
+- [x] G4 Polish: hide typography markup in text boxes (e.g. auto-wrap hyphenated RU words in <span class="nw"> in the renderer and strip
   them from content; show <br class="br-m"> etc. in a friendlier way); count draft changes per page, not per file
 
 ## Notes for next steps
@@ -64,6 +64,13 @@ Rule: one step at a time. Test, commit, push, then tick it here.
   go into each page's own JSON in A4–A6; case pages use the Work page tagline and their own title/description.
 
 ## Log
+- 2026-10-27: Nastya's feedback done (G4):
+  1) "—" → "-" in all content. 2) Contacts: max 10 in the panel; renderer adds data-n to .frow when not 5 (5 = designed grid, unchanged);
+  data-n grid = copyright max-content + equal columns; main.js fitFooter() adds .footer--stack (mobile-style list) on desktop when the row
+  or a label doesn't fit (checked 1280–1920: 10 short contacts fit at 1920, stack at 1440). 3) Markup: renderer keepHyphens() wraps
+  hyphenated words in span.nw on RU pages automatically (body text only, not in tags/SVG/head); nw spans removed from content;
+  text boxes show [phone break] (br-m) and [mobile break] (v-mt); Approach principles title is now {d:"…:", mt:"…"} rendered by
+  headingVar() as "…<span class=v-d>:</span>" (same HTML). Draft counter: "N pages changed, M new files".
 - 2026-10-27: Live check: panel works on GitHub Pages (without a token, content loads from the site; with her token, from GitHub).
   tools/build.js now also stamps admin asset versions (?v=hash). Waiting for Nastya's feedback; then G4 polish.
   Open questions sent to her: em dashes in RU case texts (12 places), 6th contact wraps the footer.

@@ -65,6 +65,17 @@ Rule: one step at a time. Test, commit, push, then tick it here.
   go into each page's own JSON in A4–A6; case pages use the Work page tagline and their own title/description.
 
 ## Log
+- 2026-10-27: Figma check round (mobile 390, Figma page 131:2228; tablet page 141:11037).
+  Preview bug: iframe got its width after loading, so main.js split headings into one word per line; now the frame is sized first.
+  EN content: 275 non-breaking spaces removed (kept next to &, → and after digits); they made lines wrap earlier than in Figma.
+  RU keeps its nbsp (Russian typography). CSS (end of styles.css, "Figma check" comments): company line under a role trimmed to cap
+  height (<1280); mobile footer 24px above © row; contact rows 53px (<1280); principles swipe 24px above; mobile tools text 346px wide;
+  gallery→prev/next gap 54px mobile, 52px tablet. Measured: EN Work, About, Approach, HEVY match Figma within 1–2px except
+  About bio column 2 (browser renders "China." one line lower than Figma: font rendering, text is identical).
+  Dots: main.js placeDots() moves a decorative dot to the nearest free spot when its designed spot covers text, links, buttons,
+  covers, gallery or other media (About photos and Approach video edges allowed, as in Figma); hides it if no free spot within 480px.
+  Checked 390/834/1024/1440/1920 × 6 pages: 0 overlaps.
+  Open for Nastya: RU Figma has no company line under roles in Work experience (site has it); RU About/Approach differ by a few px.
 - 2026-10-27: Feedback round 2 done. (a) No dashes: RU case openings rewritten ("Компания DOM работает…", "Lumo: кураторский…").
   (b) One contacts list: approachButtons removed from site.json; Approach round buttons follow site.contacts order (email now last).
   (c) Line breaks: text boxes show breaks as plain new lines; Shift+Enter = new line, Enter = new paragraph in paragraph boxes

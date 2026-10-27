@@ -299,6 +299,59 @@
   }
   const dotSize = () => (innerWidth >= 1280 ? Math.round(Math.min(40, Math.max(28, innerWidth * 0.0208))) : 24);
 
+  /* ---------- Decorative dots never sit on content ----------
+     Each dot keeps its designed spot when that spot is free. If text, an image or a button is under it
+     (longer copy, another screen width), it moves to the nearest free spot inside its own area. */
+  function contentRects(scope) {
+    const out = [], walker = document.createTreeWalker(scope, NodeFilter.SHOW_TEXT, {
+      acceptNode: (n) => n.textContent.trim() && !n.parentElement.closest(".dots, .skel, [hidden], .sr-only, .skip") ? NodeFilter.FILTER_ACCEPT : NodeFilter.FILTER_REJECT });
+    for (let n; (n = walker.nextNode()); ) {
+      range.selectNodeContents(n);
+      for (const r of range.getClientRects()) if (r.width && r.height) out.push({ l: r.left, t: r.top + scrollY, r: r.right, b: r.bottom + scrollY });
+    }
+    // by design (Figma) dots may overlap the edges of the About photos and the Approach video; everything else is off limits
+    scope.querySelectorAll(MEDIA + ", .card__cover, a.sbtn, .circle__link").forEach((el) => {
+      if (el.closest(".dots, .photo, .wip__fig")) return;
+      const r = el.getBoundingClientRect(); if (r.width && r.height) out.push({ l: r.left, t: r.top + scrollY, r: r.right, b: r.bottom + scrollY });
+    });
+    return out;
+  }
+  function placeDots() {
+    const main = document.querySelector("main"); if (!main) return;
+    const groups = [...main.querySelectorAll(".dots")]; if (!groups.length) return;
+    groups.forEach((g) => g.querySelectorAll("i").forEach((d) => { d.style.left = ""; d.style.top = ""; }));
+    const root = document.documentElement, had = root.classList.contains("skel-measure");
+    root.classList.add("skel-measure");   // reveal offsets off while measuring (same frame, never painted)
+    const rects = contentRects(main), gap = 8;
+    const hits = (x, y, sz) => rects.some((q) => x + sz + gap > q.l && x - gap < q.r && y + sz + gap > q.t && y - gap < q.b);
+    const taken = [];
+    groups.forEach((g) => {
+      const box = g.getBoundingClientRect(), ox = box.left, oy = box.top + scrollY;
+      g.querySelectorAll("i").forEach((d) => {
+        if (getComputedStyle(d).display === "none") return;
+        const sz = d.offsetWidth, x0 = ox + d.offsetLeft, y0 = oy + d.offsetTop;
+        const free = (x, y) => x >= ox && y >= oy - sz && x + sz <= ox + box.width && x + sz <= innerWidth - 4 && !hits(x, y, sz)
+          && !taken.some((t) => Math.abs(t.x - x) < sz * 1.5 && Math.abs(t.y - y) < sz * 1.5);
+        let best = free(x0, y0) ? [x0, y0] : null;
+        for (let rad = 8; !best && rad <= 480; rad += 8) {
+          for (let k = 0, n = Math.max(8, Math.round(rad / 6)); k < n && !best; k++) {
+            const a = (k / n) * Math.PI * 2, x = x0 + Math.cos(a) * rad, y = y0 + Math.sin(a) * rad;
+            if (free(x, y)) best = [x, y];
+          }
+        }
+        if (!best) { d.style.display = "none"; return; }   // no free spot nearby: better no dot than a dot on the text
+        d.style.display = "";
+        if (best[0] !== x0 || best[1] !== y0) { d.style.left = (best[0] - ox) + "px"; d.style.top = (best[1] - oy) + "px"; }
+        taken.push({ x: best[0], y: best[1] });
+      });
+    });
+    if (!had) root.classList.remove("skel-measure");
+  }
+  const placeDotsSoon = () => { clearTimeout(placeDots.t); placeDots.t = setTimeout(placeDots, 120); };
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(placeDotsSoon); else placeDotsSoon();
+  addEventListener("load", placeDotsSoon);
+  addEventListener("resize", () => { document.querySelectorAll("main .dots i").forEach((d) => { d.style.display = ""; }); placeDotsSoon(); });
+
   /* ---------- Click / tap anywhere empty: a dot lands there ---------- */
   {
     const placed = [];

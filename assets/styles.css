@@ -760,3 +760,15 @@ html[lang="ru"] .dfoot__title { font-family: var(--font); font-size: clamp(60px,
 
 /* Temporary: link to the backups page, right after the name */
 .gitem, .chero { isolation: isolate; }
+
+/* Figma check (mobile + tablet): the company line under a role is trimmed to its capital height, like in the layout */
+@media (max-width: 1279px) { .xrow__role p { text-box: trim-both cap alphabetic; } }
+/* Figma check (mobile): 24px between the contact list and the © / Back to top row */
+@media (max-width: 743px) { .footer .fbottom { margin-top: 24px; } }
+/* Figma check (mobile + tablet): each contact row is 52px plus its 1px line */
+@media (max-width: 1279px) { .fcell { height: 53px; } }
+/* Figma check (mobile): 24px above the principles' swipe line; the tools text box is 346px wide */
+@media (max-width: 743px) { .principles .swipe { padding-top: 24px; } .split__text > div { max-width: 346px; } }
+/* Figma check: space between the gallery and the previous/next links (mobile 54px, tablet 52px) */
+@media (max-width: 743px) { .pnav { margin-top: 54px; } }
+@media (min-width: 744px) and (max-width: 1279px) { .pnav { margin-top: 52px; } }

@@ -16,11 +16,11 @@
     "ru": "От понимания задачи к визуальному решению"
   },
   "heading": {
-    "en": "First, I ask questions",
+    "en": "First, I ask questions",
     "ru": "От задачи к решению"
   },
   "intro": {
-    "en": "What message do you want to convey? Who is your target audience? What do you want people to understand or do next?",
+    "en": "What message do you want to convey? Who is your target audience? What do you want people to understand or do next?",
     "ru": {
       "d": "Я рассматриваю дизайн как часть коммуникации бизнеса, связанную с содержанием, аудиторией и контекстом взаимодействия с брендом. Нахожу решение конкретной бизнес-задачи и последовательно реализую его в нужных каналах и форматах.",
       "mt": "Рассматриваю дизайн как часть коммуникации бизнеса. Решаю задачи бренда с учётом аудитории, содержания и контекста, объединяя разные каналы и форматы."
@@ -29,11 +29,11 @@
   "steps": [
     {
       "title": {
-        "en": "Understand the brief",
+        "en": "Understand the brief",
         "ru": "Разбираюсь в задаче"
       },
       "text": {
-        "en": "→ Before opening Figma, I go through the brief, content and context. I ask questions, check assumptions and agree on what the design needs to do.",
+        "en": "→ Before opening Figma, I go through the brief, content and context. I ask questions, check assumptions and agree on what the design needs to do.",
         "ru": {
           "d": "→ Анализирую бриф, цели бизнеса и потребности аудитории. Вместе с командой определяю коммуникационную задачу, приоритеты и критерии оценки дизайн-решения.",
           "mt": "→ Анализирую бриф, цели бизнеса и потребности аудитории. С командой определяю задачу, приоритеты и критерии оценки решения."
@@ -42,11 +42,11 @@
     },
     {
       "title": {
-        "en": "Consider the whole picture",
+        "en": "Consider the whole picture",
         "ru": "Составляю общую картину"
       },
       "text": {
-        "en": "→ I look at where the work will be used: a website, a campaign or templates a team opens every week. I also think about who will review it, update it and keep it working.",
+        "en": "→ I look at where the work will be used: a website, a campaign or templates a team opens every week. I also think about who will review it, update it and keep it working.",
         "ru": {
           "d": "→ Рассматриваю проект как систему коммуникаций: как связаны сообщения, каналы и точки контакта с брендом. Учитываю пользовательские сценарии и ограничения реализации, чтобы визуальное решение работало согласованно во всех материалах.",
           "mt": "→ Связываю сообщения и точки контакта в систему коммуникаций. Учитываю пользовательские сценарии и ограничения реализации, чтобы дизайн работал согласованно во всех каналах."
@@ -55,11 +55,11 @@
     },
     {
       "title": {
-        "en": "Give every element a purpose",
+        "en": "Give every element a purpose",
         "ru": "Расставляю акценты"
       },
       "text": {
-        "en": "→ Type, colour, imagery and spacing all guide attention. I try different combinations, check what stands out and remove anything that makes the message harder to follow.",
+        "en": "→ Type, colour, imagery and spacing all guide attention. I try different combinations, check what stands out and remove anything that makes the message harder to follow.",
         "ru": {
           "d": "→ Определяю ключевое сообщение и разрабатываю визуальную концепцию, которая его раскрывает. Выстраиваю смысловые акценты так, чтобы дизайн передавал характер бренда, был понятен аудитории и отвечал цели коммуникации.",
           "mt": "→ Разрабатываю визуальную концепцию вокруг ключевого сообщения. Она должна передавать характер бренда, быть понятной аудитории и отвечать цели коммуникации."
@@ -194,14 +194,14 @@
   },
   "tools": {
     "title": {
-      "en": "The right tools for each task",
+      "en": "The right tools for each task",
       "ru": "Выбираю инструменты<br class=\"v-mt\"> под задачу"
     },
     "text": {
       "en": [
-        "I use Figma for most of my daily work, including prototyping and animation. For print work, I use Illustrator; for photo editing, Photoshop.",
-        "My workflow has changed with AI. I previously created 3D visuals in Cinema 4D and drew illustrations in Procreate. That experience helps me work with AI today: I know how to describe what I need, spot problems and refine the results. AI lets me try more ideas and produce assets faster.",
-        "I enjoy trying new tools and attending workshops. Recently, I’ve also started experimenting with code to understand how my designs become working websites."
+        "I use Figma for most of my daily work, including prototyping and animation. For print work, I use Illustrator; for photo editing, Photoshop.",
+        "My workflow has changed with AI. I previously created 3D visuals in Cinema 4D and drew illustrations in Procreate. That experience helps me work with AI today: I know how to describe what I need, spot problems and refine the results. AI lets me try more ideas and produce assets faster.",
+        "I enjoy trying new tools and attending workshops. Recently, I’ve also started experimenting with code to understand how my designs become working websites."
       ],
       "ru": {
         "d": [

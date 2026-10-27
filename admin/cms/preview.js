@@ -43,12 +43,13 @@
     // keep the scroll position across re-renders
     let y = 0; try { y = frame.contentWindow.scrollY || 0; } catch {}
     frame.onload = () => { try { frame.contentWindow.scrollTo(0, y); frame.contentDocument.addEventListener("click", (ev) => { const a = ev.target.closest("a[href]"); if (a && !a.getAttribute("href").startsWith("#")) ev.preventDefault(); }, true); } catch {} };
-    frame.srcdoc = doc;
+    // size the frame first: the site splits headings into lines on load, by the width it has at that moment
     fit(stage, frame, w);
+    frame.srcdoc = doc;
   }
 
   function fit(stage, frame, w) {
-    const avail = stage.clientWidth, s = Math.min(1, avail / w);
+    const avail = stage.clientWidth || w, s = Math.min(1, avail / w);
     frame.style.width = w + "px";
     frame.style.height = (stage.clientHeight / s) + "px";
     frame.style.transform = `scale(${s})`;

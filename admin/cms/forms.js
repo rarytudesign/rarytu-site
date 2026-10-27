@@ -146,7 +146,7 @@
   }
 
   /* Editable list. b points at an array.
-     opts: { label, fixed (no delete), item(b, i) → element, summary(value, i) → string, make() → new item, addLabel, minItems, note } */
+     opts: { label, fixed (no delete), thumb(value) → small element for the collapsed row, item(b, i) → element, summary(value, i) → string, make() → new item, addLabel, minItems, note } */
   function list(b, opts) {
     const wrap = h("div", { class: "flist" });
     const open = new Set();
@@ -166,6 +166,7 @@
         d.open = open.has(i);
         d.addEventListener("toggle", () => { d.open ? open.add(i) : open.delete(i); if (d.open && !d.dataset.filled) { d.dataset.filled = 1; d.append(h("div", { class: "fitem__body" }, opts.item(b.sub(i), i))); } });
         const sum = h("summary", { class: "fitem__sum" },
+          opts.thumb ? opts.thumb(val, i) : null,
           h("span", { class: "fitem__title" }, (opts.summary ? opts.summary(val, i) : `Item ${i + 1}`).replace(/<br[^>]*>/g, " ").replace(/<[^>]+>/g, "") || `Item ${i + 1}`),
           h("span", { class: "fitem__tools" },
             h("button", { type: "button", class: "ibtn", title: "Move up", "aria-label": "Move up", disabled: i === 0 || null, onclick: (e) => { e.preventDefault(); move(-1); } }, "↑"),
@@ -187,6 +188,21 @@
     return wrap;
   }
 
+  /* Media fields. Here they only show what is there; admin/cms/media.js (step D) replaces them with upload versions.
+     image(b, {label, hint, kind}) where b holds a base path like "assets/img/x" (files x-sm.webp and x.webp)
+     video(bVideo, bPoster, {label}) where the values are file paths */
+  const mediaUrl = (p) => { const m = Store.state.draft && Store.state.draft.media && Store.state.draft.media[p]; return m ? URL.createObjectURL(m) : "../" + p; };
+  function image(b, opts = {}) {
+    const v = b.get();
+    return h("div", { class: "field" }, h("div", { class: "field__head" }, h("span", { class: "field__label" }, opts.label || "Image")),
+      v ? h("img", { class: "thumb", src: mediaUrl(v + "-sm.webp"), alt: "" }) : h("p", { class: "field__hint" }, "No image"));
+  }
+  function video(bv, bp, opts = {}) {
+    const v = bv.get(), p = bp.get();
+    return h("div", { class: "field" }, h("div", { class: "field__head" }, h("span", { class: "field__label" }, opts.label || "Video")),
+      v ? h("video", { class: "thumb", src: mediaUrl(v), poster: p ? mediaUrl(p) : null, muted: true, playsinline: true }) : h("p", { class: "field__hint" }, "No video"));
+  }
+
   /* Collapsible group of fields */
   function group(title, ...kids) {
     const d = h("details", { class: "fgroup", open: true }, h("summary", {}, title), h("div", { class: "fgroup__body" }, ...kids));
@@ -194,5 +210,5 @@
   }
   const note = (txt) => h("p", { class: "field__hint" }, txt);
 
-  window.F = { h, at, pair, text, input, select, list, group, note, esc, toBox, fromBox, parasToBox, parasFromBox, compact };
+  window.F = { h, at, pair, image, video, mediaUrl, text, input, select, list, group, note, esc, toBox, fromBox, parasToBox, parasFromBox, compact };
 })();

@@ -29,7 +29,7 @@ Rule: one step at a time. Test, commit, push, then tick it here.
 - [x] C2 Work tab: hero texts, Selected work cards (order, show/hide)
 - [x] C3 About tab: hero and bio, photos with captions, Work experience, Education, Tools and other lists
 - [x] C4 Approach tab: every section
-- [ ] C5 Project tab: card, header, tags, hero media and colour, overview, gallery (images/videos, reorder)
+- [x] C5 Project tab: card, header, tags, hero media and colour, overview, gallery (images/videos, reorder)
 
 ## D. Media
 - [ ] D1 Image upload: WebP conversion, two sizes, aspect ratio
@@ -62,6 +62,10 @@ Rule: one step at a time. Test, commit, push, then tick it here.
   go into each page's own JSON in A4–A6; case pages use the Work page tagline and their own title/description.
 
 ## Log
+- 2026-10-27: C5 done. ed-project.js (#project/<slug>): card + header (title, tags, short name, cover, bg colour), hero image/video (display),
+  overview (heading, paragraphs), gallery list with thumbnails in collapsed rows (F.list opts.thumb), proportions (ar), SEO description.
+  forms.js got display-only F.image(b) (b = base path, shows -sm.webp) and F.video(bVideo, bPoster), F.mediaUrl(path) (draft blobs or site file).
+  D1/D2 replace F.image/F.video with upload versions and add "+ Add image/video" to the gallery.
 - 2026-10-27: C4 done. ed-approach.js: intro (heading, text with variants), steps (+ add; numbers automatic; the "→ " is typed text),
   WIP caption (video replace waits for D2), principles (+ add, title/text with variants, swipe), tools (heading, paragraphs with variants),
   contact block headings (desktop and mobile/tablet), SEO + taglines. Note: when one language uses desktop/mobile variants, the form shows

@@ -41,8 +41,8 @@ Rule: one step at a time. Test, commit, push, then tick it here.
 - [x] E2 Hide or delete a project (with confirmation; files stay in history)
 
 ## F. Publish
-- [ ] F1 Publish: render all pages, one commit with content + HTML + media, verify, history event "published" with version
-- [ ] F2 Errors and conflicts: offline, token expired, site changed meanwhile, large files; clear messages, nothing half-written.
+- [x] F1 Publish: render all pages, one commit with content + HTML + media, verify, history event "published" with version
+- [x] F2 Errors and conflicts: offline, token expired, site changed meanwhile, large files; clear messages, nothing half-written.
   Also: a backup made before the panel existed has no content/ folder; restoring it removes content/. The panel must detect a missing
   content/ and say so (offer: restore a newer backup, or rebuild content from the pages with Claude) instead of breaking.
 
@@ -64,6 +64,14 @@ Rule: one step at a time. Test, commit, push, then tick it here.
   go into each page's own JSON in A4–A6; case pages use the Work page tagline and their own title/description.
 
 ## Log
+- 2026-10-27: F1+F2 done. admin/cms/publish.js (window.Publish): dialog lists changed pages and new files; blocks on missing cover / empty title /
+  gallery or About photo without a file; soft warning for a project without a top image; conflict warning (pages changed on the site since the draft
+  started) with "Publish anyway". run(): fresh snapshot → content JSON (2-space + newline) + media + all pages rendered → upload only changed blobs
+  (sha checked) → remove pages of unlisted projects and content set to null → history event {type:"publish"} → one commit (force:false, retries on
+  422 from a fresh snapshot) → verify fingerprint → Store.published(). Errors: offline/other → "Not published, draft is safe, Try again";
+  401/403 → token box. Test: tools/test-publish.js passes (block, publish, pages added/removed, media, history v.2); afterwards
+  `node tools/build.js` on the published repo writes nothing (pages == content).
+  SKILL.md: golden rule added (Claude edits content + build, never generated pages).
 - 2026-10-27: E1+E2 done. admin/cms/ed-projects.js: "+ New project" (short name, title, address/slug auto from the name, checked for
   format and duplicates, background colour) → creates content/cases/<slug>.json in the draft, adds it first in work.projects, opens its tab.
   window.ProjectActions(slug) at the bottom of a project tab: Hide (moves slug to work.hidden; its pages are removed on publish), Show again

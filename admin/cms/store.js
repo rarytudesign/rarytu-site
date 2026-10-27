@@ -59,7 +59,8 @@
       e.code = "no-content"; throw e;
     }
     // every project ever listed: the published list plus any project only the draft knows about
-    const draft = (await kvGet("draft").catch(() => null)) || null;
+    // the draft in memory is the freshest (saving to the browser is delayed a little); otherwise read it from the browser
+    const draft = state.draft || (await kvGet("draft").catch(() => null)) || null;
     const slugs = new Set(published["content/pages/work.json"].projects.concat(published["content/pages/work.json"].hidden || []));
     for (const slug of slugs) published[caseFile(slug)] = await fetchJSON(caseFile(slug), head);
     Object.assign(state, { head, published, draft, source });

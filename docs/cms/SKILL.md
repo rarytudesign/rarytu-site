@@ -24,7 +24,8 @@ Steps are small on purpose: a step must fit in one stretch of work so no context
 - Static site, no build step on the server. Pages: `index.html` (redirects by language),
   `en/` and `ru/`: `index.html` (Work), `about/`, `approach/`, `work/<slug>/` (cases: dom, hevy, kodan, lumo, nomi, talktoast).
 - `assets/styles.css`, `assets/main.js`, `assets/fonts.css`, `assets/img/`, `assets/video/`, `assets/cv/`.
-- `admin/index.html`: the panel (today: Site backups only). `admin/history.json`: version and event log.
+- `admin/index.html`: the panel. `admin/cms/*.js|css`: its code (render, github, store, preview, forms, media, editors ed-*.js, publish, backups, app).
+  `admin/history.json`: version and event log. `tools/`: build.js, test-render.js, mock-github.js, test-*.js.
 - `docs/cms/`: this skill and the progress file. `tools/`: test helpers (mock GitHub API etc.).
 
 ## Decisions already made (do not re-ask)
@@ -58,6 +59,13 @@ Content is data, pages are generated from it:
 
 Rule for the renderer: for the current content it must reproduce today's HTML exactly
 (compare with whitespace normalised; any difference must be explained and approved by a visual check).
+
+**Golden rule for Claude's own edits (since phase A): never hand-edit generated pages** (`en/**/index.html`, `ru/**/index.html`).
+Change `content/*.json` (or the renderer in `admin/cms/render.js`), run `node tools/build.js`, then `node tools/test-render.js`,
+commit content + pages together. A hand edit of a page would be overwritten by the next Publish from the panel.
+Also: Nastya may have an unpublished draft in her browser. Before changing content files she might be editing, tell her,
+so she can publish first; otherwise her Publish will show a conflict warning for those pages.
+Changes to styles.css / main.js are safe (the panel never writes them).
 
 ## Writing to GitHub from the panel
 

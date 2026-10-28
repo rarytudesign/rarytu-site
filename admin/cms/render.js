@@ -68,7 +68,7 @@
 <link rel="alternate" hreflang="ru" href="${href(ruPath)}">
 <link rel="preload" href="${href("assets/fonts/inter-tight-latin-500-normal.woff2")}" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="${href("assets/fonts.css")}">
-<link rel="stylesheet" href="${href("assets/styles.css")}">
+<link rel="stylesheet" href="${href("assets/styles.css")}${site.assetsVersion ? "?v=" + site.assetsVersion : ""}">
 <script>document.documentElement.classList.add("js");try{history.scrollRestoration="manual"}catch(e){}</script>
 </head>
 <body id="top" class="${ctx.bodyClass}" data-copied="${esc(ui.copied)}">
@@ -116,7 +116,7 @@
 <main class="main" id="main" tabindex="-1">
 ${main}
 </main>
-<script src="${href("assets/main.js")}"></script>
+<script src="${href("assets/main.js")}${site.assetsVersion ? "?v=" + site.assetsVersion : ""}"></script>
 </body>
 </html>
 `;

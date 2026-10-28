@@ -65,7 +65,8 @@ Rule: one step at a time. Test, commit, push, then tick it here.
   go into each page's own JSON in A4–A6; case pages use the Work page tagline and their own title/description.
 
 ## Log
-- 2026-10-28: Desktop gap above the dot field footer is 300px on every page (was 100). 
+- 2026-10-28: Desktop gap above the dot field footer tripled: margin-top 320px (case 290px + its 30px padding), ~330px to the
+  letters. Site CSS/JS now cache-busted: build.js writes their hash to site.json assetsVersion, pages link styles.css?v=<hash>.
 - 2026-10-28: Desktop footer everywhere. render.js dfoot(ctx, {id, desktopOnly}) is the shared dot field footer; Work, About
   (id contact-d) and case pages (id contact) get it with .dfoot--d (only ≥1280), where .footer--mt (the contact list) is hidden.
   Approach keeps dfoot from tablet up. Title = approach.json contactTitle (ctx.contactTitle, read in renderRaw for every page).

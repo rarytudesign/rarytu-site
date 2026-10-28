@@ -69,8 +69,8 @@
   ],
   "wip": {
     "dots": {
-      "en": "<div class=\"dots dots--wip\" aria-hidden=\"true\"><i style=\"--dx:16.28%;--dy:40.63%;--tx:76.46%;--ty:-2.01%;--mx:73.08%;--my:7.93%;--i:0\"></i><i style=\"--dx:89.49%;--dy:69.23%;--tx:9.27%;--ty:100.33%;--mx:10.00%;--my:98.30%;--i:1\"></i><i style=\"--dx:81.17%;--dy:0.99%;--tx:87.07%;--ty:101.34%;--mx:77.69%;--my:87.82%;--i:2\"></i><i style=\"--dx:4.82%;--dy:-6.90%;--th:none;--mx:25.38%;--my:-11.61%;--i:3\"></i><i style=\"--dx:3.36%;--dy:69.23%;--th:none;--mh:none;--i:4\"></i></div>",
-      "ru": "<div class=\"dots dots--wip\" aria-hidden=\"true\"><i style=\"--dx:16.28%;--dy:40.63%;--tx:76.46%;--ty:-2.01%;--mx:73.08%;--my:7.93%;--i:0\"></i><i style=\"--dx:89.49%;--dy:69.23%;--tx:9.27%;--ty:100.33%;--mx:10.00%;--my:98.30%;--i:1\"></i><i style=\"--dx:81.17%;--dy:0.99%;--tx:87.07%;--ty:101.34%;--mx:77.69%;--my:87.82%;--i:2\"></i><i style=\"--dx:4.82%;--dy:-6.90%;--th:none;--mx:25.38%;--my:-11.61%;--i:3\"></i><i style=\"--dx:3.36%;--dy:69.23%;--th:none;--mh:none;--i:4\"></i></div>"
+      "en": "<div class=\"dots dots--wip\" aria-hidden=\"true\"><i style=\"--dx:16.28%;--dy:56.41%;--tx:76.46%;--ty:-2.01%;--mx:73.08%;--my:7.93%;--i:0\"></i><i style=\"--dx:89.49%;--dy:85.01%;--tx:9.27%;--ty:100.33%;--mx:10.00%;--my:98.30%;--i:1\"></i><i style=\"--dx:81.17%;--dy:16.77%;--tx:87.07%;--ty:101.34%;--mx:77.69%;--my:87.82%;--i:2\"></i><i style=\"--dx:4.82%;--dy:8.88%;--th:none;--mx:25.38%;--my:-11.61%;--i:3\"></i><i style=\"--dx:3.36%;--dy:85.01%;--th:none;--mh:none;--i:4\"></i></div>",
+      "ru": "<div class=\"dots dots--wip\" aria-hidden=\"true\"><i style=\"--dx:16.28%;--dy:56.41%;--tx:76.46%;--ty:-2.01%;--mx:73.08%;--my:7.93%;--i:0\"></i><i style=\"--dx:89.49%;--dy:85.01%;--tx:9.27%;--ty:100.33%;--mx:10.00%;--my:98.30%;--i:1\"></i><i style=\"--dx:81.17%;--dy:16.77%;--tx:87.07%;--ty:101.34%;--mx:77.69%;--my:87.82%;--i:2\"></i><i style=\"--dx:4.82%;--dy:8.88%;--th:none;--mx:25.38%;--my:-11.61%;--i:3\"></i><i style=\"--dx:3.36%;--dy:85.01%;--th:none;--mh:none;--i:4\"></i></div>"
     },
     "caption": {
       "en": "A work in progress",

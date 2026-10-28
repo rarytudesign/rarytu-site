@@ -31,8 +31,8 @@
 
   const SVG = {
     chev: '<svg class="chev" viewBox="0 0 12 8" aria-hidden="true"><path d="M1 1.5 6 6.5l5-5" fill="none" stroke="currentColor" stroke-width="1.3"/></svg>',
-    burger: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16" stroke="currentColor" stroke-width="1.4"/></svg>',
-    close: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18" stroke="currentColor" stroke-width="1.4"/></svg>',
+    burger: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M1 5h22M1 12h22M1 19h22" stroke="currentColor" stroke-width="1.3"/></svg>',
+    close: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="m3.5 3.5 17 17M20.5 3.5l-17 17" stroke="currentColor" stroke-width="1.3"/></svg>',
   };
 
   // ---------- shell ----------
@@ -273,7 +273,10 @@ ${pageEnd(ctx, NEXT[ctx.nav])}`;
   function aboutMain(ctx, a) {
     const { site, lang, path } = ctx, r = up(path), ui = site.ui[lang];
     const bio = a.bio.map((col) => { const c = pick(col, lang);
-      return "<div>" + ["d", "mt"].map((k) => `<div class="v-${k}"><h2>${rich(c[k].heading)}</h2>${c[k].text.map((x) => `<p>${rich(x)}</p>`).join("")}</div>`).join("") + "</div>"; }).join("");
+      // optional phone-only copy (m): then the mobile+tablet copy shows on tablets only
+      const hasM = c.m && (c.m.text || []).some((x) => x && String(x).trim());
+      const parts = hasM ? [["d", "d"], ["t", "mt"], ["m", "m"]] : [["d", "d"], ["mt", "mt"]];
+      return "<div>" + parts.map(([cls, k]) => `<div class="v-${cls}"><h2>${rich(c[k].heading || c.mt.heading)}</h2>${c[k].text.filter((x) => x && String(x).trim()).map((x) => `<p>${rich(x)}</p>`).join("")}</div>`).join("") + "</div>"; }).join("");
     const photos = a.photos.items.map((ph) => `
       <figure class="photo">
         <img class="" ${imgSet(r, ph.image, 960, 1920)} sizes="(max-width: 743px) 80vw, (max-width: 1279px) 45vw, 22vw" alt="" loading="lazy" decoding="async">

@@ -65,6 +65,13 @@ Rule: one step at a time. Test, commit, push, then tick it here.
   go into each page's own JSON in A4–A6; case pages use the Work page tagline and their own title/description.
 
 ## Log
+- 2026-10-29: Mobile round (Figma 290:2985). Menu icon 22px lines 7px apart (as Figma). Dots: a dot keeps its Figma spot
+  whenever nothing is under it, even just outside its group's box (that rule had pushed 4 dots off); RU About photo dots
+  have their own mobile/tablet positions (Figma RU differs); Approach desktop dots recomputed from Figma relative to the
+  video card (.wip .dots box = the card). About bio: optional phone-only copy (bio[i][lang].m, class v-m; tablet then gets
+  v-t) used for RU column 1; EN heading break is phone-only (br-m), tablet heading on 2 lines as Figma. Cards reveal
+  faster (650/420ms), principle circles ease back over 750ms after the finger lifts, About photo dots appear when the
+  photos are 40% up the screen.
 - 2026-10-29: Liquid on the GPU: assets/liquid-gl.js (WebGL2 + EXT_color_buffer_float; state in RGBA32F textures, per sub-step
   bitonic sort by grid cell, cell ranges by binary search, density and relax passes, points drawn round). liquid.js is the CPU
   fallback with the same math (checked: same result). Spheres 16px from 744px up, 8px on phones; the last screen is the

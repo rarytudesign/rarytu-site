@@ -23,7 +23,9 @@
         h("p", { class: "field__sub" }, "Desktop"),
         text(part("d", "heading"), { label: "Heading" }), text(part("d", "text"), { label: "Text", paragraphs: true }),
         h("p", { class: "field__sub" }, "Mobile and tablet"),
-        text(part("mt", "heading"), { label: "Heading" }), text(part("mt", "text"), { label: "Text", paragraphs: true }));
+        text(part("mt", "heading"), { label: "Heading" }), text(part("mt", "text"), { label: "Text", paragraphs: true }),
+        h("p", { class: "field__sub" }, "Phones only (optional)"),
+        text(part("m", "text"), { label: "Text", paragraphs: true, hint: "Leave empty to use the mobile and tablet text on phones too." }));
     };
     el.append(
       h("h1", { class: "ed__title" }, "About"),

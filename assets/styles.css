@@ -64,7 +64,10 @@ html { scrollbar-color: rgba(84, 23, 37, 0.45) transparent; scrollbar-width: thi
 .only-d { display: none; }
 /* copy that differs by breakpoint: desktop (≥1280) vs mobile + tablet (Figma) */
 @media (max-width: 1279px) { .v-d { display: none !important; } }
-@media (min-width: 1280px) { .v-mt { display: none !important; } }
+@media (min-width: 1280px) { .v-mt, .v-t { display: none !important; } }
+/* phone-only and tablet-only copy */
+@media (min-width: 744px) { .v-m { display: none !important; } }
+@media (max-width: 743px) { .v-t { display: none !important; } }
 @media (max-width: 743px), (min-width: 1280px) { .only-t { display: none !important; } }
 @media (min-width: 744px) and (max-width: 1279px) { .no-t { display: none !important; } }
 @media (min-width: 1280px) { .only-d { display: inline; } .only-mt { display: none; } }
@@ -298,8 +301,8 @@ html.menu-open { background: var(--surface-muted); }
   .js .rule.rv.in { transform: none; transition: transform 1200ms var(--ease) var(--d, 0ms); }
   /* card covers open from the bottom */
   /* case card arrives whole: shape, image and text move together; opacity finishes 25% before position */
-  .js .card.rv { opacity: 0; transform: translateY(48px); }
-  .js .card.rv.in { opacity: 1; transform: none; transition: transform 1000ms var(--easy) var(--d, 0ms), opacity 750ms var(--easy) var(--d, 0ms); }
+  .js .card.rv { opacity: 0; transform: translateY(32px); }
+  .js .card.rv.in { opacity: 1; transform: none; transition: transform 650ms var(--easy) var(--d, 0ms), opacity 420ms var(--easy) var(--d, 0ms); }
 
 }
 /* text: lines rise in one after another (no masks, so nothing gets clipped) */
@@ -309,6 +312,7 @@ html.menu-open { background: var(--surface-muted); }
 }
 /* images fade in once decoded */
 .js .gitem img, .js .chero img, .js .card__cover img, .js .photo img { opacity: 0; transition: opacity 500ms var(--easy), transform 700ms var(--ease); }
+.js .card__cover img { transition: opacity 300ms var(--easy), transform 700ms var(--ease); }
 .js .gitem img.is-loaded, .js .chero img.is-loaded, .js .card__cover img.is-loaded, .js .photo img.is-loaded { opacity: 1; }
 
 /* Selected work */
@@ -544,7 +548,7 @@ html[lang="ru"] .intro__head p { max-width: 500px; }
   .wip__fig { max-width: 676px; gap: 24px; }
   .wip .media { aspect-ratio: 676 / 471; }
   .wip__fig figcaption { font-size: 16px; line-height: 20px; letter-spacing: 0.2px; }
-  .wip .dots { inset: 70px 30px 100px; }
+  .wip .dots { inset: 70px 30px 0; }   /* the box is the video card, as in Figma (the section has no bottom padding) */
 }
 
 .principles { margin-top: 64px; }
@@ -560,7 +564,10 @@ html[lang="ru"] .intro__head p { max-width: 500px; }
   display: flex; flex-direction: column; align-items: center; justify-content: center;
   text-align: center; gap: 8px; padding: 0 42px;
 }
-.pcircle { transition: background-color 300ms var(--easy), color 300ms var(--easy); }
+/* fills quickly, lets go slowly: after the finger lifts the circle eases back instead of snapping */
+.pcircle { transition: background-color 750ms var(--easy), color 750ms var(--easy); }
+.pcircle.is-pressed { transition-duration: 250ms; }
+@media (hover: hover) { .pcircle:hover { transition-duration: 300ms; } }
 @media (hover: hover) { .pcircle:hover { background: var(--brand); color: var(--surface); } }
 .pcircle h3 { font-size: 24px; line-height: 22px; letter-spacing: -1px; }
 .pcircle p { font-size: 15px; line-height: 20px; letter-spacing: 0.1px; }
@@ -783,3 +790,11 @@ video { pointer-events: none; }
 video::-webkit-media-controls, video::-webkit-media-controls-enclosure, video::-webkit-media-controls-panel,
 video::-webkit-media-controls-overlay-play-button, video::-webkit-media-controls-start-playback-button,
 video::-webkit-media-controls-play-button { display: none !important; -webkit-appearance: none; opacity: 0 !important; }
+
+/* Figma (RU mobile, About): the first column's phone text: 16/20, +0.2px, 12px between paragraphs, 348px wide */
+@media (max-width: 743px) {
+  html[lang="ru"] .ahero__bio > div:first-child .v-m p { line-height: 20px; letter-spacing: 0.2px; max-width: 348px; }
+  html[lang="ru"] .ahero__bio > div:first-child .v-m p + p { margin-top: 12px; }
+  html[lang="ru"] .ahero__bio > div:first-child .v-m p:first-of-type { text-box: trim-start cap alphabetic; }
+  html[lang="ru"] .ahero__bio > div:first-child .v-m p:last-child { text-box: trim-end cap alphabetic; }
+}

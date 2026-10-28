@@ -158,10 +158,11 @@
   /* ---------- Decorative dots: appear one after another, full size, stop-motion ---------- */
   const dotGroups = $$(".dots");
   if ("IntersectionObserver" in window) {
-    const io = new IntersectionObserver((entries) => {
-      entries.forEach((e) => { if (e.isIntersecting) { e.target.classList.add("is-in"); io.unobserve(e.target); } });
-    }, { threshold: 0.2 });
-    shown.then(() => dotGroups.forEach((g) => io.observe(g)));
+    const seen = (entries, obs) => entries.forEach((e) => { if (e.isIntersecting) { e.target.classList.add("is-in"); obs.unobserve(e.target); } });
+    const io = new IntersectionObserver(seen, { threshold: 0.2 });
+    // the About photo dots wait until the photos are well on screen (they sit around them, partly above)
+    const late = new IntersectionObserver(seen, { threshold: 0, rootMargin: "0px 0px -40% 0px" });
+    shown.then(() => dotGroups.forEach((g) => (g.classList.contains("dots--photos") ? late : io).observe(g)));
   } else dotGroups.forEach((g) => g.classList.add("is-in"));
 
   /* ---------- Text appears line by line ---------- */
@@ -332,7 +333,9 @@
         const sz = d.offsetWidth, x0 = ox + d.offsetLeft, y0 = oy + d.offsetTop;
         const free = (x, y) => x >= ox && y >= oy - sz && x + sz <= ox + box.width && x + sz <= innerWidth - 4 && !hits(x, y, sz)
           && !taken.some((t) => Math.abs(t.x - x) < sz * 1.5 && Math.abs(t.y - y) < sz * 1.5);
-        let best = free(x0, y0) ? [x0, y0] : null;
+        // the designed spot (Figma) is kept whenever nothing is under it, even just outside its group's box
+        const clear = (x, y) => x >= 0 && x + sz <= innerWidth && !hits(x, y, sz) && !taken.some((t) => Math.abs(t.x - x) < sz * 1.5 && Math.abs(t.y - y) < sz * 1.5);
+        let best = clear(x0, y0) ? [x0, y0] : null;
         for (let rad = 8; !best && rad <= 480; rad += 8) {
           for (let k = 0, n = Math.max(8, Math.round(rad / 6)); k < n && !best; k++) {
             const a = (k / n) * Math.PI * 2, x = x0 + Math.cos(a) * rad, y = y0 + Math.sin(a) * rad;

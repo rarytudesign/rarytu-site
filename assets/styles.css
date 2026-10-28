@@ -396,60 +396,6 @@ html.menu-open { background: var(--surface-muted); }
 @media (min-width: 1280px) { .circle .ring__center { font-size: clamp(24px, 1.67vw, 32px); line-height: 1; letter-spacing: -0.5px; } }
 
 /* =========================================================
-   Footer with contact cells
-   ========================================================= */
-.footer { padding: 0 var(--gutter) 24px; margin-top: 44px; }
-.page-about .footer, .page-approach .footer { margin-top: 64px; }
-@media (min-width: 744px) { .footer, .page-about .footer, .page-approach .footer { margin-top: 60px; padding-bottom: 0; } }
-@media (min-width: 1280px) { .footer, .page-about .footer { margin-top: 100px; padding-bottom: 30px; } }
-@media (min-width: 744px) { .footer--compact { display: none; } }
-.footer__title { font-family: var(--font-inter); font-weight: 500; font-size: 60px; line-height: 54px; letter-spacing: -2px; max-width: 6em; margin-bottom: 24px; }
-html[lang="ru"] .footer__title { font-size: clamp(30px, 11.8vw, 46px); line-height: 0.892; letter-spacing: -1.5px; max-width: none; hyphens: manual; }
-html[lang="ru"] .footer--compact .footer__title { font-size: 40px; line-height: 36px; letter-spacing: -1.3px; max-width: none; }
-@media (max-width: 743px) { .principles .display { font-size: 40px; line-height: 44px; letter-spacing: -0.5px; max-width: none; text-wrap: nowrap; } }
-@media (min-width: 744px) {
-  .footer__title, html[lang="ru"] .footer__title { font-family: var(--font); font-size: 50px; line-height: 50px; letter-spacing: -1px; max-width: 429px; margin-bottom: 32px; hyphens: manual; }
-  html[lang="ru"] .footer__title { max-width: 600px; }
-}
-@media (min-width: 1280px) {
-  .footer__title, html[lang="ru"] .footer__title { font-size: clamp(48px, 3.646vw, 70px); line-height: 1.0286; letter-spacing: -0.5px; margin-left: var(--col1); max-width: 707px; margin-bottom: 52px; }
-}
-.frow { display: flex; flex-direction: column; border-top: 1px solid var(--brand); }
-.frow .frow__copy { display: none; }
-.fcell { display: flex; justify-content: space-between; align-items: center; height: 52px; border-bottom: 1px solid var(--brand); line-height: 20px; letter-spacing: 0.2px; transition: opacity var(--t-fast); }
-.fcell__arrow { transition: transform 250ms var(--ease); }
-@media (hover: hover) { .fcell:hover .fcell__arrow { transform: translate(3px, -3px); } }
-.fcell:focus-visible .fcell__arrow { transform: translate(3px, -3px); }
-.fcell:active { opacity: 0.6; }
-.fbottom { display: flex; justify-content: space-between; align-items: center; height: 52px; font-size: 14px; line-height: 20px; letter-spacing: 0; }
-@media (min-width: 744px) and (max-width: 1279px) { .fcell { font-size: 16px; letter-spacing: 0; } .fcell__arrow { font-size: 24px; line-height: 24px; } }
-@media (min-width: 1280px) {
-  .frow { display: grid; grid-template-columns: 328fr repeat(4, 233fr) 209fr; column-gap: 20px; border-bottom: 1px solid var(--brand); }
-  .frow .frow__copy { display: flex; align-items: center; height: 40px; }
-  .fcell { height: 40px; border-bottom: 0; border-left: 1px solid var(--brand); padding-left: 20px; justify-content: flex-start; white-space: nowrap; }
-  .fbottom { height: auto; padding-top: 16px; justify-content: flex-end; font-size: 16px; letter-spacing: 0.2px; }
-  .fbottom .frow__copy { display: none; }
-}
-.fcell__label { text-decoration: underline; text-decoration-color: transparent; text-underline-offset: 4px; text-decoration-thickness: 1px; transition: text-decoration-color var(--t-fast); }
-@media (hover: hover) { .fcell:hover .fcell__label { text-decoration-color: currentColor; } }
-@media (min-width: 1280px) {
-  .fcell { gap: 6px; }
-  .fcell__arrow { display: inline-block; font-size: 14px; opacity: 0; transform: translate(-4px, 4px); transition: opacity 200ms var(--easy), transform 300ms var(--ease); }
-}
-@media (min-width: 1280px) and (hover: hover) { .fcell:hover .fcell__arrow { opacity: 1; transform: none; } }
-/* Contacts row: the designed grid fits 5; any other number gets equal columns after the copyright.
-   When the labels don't fit in one row, main.js adds .footer--stack and the desktop footer uses the mobile list. */
-@media (min-width: 1280px) {
-  .frow[data-n] { grid-template-columns: max-content; grid-auto-flow: column; grid-auto-columns: minmax(max-content, 1fr); }
-  .footer--stack .frow { display: flex; flex-direction: column; border-bottom: 0; }
-  .footer--stack .frow .frow__copy { display: none; }
-  .footer--stack .fcell { height: 52px; border-left: 0; border-bottom: 1px solid var(--brand); padding-left: 0; justify-content: space-between; white-space: normal; }
-  .footer--stack .fcell__arrow { opacity: 1; transform: none; font-size: inherit; }
-  .footer--stack .fbottom { height: 52px; padding-top: 0; justify-content: space-between; }
-  .footer--stack .fbottom .frow__copy { display: inline; }
-}
-
-/* =========================================================
    About
    ========================================================= */
 .ahero { background: var(--brand); color: var(--surface); padding: 28px var(--gutter) 32px; display: flex; flex-direction: column; gap: 48px; }
@@ -658,19 +604,6 @@ html[lang="ru"] .intro__head p { max-width: 500px; }
   .split__text p + p { margin-top: 12px; }
 }
 
-/* Dot field footer: desktop only (tablet and mobile use the contact list, as in Figma) */
-.dfoot { display: none; }
-@media (min-width: 744px) {
-  .dfoot {
-    position: relative; margin-top: 100px; min-height: clamp(560px, 42vw, 820px);
-    display: flex; flex-direction: column; align-items: center; justify-content: flex-start; gap: 40px;
-    padding: 0 var(--gutter) 30px; overflow: hidden; touch-action: pan-y;
-  }
-}
-.dfoot__canvas { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; }
-.dfoot__title { position: relative; z-index: 1; text-align: center; padding-top: 8px; text-wrap: wrap; font-family: var(--font-inter); font-weight: 500; font-size: clamp(64px, 4.8vw, 92px); line-height: 0.804; letter-spacing: -2px; max-width: 456px; }
-html[lang="ru"] .dfoot__title { font-family: var(--font); font-size: clamp(60px, 4.48vw, 86px); line-height: 0.86; letter-spacing: -2.5px; max-width: 676px; }
-.dfoot__btns { position: relative; z-index: 1; display: flex; gap: 8px; flex-wrap: wrap; justify-content: center; }
 /* round contact buttons (Figma 286:1936): white circle, burgundy 1px ring and glyph */
 .sbtn { display: inline-flex; align-items: center; height: 52px; border-radius: 100px; background: #fff; box-shadow: inset 0 0 0 1px var(--brand); color: var(--brand); overflow: hidden; max-width: 52px; transition: max-width 900ms var(--easy), opacity var(--t-fast); }
 .sbtn svg { width: 52px; height: 52px; flex: none; }
@@ -727,21 +660,11 @@ html[lang="ru"] .dfoot__title { font-family: var(--font); font-size: clamp(60px,
 .gitem iframe { position: absolute; top: 50%; left: 50%; border: 0; transform: translate(-50%, -50%); width: max(100%, calc(100% * (16 / 9) * var(--ar))); height: max(100%, calc(100% / ((16 / 9) * var(--ar)))); }
 
 .pnav { display: flex; justify-content: space-between; align-items: center; gap: 16px; margin-top: 16px; height: 58px; border-top: 1px solid var(--brand); border-bottom: 1px solid var(--brand); text-transform: uppercase; letter-spacing: 0.2px; line-height: 20px; font-size: 16px; }
-.case__top { display: flex; justify-content: flex-end; align-items: center; height: 52px; font-size: 14px; line-height: 20px; }
 @media (min-width: 1280px) {
   .pnav { margin-top: 70px; height: auto; padding-top: 24px; border-bottom: 0; }
-  .case__top { height: auto; margin-top: 24px; font-size: 16px; letter-spacing: 0.2px; }
 }
 .nw { white-space: nowrap; }
 
-/* Tablet: the dot field footer sits a little closer, with the © row and the next page below it */
-@media (min-width: 744px) and (max-width: 1279px) {
-  .dfoot { margin-top: 60px; min-height: 520px; padding-bottom: 0; }
-  .dfoot__title, html[lang="ru"] .dfoot__title { font-family: var(--font); font-size: 50px; line-height: 50px; letter-spacing: -1px; max-width: 429px; }
-  html[lang="ru"] .dfoot__title { max-width: 600px; }
-  .dfoot-bottom { padding: 0 var(--gutter); }
-}
-.fnext .arr { font-family: var(--font); }
 
 @media (min-width: 744px) { .wip { padding-bottom: 0; } }
 /* line breaks that only exist in the phone layout */
@@ -767,10 +690,6 @@ html[lang="ru"] .dfoot__title { font-family: var(--font); font-size: clamp(60px,
 
 /* Figma check (mobile + tablet): the company line under a role is trimmed to its capital height, like in the layout */
 @media (max-width: 1279px) { .xrow__role p { text-box: trim-both cap alphabetic; } }
-/* Figma check (mobile): 24px between the contact list and the © / Back to top row */
-@media (max-width: 743px) { .footer .fbottom { margin-top: 24px; } }
-/* Figma check (mobile + tablet): each contact row is 52px plus its 1px line */
-@media (max-width: 1279px) { .fcell { height: 53px; } }
 /* Figma check (mobile): 24px above the principles' swipe line; the tools text box is 346px wide */
 @media (max-width: 743px) { .principles .swipe { padding-top: 24px; } html[lang="en"] .split__text > div { max-width: 346px; } }
 /* Figma check: space between the gallery and the previous/next links (mobile 54px, tablet 52px) */
@@ -805,11 +724,55 @@ html[lang="ru"] .dfoot__title { font-family: var(--font); font-size: clamp(60px,
   html[lang="ru"] .ahero__bio > div:last-child p { max-width: 394px; }
 }
 
-/* Desktop: every page ends with the dot field footer instead of the contact list */
-.dfoot--d { display: none; }
+/* =========================================================
+   End of every page: the last screen and the footer
+   ========================================================= */
+/* The last screen is exactly one screen high (the visible area, browser bars counted out), so when it fills the view
+   nothing else shows: "Let's work together" and the buttons a little above the middle, the liquid below (main.js). */
+.dfoot { position: relative; height: 100vh; height: 100lvh; min-height: 480px; overflow: hidden; touch-action: pan-y; }
+.dfoot__canvas { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; }
+.dfoot__block { position: absolute; z-index: 1; left: var(--gutter); right: var(--gutter); top: 38%; transform: translateY(-50%);
+  display: flex; flex-direction: column; align-items: center; gap: 24px; pointer-events: none; }
+.dfoot__block > * { pointer-events: auto; }
+.dfoot__title { text-align: center; text-wrap: balance; font-family: var(--font-inter); font-weight: 500; font-size: 56px; line-height: 0.93; letter-spacing: -2px; max-width: 330px; }
+html[lang="ru"] .dfoot__title { font-family: var(--font); font-size: 40px; line-height: 0.92; letter-spacing: -1.3px; max-width: none; }
+.dfoot__btns { display: flex; gap: 8px; flex-wrap: wrap; justify-content: center; }
+@media (min-width: 744px) and (max-width: 1279px) {
+  .dfoot__title, html[lang="ru"] .dfoot__title { font-family: var(--font); font-size: 50px; line-height: 50px; letter-spacing: -1px; max-width: none; }
+}
 @media (min-width: 1280px) {
-  .dfoot--d { display: flex; }
-  .footer--mt { display: none; }
-  .dfoot { margin-top: 320px; }   /* three times the old visible gap above "Let’s work together" (≈110 → 330px to the letters) */
-  .page-case .dfoot { margin-top: 290px; }   /* + the 30px bottom padding of the case */
+  .dfoot__block { gap: 40px; }
+  .dfoot__title { font-size: clamp(64px, 4.8vw, 92px); line-height: 0.804; letter-spacing: -2px; max-width: 456px; padding-top: 8px; }
+  html[lang="ru"] .dfoot__title { font-size: clamp(60px, 4.48vw, 86px); line-height: 0.86; letter-spacing: -2.5px; max-width: 676px; }
+}
+
+/* The footer: brand colour, ©year and the arrow up on top; the next page (Work → About → Approach) at the bottom,
+   full width on phones, the right half from tablet up. The line fills while you keep scrolling (main.js). */
+.sfoot { display: grid; grid-template-columns: 1fr; grid-template-rows: auto 1fr auto; min-height: 236px; padding: 24px var(--gutter) 20px; background: var(--brand); color: #fff; }
+.sfoot__top { grid-column: 1 / -1; display: flex; justify-content: space-between; align-items: center; }
+.sfoot__copy { font-size: 14px; line-height: 20px; letter-spacing: 0.2px; }
+.sfoot__up { display: grid; place-items: center; width: 44px; height: 44px; border-radius: 50%; background: #fff; color: var(--brand); transition: opacity var(--t-fast); }
+.sfoot__uparrow { width: 19px; height: 14px; transform: rotate(-90deg); }
+.sfoot__up:active { opacity: 0.6; }
+.sfoot__next { grid-row: 3; display: flex; flex-direction: column; color: #fff; }
+.sfoot__name { font-family: var(--font-inter); font-size: 28px; line-height: 28px; letter-spacing: -0.5px; text-transform: uppercase; }
+.sfoot__bar { display: flex; align-items: center; gap: 12px; margin-top: 16px; }
+.sfoot__track { position: relative; flex: 1; height: 2px; background: rgba(255, 255, 255, 0.2); overflow: hidden; }
+.sfoot__fill { position: absolute; inset: 0; background: #fff; transform: scaleX(var(--p, 0)); transform-origin: left; transition: transform 120ms linear; }
+.sfoot__arrow { flex: none; width: 19px; height: 14px; transition: transform 250ms var(--ease); }
+.sfoot__hint { margin-top: 12px; font-size: 10px; line-height: 12px; letter-spacing: 0.3px; text-transform: uppercase; color: rgba(255, 255, 255, 0.6); }
+.sfoot__hint-d { display: none; }
+@media (hover: hover) { .sfoot__next:hover .sfoot__arrow { transform: translateX(4px); } }
+.sfoot__next:focus-visible .sfoot__arrow { transform: translateX(4px); }
+@media (min-width: 744px) {
+  .sfoot { grid-template-columns: 1fr 1fr; column-gap: 20px; min-height: 280px; padding: 32px var(--gutter) 32px; }
+  .sfoot__next { grid-column: 2; }
+  .sfoot__bar { margin-top: 36px; }
+  .sfoot__hint { margin-top: 14px; font-size: 12px; line-height: 14px; }
+  .sfoot__hint-m { display: none; } .sfoot__hint-d { display: inline; }
+}
+@media (min-width: 1280px) {
+  .sfoot { min-height: 320px; padding: 30px; }
+  .sfoot__copy { font-size: 16px; }
+  .sfoot__name { font-size: 32px; line-height: 32px; }
 }

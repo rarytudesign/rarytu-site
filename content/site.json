@@ -68,7 +68,8 @@
       "contact": "Contact",
       "downloadCV": "Download CV",
       "backToTop": "Back to top",
-      "footerTitle": "Let’s work together",
+      "nextPage": "Next page",
+      "keepScrolling": "Keep scrolling to next page",
       "nav": {
         "work": "Work",
         "about": "About",
@@ -85,7 +86,8 @@
       "contact": "Контакты",
       "downloadCV": "Скачать резюме",
       "backToTop": "Наверх",
-      "footerTitle": "Буду рада сотрудничеству",
+      "nextPage": "Следующая страница",
+      "keepScrolling": "Листайте дальше, чтобы перейти",
       "nav": {
         "work": "Проекты",
         "about": "Обо мне",
@@ -95,5 +97,5 @@
       "moreProjects": "Другие проекты"
     }
   },
-  "assetsVersion": "a105406a"
+  "assetsVersion": "7f484f30"
 }

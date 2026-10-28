@@ -48,7 +48,7 @@
     const langNav = `<nav class="lang" aria-label="Language / Язык">` + ["en", "ru"].map((l) => l === lang
       ? `<a aria-current="true" lang="${l}">${l.toUpperCase()}</a>`
       : `<a href="${href(ctx.altPath)}" hreflang="${l}" lang="${l}" data-lang-switch>${l.toUpperCase()}</a>`).join('<span aria-hidden="true">|</span>') + `</nav>`;
-    const utility = `<div class="utility"><a class="u-link" href="${ctx.bodyClass === "page-case" ? href(pagePath(lang, "approach")) : ""}#contact" data-contact>${esc(ui.contact)}</a>
+    const utility = `<div class="utility"><a class="u-link" href="#contact" data-contact>${esc(ui.contact)}</a>
       <a class="u-link" href="${href(site.cv[lang])}" download data-cv>${esc(ui.downloadCV)}</a></div>`;
     const enPath = lang === "en" ? path : ctx.altPath, ruPath = lang === "ru" ? path : ctx.altPath;
     const title = esc(ctx.title), desc = esc(ctx.description);
@@ -116,44 +116,48 @@
 <main class="main" id="main" tabindex="-1">
 ${main}
 </main>
+<script src="${href("assets/liquid.js")}${site.assetsVersion ? "?v=" + site.assetsVersion : ""}"></script>
 <script src="${href("assets/main.js")}${site.assetsVersion ? "?v=" + site.assetsVersion : ""}"></script>
 </body>
 </html>
 `;
   }
 
-  // ---------- shared footer (contacts) ----------
-  const NEXT = { work: "about", about: "approach", approach: "work" };
-  /* opts: { compact: bool (Approach mobile footer), title } */
-  function footer(ctx, opts = {}) {
-    const { site, lang, path } = ctx, r = up(path), ui = site.ui[lang], next = NEXT[ctx.nav];
-    const cells = site.contacts.map((c) =>
-      `    <a class="fcell" href="${esc(c.url)}"${c.copy ? ` data-copy="${esc(c.copy)}"` : ' target="_blank" rel="noopener"'}><span class="fcell__label">${esc(c.label)}</span><span class="fcell__arrow" aria-hidden="true">↗</span></a>`).join("\n");
-    return `<footer class="footer ${opts.compact ? "footer--compact" : "footer--mt"}" id="${opts.compact ? "contact-m" : "contact"}" data-contact-target>
-  <h2 class="footer__title">${rich(opts.title != null ? opts.title : ui.footerTitle)}</h2>
-  <div class="frow"${site.contacts.length !== 5 ? ` data-n="${site.contacts.length}"` : ""}>
-    <span class="frow__copy">${copyright(site)}</span>
-${cells}
-  </div>
-  <div class="fbottom"><span class="frow__copy">${copyright(site)}</span><a class="fnext arrow-link only-t" href="${r + pagePath(lang, next)}"><span>${esc(ui.nav[next])}</span> <span class="arr arr--right" aria-hidden="true">→</span></a><a class="back-top arrow-link no-t" href="#top" data-top><span>${esc(ui.backToTop)}</span> <span class="arr arr--up" aria-hidden="true">↑</span></a></div>
-</footer>`;
-  }
-
-  /* The dot field footer ("Let's work together" + round contact buttons). On Approach it shows from
-     tablet up; on every other page only on desktop, where it replaces the contact list.
-     The buttons go in the order of the shared contacts list. */
-  function dfoot(ctx, opts = {}) {
+  // ---------- end of every page: the last screen and the footer ----------
+  const NEXT = { work: "about", about: "approach" };   // Approach (and project pages) end without a next page
+  // the line arrow from the layout (19×14), drawn as a stroke so its weight always matches the 2px progress line
+  const ARROW = '<svg class="sfoot__arrow" viewBox="0 0 19 14" width="19" height="14" aria-hidden="true"><path d="M0 6.98h17.4M11.17.7l6.96 6.28-6.96 6.27" fill="none" stroke="currentColor" stroke-width="2"/></svg>';
+  /* The last screen: exactly one screen high, "Let's work together" and the round contact buttons a little above
+     the middle, the liquid of small spheres below (main.js). Same on every page and device. */
+  function lastScreen(ctx) {
     const { site, lang } = ctx;
     const btns = site.contacts.map((c) =>
       `    <a class="sbtn" href="${esc(c.url)}" aria-label="${esc(tr(c.iconLabel || c.label, lang))}"${c.copy ? ` data-copy="${esc(c.copy)}"` : ' target="_blank" rel="noopener"'}>${c.icon || DEFAULT_ICON}<span class="sbtn__label">${esc(c.label)}</span></a>`).join("\n");
-    return `<footer class="dfoot${opts.desktopOnly ? " dfoot--d" : ""}" id="${opts.id || "contact"}" data-contact-target>
+    return `<section class="dfoot" id="contact" data-contact-target aria-label="${esc(site.ui[lang].contact)}">
   <canvas class="dfoot__canvas" aria-hidden="true"></canvas>
-  <h2 class="dfoot__title">${rich(ctx.contactTitle || "")}</h2>
-  <div class="dfoot__btns">
+  <div class="dfoot__block">
+    <h2 class="dfoot__title">${rich(ctx.contactTitle || "")}</h2>
+    <div class="dfoot__btns">
 ${btns}
+    </div>
   </div>
+</section>`;
+  }
+  /* The footer: a tall brand colour block with ©year and "back to top"; on Work and About also the way on to the
+     next page (click it, or keep scrolling at the end of the page until the line fills up). */
+  function siteFooter(ctx, next) {
+    const { site, lang, path } = ctx, r = up(path), ui = site.ui[lang];
+    const go = next ? `
+  <a class="sfoot__next" href="${r + pagePath(lang, next)}" data-next>
+    <span class="sfoot__name">${esc(ui.nav[next])}</span>
+    <span class="sfoot__bar"><span class="sfoot__track"><span class="sfoot__fill"></span></span>${ARROW}</span>
+    <span class="sfoot__hint"><span class="sfoot__hint-m">${esc(ui.nextPage || "")}</span><span class="sfoot__hint-d">${esc(ui.keepScrolling || "")}</span></span>
+  </a>` : "";
+    return `<footer class="sfoot">
+  <div class="sfoot__top"><span class="sfoot__copy">${copyright(site)}</span><a class="sfoot__up" href="#top" data-top aria-label="${esc(ui.backToTop)}">${ARROW.replace('class="sfoot__arrow"', 'class="sfoot__uparrow"')}</a></div>${go}
 </footer>`;
   }
+  const pageEnd = (ctx, next) => lastScreen(ctx) + "\n" + siteFooter(ctx, next);
 
   // ---------- media ----------
   const imgSet = (r, base, w1, w2) => `src="${r}${base}-sm.webp" srcset="${r}${base}-sm.webp ${w1}w, ${r}${base}.webp ${w2}w"`;
@@ -190,9 +194,8 @@ ${btns}
     <a class="arrow-link" href="${r + casePath(lang, prev.slug)}" rel="prev"><span class="arr arr--left" aria-hidden="true">←</span> <span>${rich(tr(prev.name, lang))}</span></a>
     <a class="arrow-link" href="${r + casePath(lang, next.slug)}" rel="next"><span>${rich(tr(next.name, lang))}</span> <span class="arr arr--right" aria-hidden="true">→</span></a>
   </nav>
-  <div class="case__top"><a class="back-top arrow-link" href="#top" data-top><span>${esc(ui.backToTop)}</span> <span class="arr arr--up" aria-hidden="true">↑</span></a></div>
 </article>
-${dfoot(ctx, { desktopOnly: true })}`;
+${pageEnd(ctx, null)}`;
   }
 
   // ---------- shared bits ----------
@@ -251,8 +254,7 @@ ${circles}
   </div>
 </section>
 
-${footer(ctx)}
-${dfoot(ctx, { id: "contact-d", desktopOnly: true })}`;
+${pageEnd(ctx, NEXT[ctx.nav])}`;
   }
 
   // ---------- About page ----------
@@ -307,8 +309,7 @@ ${xrows(a.education.items, lang, r)}</ul>
   <ul class="chips">${chips}</ul>
 </section>
 
-${footer(ctx)}
-${dfoot(ctx, { id: "contact-d", desktopOnly: true })}`;
+${pageEnd(ctx, NEXT[ctx.nav])}`;
   }
 
   // ---------- Approach page ----------
@@ -358,10 +359,7 @@ ${items}
   </div>
 </section>
 
-${footer(ctx, { compact: true, title: tr(a.footerTitle, lang) })}
-
-${dfoot(ctx)}
-<div class="fbottom dfoot-bottom only-t"><span>${copyright(site)}</span><a class="fnext arrow-link" href="${r + pagePath(lang, "work")}"><span>${esc(ui.nav.work)}</span> <span class="arr arr--right" aria-hidden="true">→</span></a></div>`;
+${pageEnd(ctx, null)}`;
   }
   // icon for a contact that has none: a plain circle with an arrow, same size as the others
   const DEFAULT_ICON = '<svg viewBox="0 0 52 52" width="52" height="52" aria-hidden="true"><circle cx="26" cy="26" r="26" fill="currentColor"/><path d="M20 32 32 20M23 20h9v9" fill="none" stroke="#fff" stroke-width="2"/></svg>';
@@ -470,7 +468,7 @@ ${dfoot(ctx)}
     return out;
   }
 
-  const api = { noOrphans, keepHyphens, headingVar, listPages, renderPage, approachMain, aboutMain, caseMain, workMain, vp, esc, rich, pick, variant, tr, up, pagePath, casePath, shell, footer, SVG };
+  const api = { noOrphans, keepHyphens, headingVar, listPages, renderPage, approachMain, aboutMain, caseMain, workMain, vp, esc, rich, pick, variant, tr, up, pagePath, casePath, shell, lastScreen, siteFooter, SVG };
   root.RarytuRender = api;
   if (typeof module !== "undefined" && module.exports) module.exports = api;
 })(typeof window !== "undefined" ? window : globalThis);

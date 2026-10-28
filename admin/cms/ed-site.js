@@ -30,7 +30,7 @@
         input(b("copyright"), { label: "Copyright line", placeholder: "©{year}", hint: "{year} becomes the current year and changes by itself every January." })),
       group("Contacts",
         list(b("contacts"), {
-          label: "Contacts", note: "One list for the whole site: the contact list (mobile and tablet) and the round buttons in the desktop footer, in this order. Up to 10.",
+          label: "Contacts", note: "One list for the whole site: the round buttons on the last screen of every page, in this order. Up to 10.",
           summary: contactName, addLabel: "+ Add contact", maxItems: 10,
           make: () => ({ id: "c" + Date.now().toString(36), label: "", url: "https://", iconLabel: { en: "", ru: "" } }),
           item: (ib) => {
@@ -42,15 +42,15 @@
               h("label", { class: "field__toggle" }, (() => { const c = h("input", { type: "checkbox" }); c.checked = !!ib.sub("copy").get();
                 c.addEventListener("change", () => ib.sub("copy").set(c.checked ? (ib.sub("url").get() || "").replace(/^mailto:/, "") : undefined)); return c; })(),
                 " Clicking copies the email address (for email links)"),
-              ib.sub("icon").get() ? note("Has its own icon on Approach.") : note("No icon yet: Approach shows a plain round button with an arrow."));
+              ib.sub("icon").get() ? note("Has its own icon.") : note("No icon yet: the button shows a plain arrow."));
           } })),
       group("CV files", cv("en", "English CV"), cv("ru", "Russian CV")),
       group("Menu",
         navUi("work", "Work page"), navUi("about", "About page"), navUi("approach", "Approach page"),
         ui("contact", "Contact link"), ui("downloadCV", "Download CV link")),
       group("Small texts",
-        ui("footerTitle", "Footer heading", "Big line above the contact list at the bottom of Work and About (mobile and tablet)."),
-        ui("backToTop", "Back to top"), ui("allWork", "Back link on project pages"), ui("moreProjects", "Name of the next/previous project links", "Read aloud by screen readers."),
+        ui("nextPage", "Footer: under the next page line (phones)"), ui("keepScrolling", "Footer: under the next page line (tablet and desktop)"),
+        ui("backToTop", "Back to top", "Read aloud for the arrow button in the footer."), ui("allWork", "Back link on project pages"), ui("moreProjects", "Name of the next/previous project links", "Read aloud by screen readers."),
         ui("copied", "Message after copying the email"), ui("skip", "Skip link", "For keyboard users, appears on Tab."),
         ui("menu", "Menu button name", "Read aloud by screen readers."), ui("closeMenu", "Close menu button name")),
     );

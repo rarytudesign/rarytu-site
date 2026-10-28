@@ -65,6 +65,14 @@ Rule: one step at a time. Test, commit, push, then tick it here.
   go into each page's own JSON in A4–A6; case pages use the Work page tagline and their own title/description.
 
 ## Log
+- 2026-10-29: New end of every page (all devices). render.js lastScreen() = section.dfoot#contact, 100lvh, title + round
+  buttons at 38% height, liquid below; siteFooter(ctx, next) = footer.sfoot (brand block, ©year, arrow up, next page
+  Work→About→Approach; Approach and project pages have none). Old contact list footer, compact Approach footer, case
+  "Back to top" row and ui.footerTitle / approach.footerTitle removed; new ui.nextPage (phones) and ui.keepScrolling (tablet+).
+  Liquid: assets/liquid.js (Clavet double density relaxation, 8px spheres, 3 sub-steps, walls and floor off-canvas,
+  title+buttons solid, drops slide off its top); main.js only drives it (pointer velocity stirs it, no hole).
+  Next page: at the end of the page a new wheel push / swipe fills .sfoot__fill (--p); full = click on [data-next].
+  "Contact" scrolls to the last screen of the current page everywhere. liquid.js is in the assetsVersion hash.
 - 2026-10-28: Desktop gap above the dot field footer tripled: margin-top 320px (case 290px + its 30px padding), ~330px to the
   letters. Site CSS/JS now cache-busted: build.js writes their hash to site.json assetsVersion, pages link styles.css?v=<hash>.
 - 2026-10-28: Desktop footer everywhere. render.js dfoot(ctx, {id, desktopOnly}) is the shared dot field footer; Work, About

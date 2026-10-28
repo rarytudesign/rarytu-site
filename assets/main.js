@@ -356,7 +356,7 @@
   {
     const placed = [];
     document.addEventListener("click", (e) => {
-      if (e.button !== 0 || e.target.closest("a, button, input, textarea, select, video, iframe, .sidebar, .tbar, .mbar, .dfoot, .chip, .skel")) return;
+      if (e.button !== 0 || e.target.closest("a, button, input, textarea, select, video, iframe, .sidebar, .tbar, .mbar, .dfoot, .sfoot, .chip, .skel")) return;
       if (isMobile() && e.target.closest("[data-carousel]")) return; // on phones a tap there means "swipe"
       if (getSelection && String(getSelection()).length) return;
       const d = document.createElement("i");
@@ -559,19 +559,6 @@
   /* Copyright year: always the current year */
   document.querySelectorAll("[data-year]").forEach((el) => { el.textContent = new Date().getFullYear(); });
 
-  /* Footer contacts: one row on desktop while the labels fit; otherwise the mobile list. */
-  function fitFooter() {
-    document.querySelectorAll(".footer").forEach((f) => {
-      f.classList.remove("footer--stack");
-      if (innerWidth < 1280) return;
-      const row = f.querySelector(".frow");
-      if ((row && row.scrollWidth > row.clientWidth + 1) || [...f.querySelectorAll(".fcell")].some((c) => c.scrollWidth > c.clientWidth + 1)) f.classList.add("footer--stack");
-    });
-  }
-  fitFooter();
-  if (document.fonts && document.fonts.ready) document.fonts.ready.then(fitFooter);
-  { let fft; addEventListener("resize", () => { clearTimeout(fft); fft = setTimeout(fitFooter, 100); }); }
-
   /* ---------- Videos: load ahead of time, play only while visible ---------- */
   // In the claude.ai preview the files come from the artifact's asset store, which some browsers
   // (Safari) won't stream; there the whole file is fetched first and played from memory.
@@ -622,159 +609,113 @@
     update();
   });
 
-  /* ---------- "Contact" scrolls to the contact block at the end of this page ---------- */
-  // every page ends with contacts (the list on phones and tablets, the dot field footer on desktop);
-  // a project page on a phone or tablet has none, there the link leads to the end of Approach
+  /* ---------- "Contact" scrolls to the last screen of this page ---------- */
   const contactTarget = () => $$("[data-contact-target]").find((el) => el.offsetParent !== null);
+  const toContact = (how) => contactTarget()?.scrollIntoView({ behavior: how, block: "end" });
   document.addEventListener("click", (e) => {
     const a = e.target.closest("[data-contact]");
-    if (!a) return;
-    const target = contactTarget();
-    if (!target) return;   // no contact block shown here: a normal link
+    if (!a || !contactTarget()) return;
     e.preventDefault();
-    setTimeout(() => target.scrollIntoView({ behavior: reduce ? "auto" : "smooth", block: "start" }), 40);
+    setTimeout(() => toContact(reduce ? "auto" : "smooth"), 40);
   });
-  if (location.hash === "#contact") {
-    const jump = () => contactTarget()?.scrollIntoView({ behavior: "instant", block: "start" });
-    requestAnimationFrame(jump); addEventListener("load", jump, { once: true });
+  if (location.hash === "#contact") { requestAnimationFrame(() => toContact("instant")); addEventListener("load", () => toContact("instant"), { once: true }); }
+
+  /* ---------- Footer: keep scrolling at the very end of the page to go on to the next page ----------
+     Wheel, trackpad or finger: the white line fills up and at the end the next page opens. Let go and it drains
+     back. The momentum of the scroll that brought you to the bottom doesn't count: only a new push does. */
+  const nextLink = $("[data-next]");
+  if (nextLink) {
+    let p = 0, last = 0, raf = 0, going = false, arrived = 0, prevWheel = 0, armed = false;
+    const atEnd = () => scrollY + innerHeight >= document.documentElement.scrollHeight - 2;
+    const set = (v) => {
+      p = Math.max(0, Math.min(1, v)); nextLink.style.setProperty("--p", p.toFixed(3));
+      if (p >= 1 && !going) { going = true; setTimeout(() => nextLink.click(), 120); }
+    };
+    const drain = () => { raf = 0; if (going || p <= 0) return; if (performance.now() - last > 350) set(p - 0.025); raf = requestAnimationFrame(drain); };
+    const push = (d) => { if (going) return; last = performance.now(); set(p + d); if (!raf) raf = requestAnimationFrame(drain); };
+    addEventListener("scroll", () => { const e = atEnd(); if (e && !arrived) { arrived = performance.now(); armed = false; } else if (!e) { arrived = 0; } }, { passive: true });
+    addEventListener("wheel", (e) => {
+      const now = performance.now(), gap = now - prevWheel; prevWheel = now;
+      if (e.deltaY <= 0 || !atEnd()) return;
+      if (!arrived) { arrived = now; armed = false; }
+      if (!armed) { if (gap > 180 || now - arrived > 900) armed = true; else return; }   // still the momentum of the way down
+      push(Math.min(120, e.deltaY * (e.deltaMode === 1 ? 33 : 1)) / 700);
+    }, { passive: true });
+    // a finger counts only when the swipe starts at the end of the page (not the one that brought you there)
+    let ty = null;
+    addEventListener("touchstart", (e) => { ty = atEnd() ? e.touches[0]?.clientY ?? null : null; }, { passive: true });
+    addEventListener("touchmove", (e) => {
+      const t = e.touches[0]; if (!t || ty === null) return;
+      const d = ty - t.clientY; ty = t.clientY;
+      if (d > 0 && atEnd()) push(d / 520);
+    }, { passive: true });
+    addEventListener("touchend", () => { ty = null; }, { passive: true });
+    addEventListener("keydown", (e) => { if ((e.key === "ArrowDown" || e.key === "PageDown" || e.key === " ") && atEnd() && !e.target.closest?.("input, textarea")) push(0.2); });
+    addEventListener("pageshow", () => { going = false; set(0); });
   }
 
-  /* ---------- Liquid dot field (Approach footer, desktop) ---------- */
+  /* ---------- Liquid of small spheres on the last screen (assets/liquid.js) ----------
+     It rests until the pointer or a finger goes through it, then flows, splashes and settles like water.
+     The title and buttons are solid: the water flows around them. */
   const foot = $(".dfoot"), canvas = foot && $(".dfoot__canvas", foot);
-  if (canvas) dotField(foot, canvas, reduce);
+  if (canvas && window.RarytuLiquid) liquid(foot, canvas, reduce);
 
-  // Dots behave like a layer of water made of small balls: gravity, a floor and walls,
-  // and every dot keeps the same distance from its neighbours (they never overlap).
-  // The pointer is a moving obstacle that pushes the water; it splashes, flows back and settles.
-  function dotField(section, cv, still) {
+  function liquid(section, cv, still) {
     const ctx = cv.getContext("2d", { alpha: true });
-    const DPR = Math.min(devicePixelRatio || 1, 2);
-    const COLOR = "#541725";
-    let W = 0, H = 0, N = 0, S = 12, R = 3.6;
-    let x, y, px, py, hx, hy, head, next, gw = 0, gh = 0;
-    let pointer = null, prevPointer = null, running = false, visible = false, calm = 0;
-    const GRAV = 0.32, ITER = 2, MAXV = 24, BALL = 70;
+    const DPR = Math.min(devicePixelRatio || 1, 2), COLOR = "#541725";
+    let sim = null, W = 0, H = 0, running = false, visible = false, calm = 0, pointer = null, prev = null;
 
     function build() {
       const r = section.getBoundingClientRect();
       W = Math.round(r.width); H = Math.round(r.height);
       if (!W || !H) return;
-      cv.width = W * DPR; cv.height = H * DPR;
-      ctx.setTransform(DPR, 0, 0, DPR, 0, 0);
-      R = 8;                                        // dot radius: the same 16px dot as the cursor
-      S = R / 0.33;                                 // distance between dot centres: a clear, even gap
-      const b = section.querySelector(".dfoot__btns");
-      const level = Math.max(H * 0.42, b ? b.offsetTop + b.offsetHeight + 70 : 0);
-      const pts = [], dy = S * Math.sqrt(3) / 2;
-      const cols = Math.floor((W - S) / S);
-      const x0 = (W - cols * S) / 2;
-      for (let j = 0, yy = H - S / 2; yy > level - H * 0.06; j++, yy -= dy) {
-        const off = j % 2 ? S / 2 : 0, n = j % 2 ? cols - 1 : cols;
-        for (let k = 0; k <= n; k++) {
-          const xx = x0 + off + k * S, u = xx / W;
-          // a gentle wave on the surface (as in the Figma composition)
-          const top = level + H * (0.035 * Math.sin(u * Math.PI * 2.1 + 0.6) + 0.02 * Math.sin(u * Math.PI * 5.3 + 1.7));
-          if (yy >= top) pts.push(xx, yy);
-        }
-      }
-      N = pts.length / 2;
-      x = new Float32Array(N); y = new Float32Array(N); px = new Float32Array(N); py = new Float32Array(N); next = new Int32Array(N);
-      hx = new Float32Array(N); hy = new Float32Array(N);
-      for (let i = 0; i < N; i++) { hx[i] = px[i] = x[i] = pts[2 * i]; hy[i] = py[i] = y[i] = pts[2 * i + 1]; }
-      gw = Math.ceil(W / S) + 2; gh = Math.ceil((H + 400) / S) + 2; head = new Int32Array(gw * gh);
+      cv.width = W * DPR; cv.height = H * DPR; ctx.setTransform(DPR, 0, 0, DPR, 0, 0);
+      // the block: title and buttons, in the canvas' coordinates
+      // (measured by layout, not on screen: the reveal animation may still be moving them)
+      const k = section.querySelector(".dfoot__block").getBoundingClientRect();
+      const t = section.querySelector(".dfoot__title"), b = section.querySelector(".dfoot__btns");
+      const ox = k.left - r.left, oy = k.top - r.top;
+      const blk = { l: ox + Math.min(t.offsetLeft, b.offsetLeft), r: ox + Math.max(t.offsetLeft + t.offsetWidth, b.offsetLeft + b.offsetWidth),
+        t: oy + t.offsetTop, b: oy + b.offsetTop + b.offsetHeight };
+      const level = blk.b + (W < 744 ? 24 : 36);   // the water starts a little below the buttons (its waves reach 20px lower on average) and fills the rest
+      sim = RarytuLiquid.create({ width: W, height: H,
+        surface: (x) => level + 20 + Math.min(28, H * 0.035) * (Math.sin((x / W) * Math.PI * 2.1 + 0.6) * 0.6 + Math.sin((x / W) * Math.PI * 5.3 + 1.7) * 0.4) });
+      sim.setBlock(blk);
       draw();
     }
-
-    function hash() {
-      head.fill(-1);
-      for (let i = 0; i < N; i++) {
-        const gx = Math.min(gw - 1, Math.max(0, ((x[i] / S) | 0) + 1)), gy = Math.min(gh - 1, Math.max(0, (((y[i] + 400) / S) | 0) + 1));
-        const k = gy * gw + gx; next[i] = head[k]; head[k] = i;
-      }
-    }
-
-    function step() {
-      // integrate: the water wants to return to its calm level (a soft spring to each dot's place),
-      // anything thrown above its place falls back under gravity
-      for (let i = 0; i < N; i++) {
-        let vx = (x[i] - px[i]) * 0.965, vy = (y[i] - py[i]) * 0.965;
-        vx += (hx[i] - x[i]) * 0.006; vy += (hy[i] - y[i]) * 0.006;
-        if (y[i] < hy[i] - 1) vy += GRAV;
-        const v = Math.hypot(vx, vy); if (v > MAXV) { vx *= MAXV / v; vy *= MAXV / v; }
-        px[i] = x[i]; py[i] = y[i]; x[i] += vx; y[i] += vy;
-      }
-      // the pointer: a moving ball that shoves the water along its path
-      if (pointer) {
-        const mx = pointer.x, my = pointer.y;
-        const dvx = prevPointer ? pointer.x - prevPointer.x : 0, dvy = prevPointer ? pointer.y - prevPointer.y : 0;
-        const B2 = BALL * BALL;
-        for (let i = 0; i < N; i++) {
-          const ddx = x[i] - mx, ddy = y[i] - my, d2 = ddx * ddx + ddy * ddy;
-          if (d2 >= B2) continue;
-          const d = Math.sqrt(d2) || 0.01, push = BALL - d;
-          x[i] += (ddx / d) * push * 0.5 + dvx * 0.25;
-          y[i] += (ddy / d) * push * 0.5 + dvy * 0.25;
-        }
-        prevPointer = { ...pointer };
-      }
-      // keep every pair exactly one spacing apart at most (no overlaps), a few relaxation passes
-      const D = S * 0.97, S2 = D * D;
-      for (let it = 0; it < ITER; it++) {
-        hash();
-        for (let i = 0; i < N; i++) {
-          const gx = ((x[i] / S) | 0) + 1, gy = (((y[i] + 400) / S) | 0) + 1;
-          for (let oy = -1; oy <= 1; oy++) for (let ox = -1; ox <= 1; ox++) {
-            const X = gx + ox, Y = gy + oy; if (X < 0 || Y < 0 || X >= gw || Y >= gh) continue;
-            for (let j = head[Y * gw + X]; j !== -1; j = next[j]) {
-              if (j <= i) continue;
-              const ddx = x[j] - x[i], ddy = y[j] - y[i], d2 = ddx * ddx + ddy * ddy;
-              if (d2 >= S2 || d2 < 1e-6) continue;
-              const d = Math.sqrt(d2), c = ((D - d) / d) * 0.5;
-              x[i] -= ddx * c; y[i] -= ddy * c; x[j] += ddx * c; y[j] += ddy * c;
-            }
-          }
-        }
-        for (let i = 0; i < N; i++) {
-          if (x[i] < S / 2) x[i] = S / 2; else if (x[i] > W - S / 2) x[i] = W - S / 2;
-          if (y[i] > H - S / 2) { y[i] = H - S / 2; px[i] += (x[i] - px[i]) * 0.1; } // floor friction
-        }
-      }
-      let e = 0;
-      for (let i = 0; i < N; i++) { const vx = x[i] - px[i], vy = y[i] - py[i]; e += vx * vx + vy * vy; }
-      return e / Math.max(1, N);
-    }
-
     function draw() {
-      ctx.clearRect(0, 0, W, H);
-      ctx.fillStyle = COLOR;
-      ctx.beginPath();
-      for (let i = 0; i < N; i++) { ctx.moveTo(x[i] + R, y[i]); ctx.arc(x[i], y[i], R, 0, 6.2832); }
+      ctx.clearRect(0, 0, W, H); ctx.fillStyle = COLOR; ctx.beginPath();
+      const { x, y, N, R } = sim;
+      for (let i = 0; i < N; i++) { if (y[i] < -R || y[i] > H + R) continue; ctx.moveTo(x[i] + R, y[i]); ctx.arc(x[i], y[i], R, 0, 6.2832); }
       ctx.fill();
     }
-
     function tick() {
-      if (!visible) { running = false; return; }
-      const e = step();
+      if (!visible || !sim) { running = false; return; }
+      let pp = null;
+      if (pointer) { pp = { x: pointer.x, y: pointer.y, vx: prev ? pointer.x - prev.x : 0, vy: prev ? pointer.y - prev.y : 0 }; prev = { ...pointer }; }
+      const e = sim.step(pp);
       draw();
-      calm = e > 0.0005 || pointer ? 0 : calm + 1;
-      if (calm < 45) requestAnimationFrame(tick); else running = false;
+      calm = e > 0.0004 || pointer ? 0 : calm + 1;
+      if (calm < 60) requestAnimationFrame(tick); else running = false;
     }
-    const kick = () => { if (!running && visible && !still) { running = true; calm = 0; requestAnimationFrame(tick); } };
-
+    const kick = () => { if (!running && visible && !still && sim) { running = true; calm = 0; requestAnimationFrame(tick); } };
     const toLocal = (e) => { const r = section.getBoundingClientRect(); return { x: e.clientX - r.left, y: e.clientY - r.top }; };
     if (!still) {
-      section.addEventListener("pointermove", (e) => { pointer = toLocal(e); kick(); }, { passive: true });
-      section.addEventListener("pointerleave", () => { pointer = null; prevPointer = null; });
-      // touch: the finger is the ball, also while the page scrolls under it
+      section.addEventListener("pointermove", (e) => { if (e.pointerType === "touch") return; pointer = toLocal(e); kick(); }, { passive: true });
+      section.addEventListener("pointerleave", (e) => { if (e.pointerType === "touch") return; pointer = null; prev = null; });
+      // touch: the finger stirs the water, also while the page scrolls under it
       const fromTouch = (e) => { const t = e.touches[0]; if (!t) return; pointer = toLocal(t); kick(); };
-      section.addEventListener("touchstart", (e) => { prevPointer = null; fromTouch(e); }, { passive: true });
+      section.addEventListener("touchstart", (e) => { prev = null; fromTouch(e); }, { passive: true });
       section.addEventListener("touchmove", fromTouch, { passive: true });
-      const lift = () => { pointer = null; prevPointer = null; };
+      const lift = () => { pointer = null; prev = null; };
       section.addEventListener("touchend", lift, { passive: true });
       section.addEventListener("touchcancel", lift, { passive: true });
     }
     new IntersectionObserver(([e]) => { visible = e.isIntersecting; if (visible) kick(); }, { rootMargin: "100px" }).observe(section);
-    let rt; new ResizeObserver(() => { clearTimeout(rt); rt = setTimeout(build, 150); }).observe(section);
+    // rebuild when the size changes (the section is 100lvh, so a phone's browser bars sliding in and out don't change it)
+    let rt;
+    new ResizeObserver(() => { clearTimeout(rt); rt = setTimeout(() => { if (section.clientWidth !== W || section.clientHeight !== H) build(); }, 150); }).observe(section);
+    document.fonts?.ready.then(build);
     build();
   }
 })();

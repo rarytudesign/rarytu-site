@@ -48,7 +48,7 @@
     const langNav = `<nav class="lang" aria-label="Language / Язык">` + ["en", "ru"].map((l) => l === lang
       ? `<a aria-current="true" lang="${l}">${l.toUpperCase()}</a>`
       : `<a href="${href(ctx.altPath)}" hreflang="${l}" lang="${l}" data-lang-switch>${l.toUpperCase()}</a>`).join('<span aria-hidden="true">|</span>') + `</nav>`;
-    const utility = `<div class="utility"><a class="u-link" href="${href(pagePath(lang, "approach"))}#contact" data-contact>${esc(ui.contact)}</a>
+    const utility = `<div class="utility"><a class="u-link" href="${ctx.bodyClass === "page-case" ? href(pagePath(lang, "approach")) : ""}#contact" data-contact>${esc(ui.contact)}</a>
       <a class="u-link" href="${href(site.cv[lang])}" download data-cv>${esc(ui.downloadCV)}</a></div>`;
     const enPath = lang === "en" ? path : ctx.altPath, ruPath = lang === "ru" ? path : ctx.altPath;
     const title = esc(ctx.title), desc = esc(ctx.description);
@@ -129,13 +129,29 @@ ${main}
     const { site, lang, path } = ctx, r = up(path), ui = site.ui[lang], next = NEXT[ctx.nav];
     const cells = site.contacts.map((c) =>
       `    <a class="fcell" href="${esc(c.url)}"${c.copy ? ` data-copy="${esc(c.copy)}"` : ' target="_blank" rel="noopener"'}><span class="fcell__label">${esc(c.label)}</span><span class="fcell__arrow" aria-hidden="true">↗</span></a>`).join("\n");
-    return `<footer class="footer ${opts.compact ? "footer--compact" : ""}" id="${opts.compact ? "contact-m" : "contact"}" data-contact-target>
+    return `<footer class="footer ${opts.compact ? "footer--compact" : "footer--mt"}" id="${opts.compact ? "contact-m" : "contact"}" data-contact-target>
   <h2 class="footer__title">${rich(opts.title != null ? opts.title : ui.footerTitle)}</h2>
   <div class="frow"${site.contacts.length !== 5 ? ` data-n="${site.contacts.length}"` : ""}>
     <span class="frow__copy">${copyright(site)}</span>
 ${cells}
   </div>
   <div class="fbottom"><span class="frow__copy">${copyright(site)}</span><a class="fnext arrow-link only-t" href="${r + pagePath(lang, next)}"><span>${esc(ui.nav[next])}</span> <span class="arr arr--right" aria-hidden="true">→</span></a><a class="back-top arrow-link no-t" href="#top" data-top><span>${esc(ui.backToTop)}</span> <span class="arr arr--up" aria-hidden="true">↑</span></a></div>
+</footer>`;
+  }
+
+  /* The dot field footer ("Let's work together" + round contact buttons). On Approach it shows from
+     tablet up; on every other page only on desktop, where it replaces the contact list.
+     The buttons go in the order of the shared contacts list. */
+  function dfoot(ctx, opts = {}) {
+    const { site, lang } = ctx;
+    const btns = site.contacts.map((c) =>
+      `    <a class="sbtn" href="${esc(c.url)}" aria-label="${esc(tr(c.iconLabel || c.label, lang))}"${c.copy ? ` data-copy="${esc(c.copy)}"` : ' target="_blank" rel="noopener"'}>${c.icon || DEFAULT_ICON}<span class="sbtn__label">${esc(c.label)}</span></a>`).join("\n");
+    return `<footer class="dfoot${opts.desktopOnly ? " dfoot--d" : ""}" id="${opts.id || "contact"}" data-contact-target>
+  <canvas class="dfoot__canvas" aria-hidden="true"></canvas>
+  <h2 class="dfoot__title">${rich(ctx.contactTitle || "")}</h2>
+  <div class="dfoot__btns">
+${btns}
+  </div>
 </footer>`;
   }
 
@@ -175,7 +191,8 @@ ${cells}
     <a class="arrow-link" href="${r + casePath(lang, next.slug)}" rel="next"><span>${rich(tr(next.name, lang))}</span> <span class="arr arr--right" aria-hidden="true">→</span></a>
   </nav>
   <div class="case__top"><a class="back-top arrow-link" href="#top" data-top><span>${esc(ui.backToTop)}</span> <span class="arr arr--up" aria-hidden="true">↑</span></a></div>
-</article>`;
+</article>
+${dfoot(ctx, { desktopOnly: true })}`;
   }
 
   // ---------- shared bits ----------
@@ -234,7 +251,8 @@ ${circles}
   </div>
 </section>
 
-${footer(ctx)}`;
+${footer(ctx)}
+${dfoot(ctx, { id: "contact-d", desktopOnly: true })}`;
   }
 
   // ---------- About page ----------
@@ -289,7 +307,8 @@ ${xrows(a.education.items, lang, r)}</ul>
   <ul class="chips">${chips}</ul>
 </section>
 
-${footer(ctx)}`;
+${footer(ctx)}
+${dfoot(ctx, { id: "contact-d", desktopOnly: true })}`;
   }
 
   // ---------- Approach page ----------
@@ -304,9 +323,6 @@ ${footer(ctx)}`;
       return `    <li class="pcircle"><h3>${rich(t)}</h3><p>${rich(x)}</p></li>`; }).join("\n");
     const tt = pick(a.tools.text, lang);
     const toolsText = isVar(tt) ? `<div class="v-d">${paras(tt.d)}</div><div class="v-mt">${paras(tt.mt)}</div>` : `<div>${paras(tt)}</div>`;
-    const byId = {}; site.contacts.forEach((c) => { byId[c.id] = c; });
-    const btns = site.contacts.map((c) =>
-      `    <a class="sbtn" href="${esc(c.url)}" aria-label="${esc(tr(c.iconLabel || c.label, lang))}"${c.copy ? ` data-copy="${esc(c.copy)}"` : ' target="_blank" rel="noopener"'}>${c.icon || DEFAULT_ICON}<span class="sbtn__label">${esc(c.label)}</span></a>`).join("\n");
     const media = (m) => `<video class="media" src="${r}${m.video}" poster="${r}${m.poster}" muted loop playsinline autoplay preload="metadata" width="${m.width}" height="${m.height}"></video>`;
     return `<section class="intro">
   <div class="intro__head">
@@ -344,13 +360,7 @@ ${items}
 
 ${footer(ctx, { compact: true, title: tr(a.footerTitle, lang) })}
 
-<footer class="dfoot" id="contact" data-contact-target>
-  <canvas class="dfoot__canvas" aria-hidden="true"></canvas>
-  <h2 class="dfoot__title">${rich(tr(a.contactTitle, lang))}</h2>
-  <div class="dfoot__btns">
-${btns}
-  </div>
-</footer>
+${dfoot(ctx)}
 <div class="fbottom dfoot-bottom only-t"><span>${copyright(site)}</span><a class="fnext arrow-link" href="${r + pagePath(lang, "work")}"><span>${esc(ui.nav.work)}</span> <span class="arr arr--right" aria-hidden="true">→</span></a></div>`;
   }
   // icon for a contact that has none: a plain circle with an arrow, same size as the others
@@ -391,7 +401,7 @@ ${btns}
   function noOrphans(html) {
     const at = html.indexOf("<body"); if (at < 0) return html;
     const body = html.slice(at).replace(/(<(p|figcaption)\b[^>]*>)([\s\S]*?)(<\/\2>)/g, (m, open, tag, inner, close) => {
-      if (/<svg/i.test(inner)) return m;
+      if (/<svg/i.test(inner) || /class="[^"]*tagline/.test(open)) return m;   // taglines are display type with their own line breaks
       const parts = inner.split(/(<[^>]+>)/);
       const words = parts.filter((x, i) => i % 2 === 0).join(" ").trim().split(/[ \u00a0]+/).filter(Boolean);
       if (words.length < 4) return m;
@@ -420,6 +430,8 @@ ${btns}
     const { site } = data, lang = p.lang, other = lang === "en" ? "ru" : "en";
     const work = data.read("content/pages/work.json");
     const ctx = { site, lang, path: p.path, altPath: p.path.replace(/^(en|ru)\//, other + "/") };
+    // the footer title is set on the Approach page and used by the dot field footer on every page
+    ctx.contactTitle = tr(data.read("content/pages/approach.json").contactTitle, lang);
     if (p.key === "case") {
       const cases = {}; for (const s of work.projects) cases[s] = data.read(`content/cases/${s}.json`);
       const c = cases[p.slug] || data.read(`content/cases/${p.slug}.json`);

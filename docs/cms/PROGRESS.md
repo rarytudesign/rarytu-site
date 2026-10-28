@@ -65,6 +65,13 @@ Rule: one step at a time. Test, commit, push, then tick it here.
   go into each page's own JSON in A4–A6; case pages use the Work page tagline and their own title/description.
 
 ## Log
+- 2026-10-28: Desktop footer everywhere. render.js dfoot(ctx, {id, desktopOnly}) is the shared dot field footer; Work, About
+  (id contact-d) and case pages (id contact) get it with .dfoot--d (only ≥1280), where .footer--mt (the contact list) is hidden.
+  Approach keeps dfoot from tablet up. Title = approach.json contactTitle (ctx.contactTitle, read in renderRaw for every page).
+  Buttons per Figma 286:1936: white 52px circles, 1px brand ring, brand glyph (CSS recolours the stored SVGs), contacts reordered
+  to Mail, Telegram, LinkedIn, Instagram, Behance (one list, so the mobile/tablet list follows). "Contact" link = #contact on the
+  page itself (case pages: approach #contact as fallback); main.js scrolls to the visible [data-contact-target] on any page.
+  Fix: noOrphans skips *tagline paragraphs (RU Approach sidebar tagline overflowed at 1920).
 - 2026-10-28: Feedback round 3. (1) Work page circles: the whole circle is a link on every device (.circle__hit no longer
   pointer-events:none on hover devices; cursor pointer). (2) About photos cropped exactly as in Figma (same crop at all breakpoints:
   frame ~415:293, Figma fills: photo-1 118.42%/126.1% at 0.1%/-0.16%; photo-3 100%/141.98% at 0/-9.61%; photo-2 162.77%/230.54% at

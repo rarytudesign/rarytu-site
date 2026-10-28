@@ -622,19 +622,19 @@
     update();
   });
 
-  /* ---------- "Contact" scrolls to whichever contact block is visible ---------- */
-  // "Contact" always leads to the contact block at the end of the Approach page
+  /* ---------- "Contact" scrolls to the contact block at the end of this page ---------- */
+  // every page ends with contacts (the list on phones and tablets, the dot field footer on desktop);
+  // a project page on a phone or tablet has none, there the link leads to the end of Approach
   const contactTarget = () => $$("[data-contact-target]").find((el) => el.offsetParent !== null);
-  const onApproach = document.body.classList.contains("page-approach");
   document.addEventListener("click", (e) => {
     const a = e.target.closest("[data-contact]");
-    if (!a || !onApproach) return; // other pages: a normal link to approach/#contact
+    if (!a) return;
     const target = contactTarget();
-    if (!target) return;
+    if (!target) return;   // no contact block shown here: a normal link
     e.preventDefault();
     setTimeout(() => target.scrollIntoView({ behavior: reduce ? "auto" : "smooth", block: "start" }), 40);
   });
-  if (onApproach && location.hash === "#contact") {
+  if (location.hash === "#contact") {
     const jump = () => contactTarget()?.scrollIntoView({ behavior: "instant", block: "start" });
     requestAnimationFrame(jump); addEventListener("load", jump, { once: true });
   }

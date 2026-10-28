@@ -30,7 +30,7 @@
         text(b("tools", "text"), { label: "Text", paragraphs: true, variants: true }),
         F.video(b("tools", "video"), b("tools", "poster"), { label: "Video", folder: "assets/video", prefix: "approach", onUpload: (r) => { b("tools", "width").set(r.width); b("tools", "height").set(r.height); } })),
       group("Contact block",
-        text(b("contactTitle"), { label: "Heading above the round buttons (desktop)" }),
+        text(b("contactTitle"), { label: "Heading above the round buttons", hint: "Desktop footer of every page; on Approach also on tablet." }),
         text(b("footerTitle"), { label: "Heading above the contacts (mobile and tablet)" }),
         note("The contacts themselves are edited in the Site tab.")),
       group("Search engines and sharing",

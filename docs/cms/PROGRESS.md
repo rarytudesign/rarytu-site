@@ -65,6 +65,12 @@ Rule: one step at a time. Test, commit, push, then tick it here.
   go into each page's own JSON in A4–A6; case pages use the Work page tagline and their own title/description.
 
 ## Log
+- 2026-10-29: Liquid on the GPU: assets/liquid-gl.js (WebGL2 + EXT_color_buffer_float; state in RGBA32F textures, per sub-step
+  bitonic sort by grid cell, cell ranges by binary search, density and relax passes, points drawn round). liquid.js is the CPU
+  fallback with the same math (checked: same result). Spheres 16px from 744px up, 8px on phones; the last screen is the
+  container (walls and floor at its edges, no bounce); no collision with the title/buttons any more. rho0Scale 1.33 (big) /
+  0.9 (small) keeps the water level at rest. Runs only after the pointer/finger touches it, and 8s after.
+  Videos: no player UI anywhere (attributes + ::-webkit-media-controls hidden, pointer-events none).
 - 2026-10-29: New end of every page (all devices). render.js lastScreen() = section.dfoot#contact, 100lvh, title + round
   buttons at 38% height, liquid below; siteFooter(ctx, next) = footer.sfoot (brand block, ©year, arrow up, next page
   Work→About→Approach; Approach and project pages have none). Old contact list footer, compact Approach footer, case

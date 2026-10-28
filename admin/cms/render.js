@@ -116,6 +116,7 @@
 <main class="main" id="main" tabindex="-1">
 ${main}
 </main>
+<script src="${href("assets/liquid-gl.js")}${site.assetsVersion ? "?v=" + site.assetsVersion : ""}"></script>
 <script src="${href("assets/liquid.js")}${site.assetsVersion ? "?v=" + site.assetsVersion : ""}"></script>
 <script src="${href("assets/main.js")}${site.assetsVersion ? "?v=" + site.assetsVersion : ""}"></script>
 </body>
@@ -170,9 +171,9 @@ ${btns}
     const prev = cases[order[((i < 0 ? 0 : i) - 1 + n) % n]] || c, next = cases[order[(i + 1) % n]] || c;
     const title = tr(c.title, lang), h = c.hero || {};
     const heroImg = h.image ? `<img class="" ${imgSet(r, h.image, 960, 1920)} sizes="(max-width: 743px) 320px, (max-width: 1279px) 100vw, 72vw" alt="${esc(title)}" fetchpriority="high" decoding="async">` : "";
-    const heroVid = h.video ? `<video class="chero__v" src="${r}${h.video}" poster="${r}${h.poster}" muted loop playsinline autoplay preload="auto"></video>` : "";
+    const heroVid = h.video ? `<video class="chero__v" src="${r}${h.video}" poster="${r}${h.poster}" muted loop playsinline disablepictureinpicture disableremoteplayback controlslist="nodownload nofullscreen noremoteplayback" autoplay preload="auto"></video>` : "";
     const gallery = (c.gallery || []).map((g, k) => g.video
-      ? `<div class="gitem gitem--video" style="--ar:${g.ar}"><video class="gitem__v" src="${r}${g.video}" poster="${r}${g.poster}" muted loop playsinline autoplay preload="metadata"></video></div>`
+      ? `<div class="gitem gitem--video" style="--ar:${g.ar}"><video class="gitem__v" src="${r}${g.video}" poster="${r}${g.poster}" muted loop playsinline disablepictureinpicture disableremoteplayback controlslist="nodownload nofullscreen noremoteplayback" autoplay preload="metadata"></video></div>`
       : `<div class="gitem" style="--ar:${g.ar}"><img class="" ${imgSet(r, g.image, 960, 1920)} sizes="(max-width: 743px) 320px, (max-width: 1279px) 100vw, 1370px" alt="" ${k < 2 ? 'fetchpriority="high"' : 'loading="lazy"'} decoding="async"></div>`).join("");
     const paras = (pick(c.overview.text, lang) || []).map((p) => `<p>${rich(p)}</p>`).join("");
     return `<article class="case">
@@ -324,7 +325,7 @@ ${pageEnd(ctx, NEXT[ctx.nav])}`;
       return `    <li class="pcircle"><h3>${rich(t)}</h3><p>${rich(x)}</p></li>`; }).join("\n");
     const tt = pick(a.tools.text, lang);
     const toolsText = isVar(tt) ? `<div class="v-d">${paras(tt.d)}</div><div class="v-mt">${paras(tt.mt)}</div>` : `<div>${paras(tt)}</div>`;
-    const media = (m) => `<video class="media" src="${r}${m.video}" poster="${r}${m.poster}" muted loop playsinline autoplay preload="metadata" width="${m.width}" height="${m.height}"></video>`;
+    const media = (m) => `<video class="media" src="${r}${m.video}" poster="${r}${m.poster}" muted loop playsinline disablepictureinpicture disableremoteplayback controlslist="nodownload nofullscreen noremoteplayback" autoplay preload="metadata" width="${m.width}" height="${m.height}"></video>`;
     return `<section class="intro">
   <div class="intro__head">
     <h1 class="display">${rich(tr(a.heading, lang))}</h1>

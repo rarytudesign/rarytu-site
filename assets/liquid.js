@@ -1,7 +1,7 @@
 /* Liquid made of small spheres for the last screen ("Let's work together").
    A particle fluid (double density relaxation, Clavet et al. 2005): every sphere keeps a soft distance from its
    neighbours, so the body behaves like water: it levels out, flows, splashes and falls back under gravity.
-   The title and buttons are a solid block the water flows around. Exposes window.RarytuLiquid (and module.exports for tests). */
+   The CPU fallback of assets/liquid-gl.js. Exposes window.RarytuLiquid (and module.exports for tests). */
 (function (root) {
   function create(o) {
     const W = o.width, H = o.height;
@@ -10,16 +10,16 @@
     const h = S * 2;                         // reach of the pressure between spheres
     const SUB = o.substeps || 3;            // smaller time steps keep the water stiff without blowing up
     const G = (o.gravity != null ? o.gravity : 0.5) / (SUB * SUB);   // gravity in px per frame², per sub-step
-    const K = o.k != null ? o.k : 1.2, KN = o.kNear != null ? o.kNear : 4;
+    const K = o.k != null ? o.k : 0.1 * S, KN = o.kNear != null ? o.kNear : S / 3;   // stiffness grows with the sphere size
     const MAXV = (o.maxSpeed || 28) / SUB;
     const DAMP = o.damping != null ? o.damping : 0.997;
     // rest density of the hexagonal packing the water starts in (6 neighbours at S, 6 at S·√3)
     const q1 = 1 - S / h, q2 = 1 - (S * Math.sqrt(3)) / h;
-    const RHO0 = 6 * q1 * q1 + 6 * Math.max(0, q2) * Math.max(0, q2);
+    const RHO0 = (6 * q1 * q1 + 6 * Math.max(0, q2) * Math.max(0, q2)) * (o.rho0Scale || (S >= 20 ? 1.33 : 0.9));   // tuned so the water keeps its level at rest (big and small spheres)
 
     // ---------- the water at rest: hexagonal rows below the surface line ----------
-    // the walls and the floor sit just outside the canvas, so the edge rows are cut like the layout, not lined up on view
-    const XL = -S, XR = W + S, YB = H + S * 0.6;
+    // the last screen is the container: walls at its sides, the floor at its bottom edge
+    const XL = 0, XR = W, YB = H;
     const pts = [], dy = (S * Math.sqrt(3)) / 2;
     const cols = Math.floor((XR - XL - 2 * R) / S), x0 = XL + (XR - XL - cols * S) / 2;
     for (let j = 0, yy = YB - R - 0.5; yy > 0; j++, yy -= dy) {
@@ -87,8 +87,9 @@
     function bounds() {
       const L = XL + R, Rt = XR - R, B = YB - R;
       for (let i = 0; i < N; i++) {
-        if (x[i] < L) { x[i] = L; px[i] = L + (L - px[i]) * 0.3; } else if (x[i] > Rt) { x[i] = Rt; px[i] = Rt + (Rt - px[i]) * 0.3; }
-        if (y[i] > B) { y[i] = B; py[i] = B + (B - py[i]) * 0.2; px[i] += (x[i] - px[i]) * 0.05; }
+        // the container's sides and bottom take the water's speed without bouncing it back
+        if (x[i] < L) { x[i] = L; px[i] = L; } else if (x[i] > Rt) { x[i] = Rt; px[i] = Rt; }
+        if (y[i] > B) { y[i] = B; py[i] = B; px[i] += (x[i] - px[i]) * 0.05; }
         if (block) {
           const l = block.l - R, r = block.r + R, t = block.t - R, b = block.b + R;
           if (x[i] > l && x[i] < r && y[i] > t && y[i] < b) {
@@ -106,7 +107,7 @@
 
     /* One frame. pointer: { x, y, vx, vy } in px per frame, or null. Returns the mean squared speed (to know when it's calm). */
     function step(pointer) {
-      const PR = 80, PR2 = PR * PR;
+      const PR = o.pointerRadius || 80, PR2 = PR * PR;
       for (let s = 0; s < SUB; s++) {
         for (let i = 0; i < N; i++) {
           let vx = (x[i] - px[i]) * DAMP, vy = (y[i] - py[i]) * DAMP + G;

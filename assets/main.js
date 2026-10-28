@@ -276,7 +276,7 @@
 
   /* ---------- Is there text or media under this point? (dots never cover content) ---------- */
   const range = document.createRange();
-  const MEDIA = "img, video, iframe, canvas, svg, .chip, .sbtn, .xrow__logo";
+  const MEDIA = "img, video, iframe, canvas, svg, .chip, .sbtn, .xrow__logo, .gitem, .chero, .wip__fig, .split__media";   // video boxes too: videos take no pointer events
   function textAt(x, y, pad = 0) {
     const el = document.elementFromPoint(x, y);
     if (!el) return false;
@@ -356,7 +356,7 @@
   {
     const placed = [];
     document.addEventListener("click", (e) => {
-      if (e.button !== 0 || e.target.closest("a, button, input, textarea, select, video, iframe, .sidebar, .tbar, .mbar, .dfoot, .sfoot, .chip, .skel")) return;
+      if (e.button !== 0 || e.target.closest("a, button, input, textarea, select, video, iframe, .sidebar, .tbar, .mbar, .dfoot, .sfoot, .chip, .skel, .wip__fig, .split__media, .gitem, .chero")) return;
       if (isMobile() && e.target.closest("[data-carousel]")) return; // on phones a tap there means "swipe"
       if (getSelection && String(getSelection()).length) return;
       const d = document.createElement("i");
@@ -654,57 +654,67 @@
     addEventListener("pageshow", () => { going = false; set(0); });
   }
 
-  /* ---------- Liquid of small spheres on the last screen (assets/liquid.js) ----------
-     It rests until the pointer or a finger goes through it, then flows, splashes and settles like water.
-     The title and buttons are solid: the water flows around them. */
-  const foot = $(".dfoot"), canvas = foot && $(".dfoot__canvas", foot);
-  if (canvas && window.RarytuLiquid) liquid(foot, canvas, reduce);
+  /* ---------- Liquid of spheres on the last screen ----------
+     Runs on the GPU (assets/liquid-gl.js, WebGL2); browsers without it get the same physics on the CPU (assets/liquid.js).
+     It rests until the pointer or a finger goes through it, then flows, splashes and settles like water in a glass:
+     the last screen is the container. Spheres: 16px from tablet up, 8px on phones. */
+  const foot = $(".dfoot");
+  if (foot && (window.RarytuLiquidGL || window.RarytuLiquid)) liquid(foot, reduce);
 
-  function liquid(section, cv, still) {
-    const ctx = cv.getContext("2d", { alpha: true });
+  function liquid(section, still) {
     const DPR = Math.min(devicePixelRatio || 1, 2), COLOR = "#541725";
-    let sim = null, W = 0, H = 0, running = false, visible = false, calm = 0, pointer = null, prev = null;
+    let sim = null, cv = null, ctx = null, W = 0, H = 0, running = false, visible = false, pointer = null, prev = null, lastActive = -1e9;
 
     function build() {
       const r = section.getBoundingClientRect();
       W = Math.round(r.width); H = Math.round(r.height);
       if (!W || !H) return;
-      cv.width = W * DPR; cv.height = H * DPR; ctx.setTransform(DPR, 0, 0, DPR, 0, 0);
-      // the block: title and buttons, in the canvas' coordinates
-      // (measured by layout, not on screen: the reveal animation may still be moving them)
-      const k = section.querySelector(".dfoot__block").getBoundingClientRect();
-      const t = section.querySelector(".dfoot__title"), b = section.querySelector(".dfoot__btns");
-      const ox = k.left - r.left, oy = k.top - r.top;
-      const blk = { l: ox + Math.min(t.offsetLeft, b.offsetLeft), r: ox + Math.max(t.offsetLeft + t.offsetWidth, b.offsetLeft + b.offsetWidth),
-        t: oy + t.offsetTop, b: oy + b.offsetTop + b.offsetHeight };
-      const level = blk.b + (W < 744 ? 24 : 36);   // the water starts a little below the buttons (its waves reach 20px lower on average) and fills the rest
-      sim = RarytuLiquid.create({ width: W, height: H,
-        surface: (x) => level + 20 + Math.min(28, H * 0.035) * (Math.sin((x / W) * Math.PI * 2.1 + 0.6) * 0.6 + Math.sin((x / W) * Math.PI * 5.3 + 1.7) * 0.4) });
-      sim.setBlock(blk);
+      // a fresh canvas each time: a canvas keeps the first kind of context it was given
+      const old = section.querySelector(".dfoot__canvas");
+      cv = document.createElement("canvas"); cv.className = "dfoot__canvas"; cv.setAttribute("aria-hidden", "true");
+      if (old) old.replaceWith(cv); else section.prepend(cv);
+      cv.width = Math.round(W * DPR); cv.height = Math.round(H * DPR);
+      // the water starts a little below the buttons (measured by layout: the reveal animation may still move them)
+      const k = section.querySelector(".dfoot__block").getBoundingClientRect(), b = section.querySelector(".dfoot__btns");
+      const level = k.top - r.top + b.offsetTop + b.offsetHeight + (W < 744 ? 24 : 36);
+      const small = W < 744;
+      const opts = { width: W, height: H, dpr: DPR, radius: small ? 4 : 8, spacing: small ? 12 : 24, pointerRadius: small ? 60 : 80,
+        surface: (x) => level + 20 + Math.min(28, H * 0.035) * (Math.sin((x / W) * Math.PI * 2.1 + 0.6) * 0.6 + Math.sin((x / W) * Math.PI * 5.3 + 1.7) * 0.4) };
+      sim = null; ctx = null;
+      try { sim = window.RarytuLiquidGL ? RarytuLiquidGL.create(cv, opts) : null; } catch (e) { console.warn("liquid (WebGL)", e); sim = null; }
+      if (!sim && window.RarytuLiquid) {
+        if (cv.getContext("webgl2")) { const c2 = cv.cloneNode(); cv.replaceWith(c2); cv = c2; }   // the WebGL try already claimed this canvas
+        ctx = cv.getContext("2d", { alpha: true }); ctx.setTransform(DPR, 0, 0, DPR, 0, 0);
+        sim = RarytuLiquid.create(opts);
+      }
+      section.dataset.liquid = sim ? (sim.gpu ? "webgl" : "cpu") : "none";
       draw();
     }
     function draw() {
+      if (!sim) return;
+      if (sim.gpu) { sim.draw(); return; }
       ctx.clearRect(0, 0, W, H); ctx.fillStyle = COLOR; ctx.beginPath();
       const { x, y, N, R } = sim;
       for (let i = 0; i < N; i++) { if (y[i] < -R || y[i] > H + R) continue; ctx.moveTo(x[i] + R, y[i]); ctx.arc(x[i], y[i], R, 0, 6.2832); }
       ctx.fill();
     }
+    // runs while touched and for a while after, so splashes land and the surface settles
+    const live = () => pointer || performance.now() - lastActive < 8000;
     function tick() {
-      if (!visible || !sim) { running = false; return; }
+      if (!visible || !sim || !live()) { running = false; return; }
       let pp = null;
-      if (pointer) { pp = { x: pointer.x, y: pointer.y, vx: prev ? pointer.x - prev.x : 0, vy: prev ? pointer.y - prev.y : 0 }; prev = { ...pointer }; }
-      const e = sim.step(pp);
+      if (pointer) { pp = { x: pointer.x, y: pointer.y, vx: prev ? pointer.x - prev.x : 0, vy: prev ? pointer.y - prev.y : 0 }; prev = { ...pointer }; lastActive = performance.now(); }
+      sim.step(pp);
       draw();
-      calm = e > 0.0004 || pointer ? 0 : calm + 1;
-      if (calm < 60) requestAnimationFrame(tick); else running = false;
+      requestAnimationFrame(tick);
     }
-    const kick = () => { if (!running && visible && !still && sim) { running = true; calm = 0; requestAnimationFrame(tick); } };
+    const kick = () => { if (!running && visible && !still && sim && live()) { running = true; requestAnimationFrame(tick); } };
     const toLocal = (e) => { const r = section.getBoundingClientRect(); return { x: e.clientX - r.left, y: e.clientY - r.top }; };
     if (!still) {
-      section.addEventListener("pointermove", (e) => { if (e.pointerType === "touch") return; pointer = toLocal(e); kick(); }, { passive: true });
+      section.addEventListener("pointermove", (e) => { if (e.pointerType === "touch") return; pointer = toLocal(e); lastActive = performance.now(); kick(); }, { passive: true });
       section.addEventListener("pointerleave", (e) => { if (e.pointerType === "touch") return; pointer = null; prev = null; });
       // touch: the finger stirs the water, also while the page scrolls under it
-      const fromTouch = (e) => { const t = e.touches[0]; if (!t) return; pointer = toLocal(t); kick(); };
+      const fromTouch = (e) => { const t = e.touches[0]; if (!t) return; pointer = toLocal(t); lastActive = performance.now(); kick(); };
       section.addEventListener("touchstart", (e) => { prev = null; fromTouch(e); }, { passive: true });
       section.addEventListener("touchmove", fromTouch, { passive: true });
       const lift = () => { pointer = null; prev = null; };

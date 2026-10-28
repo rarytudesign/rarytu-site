@@ -776,3 +776,10 @@ html[lang="ru"] .dfoot__title { font-family: var(--font); font-size: 40px; line-
   .sfoot__copy { font-size: 16px; }
   .sfoot__name { font-size: 32px; line-height: 32px; }
 }
+
+/* Videos are pictures that move: never any player interface (iOS shows a play button when it won't autoplay,
+   e.g. in Low Power Mode; Android shows controls on tap). They don't take taps either. */
+video { pointer-events: none; }
+video::-webkit-media-controls, video::-webkit-media-controls-enclosure, video::-webkit-media-controls-panel,
+video::-webkit-media-controls-overlay-play-button, video::-webkit-media-controls-start-playback-button,
+video::-webkit-media-controls-play-button { display: none !important; -webkit-appearance: none; opacity: 0 !important; }

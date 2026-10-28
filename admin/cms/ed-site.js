@@ -27,7 +27,7 @@
       h("p", { class: "ed__lede" }, "Things every page shares: your name, contacts, CV and the small interface texts."),
       group("Name and copyright",
         input(b("name"), { label: "Name", hint: "Shown at the top of every page." }),
-        input(b("copyright"), { label: "Copyright line", placeholder: "© 2020–2026" })),
+        input(b("copyright"), { label: "Copyright line", placeholder: "©{year}", hint: "{year} becomes the current year and changes by itself every January." })),
       group("Contacts",
         list(b("contacts"), {
           label: "Contacts", note: "One list for the whole site: the footer of every page and the round buttons on Approach, in this order. Up to 10.",

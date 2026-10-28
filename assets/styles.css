@@ -376,8 +376,8 @@ html.menu-open { background: var(--surface-muted); }
   .circle__link .ico-ne { width: 10px; height: 10px; }
 }
 .circle__hit { position: absolute; inset: 0; border-radius: 50%; z-index: 1; }
+.circle:has(.circle__hit) { cursor: pointer; }   /* the whole circle opens the page, not just the link */
 @media (hover: hover) {
-  .circle__hit { pointer-events: none; }
   .circle:not(.circle--ring):hover { background: var(--brand); color: var(--surface); }
   .circle__link:hover .ico-ne { transform: translate(3px, -3px); }
 }
@@ -791,3 +791,12 @@ html[lang="ru"] .dfoot__title { font-family: var(--font); font-size: clamp(60px,
 @media (max-width: 743px) { html[lang="ru"] .split__text p + p { margin-top: 0; } }
 /* Figma check (RU mobile, About): 6px between bio paragraphs */
 @media (max-width: 743px) { html[lang="ru"] .ahero__bio p + p { margin-top: 6px; } }
+/* Figma check (desktop, About): bio columns 426px and 394px; text 411/344px (EN), 409/394px (RU). Tablet limits don't apply here. */
+@media (min-width: 1280px) {
+  .ahero__bio > div:first-child, html[lang="ru"] .ahero__bio > div:first-child { flex: 0 1 426px; max-width: 426px; }
+  .ahero__bio > div:last-child, html[lang="ru"] .ahero__bio > div:last-child { flex: 0 1 394px; max-width: 394px; }
+  .ahero__bio > div:first-child p { max-width: 411px; }
+  html[lang="ru"] .ahero__bio > div:first-child p { max-width: 409px; }
+  .ahero__bio > div:last-child p { max-width: 344px; }
+  html[lang="ru"] .ahero__bio > div:last-child p { max-width: 394px; }
+}

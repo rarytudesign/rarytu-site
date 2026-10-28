@@ -65,6 +65,14 @@ Rule: one step at a time. Test, commit, push, then tick it here.
   go into each page's own JSON in A4–A6; case pages use the Work page tagline and their own title/description.
 
 ## Log
+- 2026-10-28: Feedback round 3. (1) Work page circles: the whole circle is a link on every device (.circle__hit no longer
+  pointer-events:none on hover devices; cursor pointer). (2) About photos cropped exactly as in Figma (same crop at all breakpoints:
+  frame ~415:293, Figma fills: photo-1 118.42%/126.1% at 0.1%/-0.16%; photo-3 100%/141.98% at 0/-9.61%; photo-2 162.77%/230.54% at
+  -28.7%/-60.54%; photo-4 107.93%/271.75% at 0.02%/-89.87%) → new files assets/img/about/photo-N-crop(-sm).webp; originals kept.
+  (4) RU desktop bio column 1 text from Figma. Desktop bio columns 426/394px, text 411/344 (EN) and 409/394 (RU): tablet limits used
+  to leak into desktop. (5) Renderer noOrphans(): last two words of every <p>/<figcaption> with 4+ words are joined (all languages);
+  RU: short words (1–2 letters) get a non-breaking space after them automatically (keepHyphens). (6) Copyright "©{year}" in site.json,
+  rendered as ©<span data-year>YYYY</span>; main.js sets the current year. Mobile Figma measurements unchanged after all this.
 - 2026-10-27: Figma check round 2 (mobile). Text gets 2px slack into the side margin (browsers count trailing letter-spacing,
   Figma doesn't); education paragraph gap 8px; RU: principles heading wraps (nbsp removed, text-wrap), Approach heading 40/36 and intro
   276px wide, tools text full width with no paragraph gaps, About bio column 2 split into two paragraphs with 6px gap. Measured: EN and RU

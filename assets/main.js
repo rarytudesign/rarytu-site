@@ -556,6 +556,9 @@
   fitTitles(); document.fonts?.ready.then(fitTitles);
   { let ft; addEventListener("resize", () => { clearTimeout(ft); ft = setTimeout(fitTitles, 100); }); }
 
+  /* Copyright year: always the current year */
+  document.querySelectorAll("[data-year]").forEach((el) => { el.textContent = new Date().getFullYear(); });
+
   /* Footer contacts: one row on desktop while the labels fit; otherwise the mobile list. */
   function fitFooter() {
     document.querySelectorAll(".footer").forEach((f) => {

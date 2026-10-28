@@ -132,10 +132,10 @@ ${main}
     return `<footer class="footer ${opts.compact ? "footer--compact" : ""}" id="${opts.compact ? "contact-m" : "contact"}" data-contact-target>
   <h2 class="footer__title">${rich(opts.title != null ? opts.title : ui.footerTitle)}</h2>
   <div class="frow"${site.contacts.length !== 5 ? ` data-n="${site.contacts.length}"` : ""}>
-    <span class="frow__copy">${esc(site.copyright)}</span>
+    <span class="frow__copy">${copyright(site)}</span>
 ${cells}
   </div>
-  <div class="fbottom"><span class="frow__copy">${esc(site.copyright)}</span><a class="fnext arrow-link only-t" href="${r + pagePath(lang, next)}"><span>${esc(ui.nav[next])}</span> <span class="arr arr--right" aria-hidden="true">→</span></a><a class="back-top arrow-link no-t" href="#top" data-top><span>${esc(ui.backToTop)}</span> <span class="arr arr--up" aria-hidden="true">↑</span></a></div>
+  <div class="fbottom"><span class="frow__copy">${copyright(site)}</span><a class="fnext arrow-link only-t" href="${r + pagePath(lang, next)}"><span>${esc(ui.nav[next])}</span> <span class="arr arr--right" aria-hidden="true">→</span></a><a class="back-top arrow-link no-t" href="#top" data-top><span>${esc(ui.backToTop)}</span> <span class="arr arr--up" aria-hidden="true">↑</span></a></div>
 </footer>`;
   }
 
@@ -351,7 +351,7 @@ ${footer(ctx, { compact: true, title: tr(a.footerTitle, lang) })}
 ${btns}
   </div>
 </footer>
-<div class="fbottom dfoot-bottom only-t"><span>${esc(site.copyright)}</span><a class="fnext arrow-link" href="${r + pagePath(lang, "work")}"><span>${esc(ui.nav.work)}</span> <span class="arr arr--right" aria-hidden="true">→</span></a></div>`;
+<div class="fbottom dfoot-bottom only-t"><span>${copyright(site)}</span><a class="fnext arrow-link" href="${r + pagePath(lang, "work")}"><span>${esc(ui.nav.work)}</span> <span class="arr arr--right" aria-hidden="true">→</span></a></div>`;
   }
   // icon for a contact that has none: a plain circle with an arrow, same size as the others
   const DEFAULT_ICON = '<svg viewBox="0 0 52 52" width="52" height="52" aria-hidden="true"><circle cx="26" cy="26" r="26" fill="currentColor"/><path d="M20 32 32 20M23 20h9v9" fill="none" stroke="#fff" stroke-width="2"/></svg>';
@@ -359,6 +359,8 @@ ${btns}
   // Russian typography: a word with a hyphen (веб-дизайн, CRM-коммуникаций) never breaks at the hyphen.
   // Applied to the text of <body> on Russian pages, outside tags, scripts and SVG.
   const HYPH = /(^|[^\p{L}\p{N}-])([\p{L}\p{N}]+(?:-[\p{L}\p{N}]+)+)(?=$|[^\p{L}\p{N}-])/gu;
+  // Russian typography: a one- or two-letter word (в, с, и, к, на, по, не…) never stays alone at the end of a line
+  const SHORT = /(?<=^|[\s\u00a0(«"])([А-Яа-яЁё]{1,2}) (?=[^\s])/g;
   function keepHyphens(html) {
     const at = html.indexOf("<body"); if (at < 0) return html;
     let skip = 0, nw = 0;
@@ -368,7 +370,7 @@ ${btns}
         if (/^<span class="nw">/.test(part)) nw++; else if (nw && part === "</span>") nw--;
         return part;
       }
-      return skip || nw ? part : part.replace(HYPH, '$1<span class="nw">$2</span>');
+      return skip || nw ? part : part.replace(HYPH, '$1<span class="nw">$2</span>').replace(SHORT, "$1\u00a0");
     }).join("");
     return html.slice(0, at) + body;
   }
@@ -381,12 +383,38 @@ ${btns}
     return `<span class="v-d">${rich(x.d)}</span><span class="v-mt">${rich(x.mt)}</span>`;
   }
 
+  // "©{year}": the year is filled in when the page is built and kept current in the browser by main.js ([data-year])
+  const copyright = (site) => esc(site.copyright || "").replace("{year}", `<span data-year>${new Date().getFullYear()}</span>`);
+
+  // No orphans: the last two words of a paragraph stay together, so a paragraph never ends with one word alone on a line.
+  // Applies to <p> and <figcaption> with at least four words; text inside tags and SVG is untouched.
+  function noOrphans(html) {
+    const at = html.indexOf("<body"); if (at < 0) return html;
+    const body = html.slice(at).replace(/(<(p|figcaption)\b[^>]*>)([\s\S]*?)(<\/\2>)/g, (m, open, tag, inner, close) => {
+      if (/<svg/i.test(inner)) return m;
+      const parts = inner.split(/(<[^>]+>)/);
+      const words = parts.filter((x, i) => i % 2 === 0).join(" ").trim().split(/[ \u00a0]+/).filter(Boolean);
+      if (words.length < 4) return m;
+      for (let i = parts.length - 1; i >= 0; i -= 1) {
+        if (i % 2 === 1) { if (/^<br/.test(parts[i])) break; continue; }   // stop at a line break: the last line is handled
+        const t = parts[i].replace(/\s+$/, ""), k = t.lastIndexOf(" ");
+        if (k > 0) { parts[i] = t.slice(0, k) + "\u00a0" + t.slice(k + 1) + parts[i].slice(t.length); break; }
+        if (t.trim()) {   // the last word starts this text piece: join it with the end of the previous text piece
+          for (let j = i - 2; j >= 0; j -= 2) { if (/ $/.test(parts[j])) { parts[j] = parts[j].replace(/ $/, "\u00a0"); break; } if (parts[j].trim()) break; }
+          break;
+        }
+      }
+      return open + parts.join("") + close;
+    });
+    return html.slice(0, at) + body;
+  }
+
   // ---------- pages ----------
   /* p: { lang, key: "work"|"about"|"approach"|"case", slug? , path }
      data: { site, read(file) → parsed JSON }  (read is sync in Node; the panel passes a cache) */
   function renderPage(p, data) {
     const html = renderRaw(p, data);
-    return p.lang === "ru" ? keepHyphens(html) : html;
+    return noOrphans(p.lang === "ru" ? keepHyphens(html) : html);
   }
   function renderRaw(p, data) {
     const { site } = data, lang = p.lang, other = lang === "en" ? "ru" : "en";
@@ -430,7 +458,7 @@ ${btns}
     return out;
   }
 
-  const api = { keepHyphens, headingVar, listPages, renderPage, approachMain, aboutMain, caseMain, workMain, vp, esc, rich, pick, variant, tr, up, pagePath, casePath, shell, footer, SVG };
+  const api = { noOrphans, keepHyphens, headingVar, listPages, renderPage, approachMain, aboutMain, caseMain, workMain, vp, esc, rich, pick, variant, tr, up, pagePath, casePath, shell, footer, SVG };
   root.RarytuRender = api;
   if (typeof module !== "undefined" && module.exports) module.exports = api;
 })(typeof window !== "undefined" ? window : globalThis);

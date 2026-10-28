@@ -810,5 +810,6 @@ html[lang="ru"] .dfoot__title { font-family: var(--font); font-size: clamp(60px,
 @media (min-width: 1280px) {
   .dfoot--d { display: flex; }
   .footer--mt { display: none; }
-  .page-case .dfoot { margin-top: 70px; }
+  .dfoot { margin-top: 300px; }   /* three times the old 100px gap above "Let's work together" */
+  .page-case .dfoot { margin-top: 270px; }   /* + the 30px bottom padding of the case = 300 */
 }

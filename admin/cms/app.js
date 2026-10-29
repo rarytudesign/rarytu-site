@@ -82,7 +82,8 @@
   addEventListener("beforeunload", () => {});  // drafts are saved continuously, nothing to warn about
 
   renderDraftState(); route();
-  Store.load().then(() => {
+  // with a remembered device the token is decrypted first, so the content comes straight from GitHub
+  (window.Auth ? Auth.ready : Promise.resolve()).then(() => Store.load()).then(() => {
     ready = true;
     const d = Store.state.draft;
     if (d && Store.conflicts().length) {

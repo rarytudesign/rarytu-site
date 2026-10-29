@@ -65,6 +65,14 @@ Rule: one step at a time. Test, commit, push, then tick it here.
   go into each page's own JSON in A4–A6; case pages use the Work page tagline and their own title/description.
 
 ## Log
+- 2026-10-29: Sign-in for the panel (admin/cms/auth.js, loaded before github.js; window.Auth). No server, so the password protects
+  the GitHub token: admin/auth.json = token encrypted with AES-GCM, key = PBKDF2-SHA-256(login lowercased + "\n" + password,
+  600 000 rounds). "Remember this device": token encrypted with a non-extractable AES key in IndexedDB "rarytu-auth", record in
+  localStorage "rarytu-auth-device" (180 days from the last visit), otherwise in sessionStorage. An old plain "rarytu-gh-token"
+  moves into the device store on first load (tests rely on this). GH.getToken/setToken read Auth; askToken and "GitHub access"
+  open the sign-in screens (expired token: new token + login/password updates auth.json for every device). Top bar: "Set up
+  sign-in" (until auth.json exists) and Sign out. app.js waits for Auth.ready before Store.load. Test: tools/test-auth.js
+  (fake GitHub, 18 checks). test-backups now opens #backups (the default tab is Work since G2). README guide updated.
 - 2026-10-29: Phones/tablets: next page by scrolling on (replaces "push past the end"). main.js adds .sfoot-run (80% of a 100lvh
   screen) after the footer; .sfoot.is-run is sticky at the bottom (top = 100dvh - --fh), ::before rises in brand colour by --p,
   the next-page block moves to the middle (--rise) and the name grows; at the end the link opens. Stop after 6% in → it eases to

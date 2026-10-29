@@ -22,8 +22,9 @@
   const enc = new TextEncoder();
 
   // ---------- GitHub access ----------
-  const getToken = () => { try { return localStorage.getItem("rarytu-gh-token") || ""; } catch { return ""; } };
-  const setToken = (t) => { try { t ? localStorage.setItem("rarytu-gh-token", t) : localStorage.removeItem("rarytu-gh-token"); } catch {} };
+  // the token lives in auth.js (unlocked by the sign-in, kept encrypted on a remembered device)
+  const getToken = () => (window.Auth ? Auth.token() : "");
+  const setToken = (t) => { if (window.Auth) Auth.setToken(t); };
   async function gh(path, opts = {}, tries = 3) {
     for (let n = 1; ; n++) {
       let r;
@@ -40,11 +41,13 @@
   }
   let afterToken = null;
   function askToken(then) {
-    afterToken = then || null; $("token").hidden = false; $("token-msg").textContent = "";
+    afterToken = then || null;
+    if (window.Auth) { const f = afterToken; afterToken = null; Auth.expired(f); return; }   // a new token goes through the sign-in screen, so every device gets it
+    $("token").hidden = false; $("token-msg").textContent = "";
     $("token-input").focus(); $("token").scrollIntoView({ block: "center", behavior: "smooth" });
   }
   const needToken = (then) => getToken() ? then() : askToken(then);
-  $("token-change").addEventListener("click", () => askToken());
+  $("token-change").addEventListener("click", () => (window.Auth ? Auth.settings() : askToken()));
   $("token-save").addEventListener("click", async () => {
     const t = $("token-input").value.trim(), msg = $("token-msg");
     if (!t) { setToken(""); msg.textContent = "Token removed from this browser."; return; }

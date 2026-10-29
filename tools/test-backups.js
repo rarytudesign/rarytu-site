@@ -7,7 +7,7 @@ const git = (a, input) => execFileSync('git', ['--git-dir', process.env.MOCK_GIT
   await ctx.route(/api\.github\.com|raw\.githubusercontent\.com/, mock.handle);
   await ctx.addInitScript(() => { localStorage.setItem('rarytu-gh-token', 'test'); window.confirm = () => true; });
   const pg = await ctx.newPage(); pg.on('pageerror', e => console.log('PAGEERR', e.message));
-  const open = async () => { await pg.goto('http://localhost:8811/admin/index.html'); await pg.waitForTimeout(800); };
+  const open = async () => { await pg.goto('http://localhost:8811/admin/index.html#backups'); await pg.waitForTimeout(800); };
   const hist = async () => console.log('  LIVE:', await pg.textContent('#live'), '\n  ROWS:', (await pg.textContent('#history-rows')).replace(/\s+/g, ' ').trim());
   const st = async () => console.log('  STATUS:', (await pg.textContent('#status')).replace(/\s+/g, ' ').trim());
   const doBackup = async () => { const [dl] = await Promise.all([pg.waitForEvent('download', { timeout: 120000 }), pg.click('#backup')]); const f = S + '/' + dl.suggestedFilename(); await dl.saveAs(f); await pg.waitForFunction(() => /saved|failed/.test(document.querySelector('#status').textContent), null, { timeout: 60000 }); await pg.waitForTimeout(500); return f; };

@@ -182,3 +182,22 @@ a.primary { background: var(--brand); color: var(--surface); }
 .ibtn--hist { width: 36px; height: 36px; border-radius: 10px; display: inline-flex; align-items: center; justify-content: center; }
 .ibtn--hist:disabled { opacity: 0.3; cursor: default; }
 @media (max-width: 900px) { .top > span:first-child { flex: none; } .top__hist { flex: 1; } }
+
+/* Sign-in (auth.js): the panel stays hidden until it's unlocked */
+html.auth-locked .top, html.auth-locked .shell { visibility: hidden; }
+.auth { position: fixed; inset: 0; z-index: 100; display: grid; place-items: center; padding: 24px 16px; background: var(--muted); overflow-y: auto; }
+.auth[hidden] { display: none; }
+.auth__card { width: 100%; max-width: 420px; display: flex; flex-direction: column; gap: 14px; padding: 28px 24px; background: #fff; border: 1px solid var(--line); border-radius: 20px; }
+.auth__card h1 { font-size: 28px; line-height: 32px; font-weight: 500; letter-spacing: -0.5px; margin: 0; }
+.auth__card p { margin: 0; }
+.auth__brand { font-size: 13px; opacity: 0.7; }
+.auth__f { display: flex; flex-direction: column; gap: 6px; font-size: 14px; }
+.auth__f i { font-style: normal; opacity: 0.6; }
+.auth__f input { font: inherit; font-size: 16px; height: 46px; padding: 0 14px; border: 1px solid var(--line); border-radius: 10px; color: var(--brand); }
+.auth__f input:focus-visible { outline: 2px solid var(--brand); outline-offset: 1px; }
+.auth__check { display: flex; align-items: center; gap: 8px; font-size: 14px; }
+.auth__check input { width: 18px; height: 18px; accent-color: var(--brand); }
+.auth__small, .auth__help { font-size: 13px; opacity: 0.8; }
+.auth__help ol { margin: 6px 0 0; padding-left: 18px; }
+.auth__card button { height: 46px; }
+.auth__msg { min-height: 20px; font-size: 14px; }

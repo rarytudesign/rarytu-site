@@ -127,7 +127,9 @@ def main():
                 trim_h = (nfl - 1) * (seg.get("lh") or 0) + 0.727 * (seg.get("fs") or 0) + (it.get("ps") or 0) * (npar - 1)
                 if seg.get("lh") and seg.get("fs") and abs(fh - trim_h) < abs(fh - full_h) - 0.5:
                     fsz, flh = seg["fs"], seg["lh"]
-                    fy = round(fy - ((flh - 1.2109 * fsz) / 2 + (0.96875 - 0.727) * fsz), 1)
+                    # compare cap tops: Figma's trimmed top is the cap line; on the site the cap sits inside the site's own line height
+                    sl = t["lh"] or flh
+                    fy = round(fy - ((sl - 1.2109 * fsz) / 2 + (0.96875 - 0.727) * fsz), 1)
                 lhs = t["lh"] or seg.get("lh")
                 nl = len(t["lines"]); fl = len(it.get("lines") or []) or it.get("nlines") or 0
                 sx = t["left"] if it.get("al") in ("LEFT", "JUSTIFIED", None) else t["box"][0]
@@ -140,7 +142,8 @@ def main():
                 prev_dy = prev.get(flow)
                 row["dy"] = dy; row["step"] = round(dy - prev_dy, 1) if prev_dy is not None else dy; row["flow"] = flow
                 prev[flow] = dy
-                if flow == "main": offs.append((fy + fh, round(t["top"] + row["site"]["h"] - fy - fh, 1)))
+                if flow == "main":   # offset media below this text carries: its top offset plus any extra lines
+                    offs.append((it["box"][1] + fh, round(dy + ((nl - fl) * lhs if fl and lhs else 0), 1)))
                 iss = []
                 if abs(row["step"]) > TOL: iss.append(f"spacing {row['step']:+}")
                 if it.get("al") == "LEFT" and abs(sx - fx) > TOL: iss.append(f"x {sx - fx:+.1f}")
@@ -171,7 +174,7 @@ def main():
                              "site": {"x": s["box"][0], "y": s["box"][1], "w": s["box"][2]}, "issues": iss})
             for s in sd: rows.append({"dev": dev, "page": page, "name": "dot", "extra": True, "site": {"x": s["box"][0], "y": s["box"][1]}, "issues": ["dot not in Figma"]})
             # media: Figma image layers vs site media, in reading order
-            fm = sorted([i for i in f["items"] if i["t"] == "I" and i["box"][2] > 60 and i["box"][3] > 60 and "Screenshot" not in i["nm"]
+            fm = sorted([i for i in f["items"] if i["t"] == "I" and i["box"][2] > 60 and i["box"][3] > 60 and "Screenshot" not in i["nm"] and not i["nm"].startswith("dither")
                          and i["box"][0] < w and i["box"][0] + i["box"][2] > 0], key=lambda i: (round(i["box"][1]), i["box"][0]))
             sm = sorted(S["M"], key=lambda m: (round(m["box"][1]), m["box"][0]))
             for a, b in zip(fm, sm):

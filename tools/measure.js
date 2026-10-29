@@ -45,7 +45,14 @@ function collect() {
         const rs = [...range.getClientRects()].filter((q) => q.width > 0);
         if (!rs.length) continue;
         // a word split over two lines by a hyphen break gives two rects
-        rs.forEach((q, i) => { words.push({ w: rs.length > 1 ? (i ? "" : m[0]) : m[0], t: q.top, b: q.bottom, l: q.left, r: q.right });
+        // a word broken at its hyphen over two lines: give each line its part (split at the hyphen that fits the widths)
+        let parts = rs.map((q, i) => (rs.length > 1 ? (i ? "" : m[0]) : m[0]));
+        if (rs.length === 2 && m[0].includes("-")) {
+          const ratio = rs[0].width / (rs[0].width + rs[1].width); let best = -1, bd = 9;
+          for (let h = m[0].indexOf("-"); h >= 0; h = m[0].indexOf("-", h + 1)) { const d = Math.abs((h + 1) / m[0].length - ratio); if (d < bd) { bd = d; best = h; } }
+          if (best >= 0) parts = [m[0].slice(0, best + 1), m[0].slice(best + 1)];
+        }
+        rs.forEach((q, i) => { if (!parts[i] && i) { x1 = Math.max(x1, q.right); return; } words.push({ w: parts[i], t: q.top, b: q.bottom, l: q.left, r: q.right });
           x0 = Math.min(x0, q.left); x1 = Math.max(x1, q.right); y0 = Math.min(y0, q.top); y1 = Math.max(y1, q.bottom); });
       }
     }

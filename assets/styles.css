@@ -323,7 +323,7 @@ html.menu-open { background: var(--surface-muted); }
 .work-head { display: flex; flex-direction: column; gap: 10px; }
 .work-head p { max-width: 254px; }
 @media (min-width: 744px) { .work-head { gap: 14px; } .work-head p { max-width: 500px; } }
-@media (min-width: 1280px) { .work-head { gap: 32px; } .work-head p { max-width: 261px; } }
+@media (min-width: 1280px) { .work-head { gap: 32px; } .work-head p { max-width: 261px; } html[lang="ru"] .work-head p { max-width: 277px; } }
 
 .grid { display: grid; grid-template-columns: minmax(0, 1fr); row-gap: 38px; margin-top: 30px; }
 @media (min-width: 744px) { .grid { grid-template-columns: repeat(2, minmax(0, 1fr)); column-gap: 20px; row-gap: 48px; } }
@@ -398,7 +398,8 @@ html.menu-open { background: var(--surface-muted); }
   .circle p { font-size: 16px; line-height: 20px; letter-spacing: 0.2px; max-width: 261px; }
   html[lang="en"] .callouts .circle:nth-child(2) p { max-width: 294px; }   /* Figma: the second circle's text is 294px wide (2 lines) */
   html[lang="ru"] .callouts .circle:nth-child(1) p { max-width: 291px; } html[lang="ru"] .callouts .circle:nth-child(2) p { max-width: 294px; }
-  .circle__link { font-size: 16px; line-height: 20px; padding: 0; margin: -4.2px 0; gap: 4px; }   /* inline-flex ignores text-box: trim its line by hand (cap to baseline, as in Figma) */
+  .circle__link { font-size: 16px; line-height: 20px; padding: 0; margin: -4.2px 0; gap: 4px; }
+  html[lang="ru"] .circle__link { letter-spacing: 0; }   /* Figma RU 16/20/0 */   /* inline-flex ignores text-box: trim its line by hand (cap to baseline, as in Figma) */
   .circle__link .ico-ne { width: 10px; height: 10px; }
 }
 .circle__hit { position: absolute; inset: 0; border-radius: 50%; z-index: 1; }
@@ -519,7 +520,9 @@ html.menu-open { background: var(--surface-muted); }
   .xrow__role p { margin-top: 12px; }
   .xrow__text p + p { margin-top: 0; }
   .xlist--edu .xrow__text p + p { margin-top: 4px; }   /* Figma: one-line notes 24px apart */
-  .xlist--edu .xrow__text { margin-right: -35px; }   /* Figma: education notes run in 521px boxes, past the 486px column */
+  .xlist--edu .xrow__text { max-width: 521px; margin-right: -35px; }   /* Figma: education notes run in 521px boxes, past the 486px column */
+  html[lang="ru"] .xlist .xrow { padding-top: 16px; padding-bottom: 16px; }   /* Figma RU: 16px above and below each row (EN 14), */
+  html[lang="ru"] .xlist:not(.xlist--edu) .xrow__text p + p { margin-top: 12px; }   /* and 12px between paragraphs (EN 20) */
   .steps .xrow + .xrow::before { left: 0; }
   .steps .xrow__n { font-size: 22px; line-height: 20px; letter-spacing: -0.2px; }
 }
@@ -598,6 +601,7 @@ html[lang="ru"] .intro__head p { max-width: 500px; }
 @media (hover: hover) { .pcircle:hover { background: var(--brand); color: var(--surface); } }
 .pcircle h3 { font-size: 24px; line-height: 22px; letter-spacing: -1px; }
 .pcircle p { font-size: 15px; line-height: 20px; letter-spacing: 0.1px; }
+@media (max-width: 743px) { .pcircle { padding-bottom: 6px; } }   /* Figma: the copy sits 3px above the centre */
 @media (min-width: 744px) {
   .principles { margin-top: 60px; }
   .pgrid { grid-auto-flow: row; grid-template-columns: repeat(2, minmax(0, 1fr)); grid-auto-columns: auto; overflow: visible; }
@@ -620,7 +624,8 @@ html[lang="ru"] .intro__head p { max-width: 500px; }
   html[lang="en"] .pcircle:nth-child(1) p { max-width: 325px; } html[lang="en"] .pcircle:nth-child(2) p { max-width: 265px; }
   html[lang="en"] .pcircle:nth-child(3) p { max-width: 317px; } html[lang="en"] .pcircle:nth-child(4) p { max-width: 348px; }
   html[lang="en"] .pcircle:nth-child(5) p, html[lang="en"] .pcircle:nth-child(6) p { max-width: 311px; }
-  html[lang="ru"] .pcircle:nth-child(1) p { max-width: 325px; } html[lang="ru"] .pcircle:nth-child(2) p { max-width: 378px; }
+  html[lang="ru"] .pcircle:nth-child(1) p { max-width: 325px; } html[lang="ru"] .pcircle:nth-child(2) p { max-width: 380px; }
+  html[lang="ru"] .pcircle h3 { text-box: none; }   /* Figma RU: the principle titles are not trimmed (the texts are) */
   html[lang="ru"] .pcircle:nth-child(3) p { max-width: 317px; } html[lang="ru"] .pcircle:nth-child(4) p { max-width: 348px; }
   html[lang="ru"] .pcircle:nth-child(5) p { max-width: 342px; } html[lang="ru"] .pcircle:nth-child(6) p { max-width: 367px; }
 }
@@ -715,7 +720,7 @@ html[lang="ru"] .intro__head p { max-width: 500px; }
 
 
 @media (min-width: 744px) { .wip { padding-bottom: 0; } }
-@media (min-width: 744px) and (max-width: 1279px) { .wip { padding-bottom: 32px; } }   /* Figma 141:13229: 32px under the caption, then 60px to the heading */
+@media (min-width: 744px) and (max-width: 1279px) { .wip { padding-bottom: 32px; } .wip .dots { inset: 0 0 32px; } }   /* Figma 141:13229: 32px under the caption, then 60px to the heading */
 /* line breaks that only exist in the phone layout */
 @media (min-width: 744px) { .br-m { display: none; } }
 /* phones: circles get an explicit height; iOS Safari could size the grid row shorter than the
@@ -816,7 +821,7 @@ html[lang="ru"] .dfoot__title { font-family: var(--font-inter); font-size: 40px;
 @media (min-width: 1280px) {
   .dfoot__block { gap: 40px; }
   .dfoot__title { font-size: clamp(64px, 4.8vw, 92px); line-height: 0.804; letter-spacing: -2px; max-width: 456px; padding-top: 8px; }
-  html[lang="ru"] .dfoot__title { font-size: clamp(60px, 4.48vw, 86px); line-height: 0.86; letter-spacing: -2.5px; max-width: 676px; }
+  html[lang="ru"] .dfoot__title { font-family: var(--font); font-size: clamp(60px, 4.48vw, 86px); line-height: 0.86; letter-spacing: -2.5px; max-width: 676px; }   /* Figma RU desktop: Inter Tight (phones: Inter) */
 }
 
 /* The footer: brand colour, ©year and the arrow up on top; the next page (Work → About → Approach) at the bottom,
@@ -885,4 +890,30 @@ video::-webkit-media-controls-play-button { display: none !important; -webkit-ap
 /* About photo dots on desktop: quicker one after another */
 @media (min-width: 1280px) and (prefers-reduced-motion: no-preference) {
   .js .dots--photos.is-in i { animation-duration: 480ms, 360ms; animation-delay: calc(var(--i) * 90ms); }
+}
+
+/* =========================================================
+   Figma Dev Mode check, 29.10 (round 2): differences between the EN and RU frames and per-item boxes, as in Figma
+   ========================================================= */
+@media (max-width: 743px) {
+  /* RU circles: Figma's text block sits 7px below the centre (fixed-height frames) */
+  html[lang="ru"] .callouts > .circle:not(.circle--ring) { padding-top: 15px; }
+  /* RU case titles are trimmed to cap height, 10px above the tags */
+  html[lang="ru"] .chead__title { text-box: trim-both cap alphabetic; margin-bottom: 2px; }
+  /* RU education notes: two of them have narrower boxes (330 / 337px) */
+  html[lang="ru"] .xlist--edu .xrow:nth-child(3) .xrow__text p:nth-child(2) { max-width: 330px; }
+  html[lang="ru"] .xlist--edu .xrow:nth-child(3) .xrow__text p:nth-child(3) { max-width: 337px; }
+  html[lang="ru"] .xlist:not(.xlist--edu) .xrow:nth-child(5) .xrow__role { padding-top: 6px; }   /* freelance row: role 6px under the date */
+}
+@media (max-width: 1279px) { .case[data-slug="dom"] .cover-text > div { gap: 6px; } }   /* Figma DOM (phone, tablet): 6px between the overview paragraphs, HEVY 12px */
+@media (min-width: 744px) and (max-width: 1279px) {
+  html[lang="ru"] .hero .display { line-height: 52px; }   /* Figma RU 55/52 (EN 55/56) */
+  /* company lines that Figma doesn't trim: all RU ones, and the long EN Apelsin line */
+  html[lang="ru"] .xlist:not(.xlist--edu) .xrow__role p, html[lang="en"] .xlist:not(.xlist--edu) .xrow:nth-child(3) .xrow__role p { text-box: none; }
+  html[lang="ru"] .callouts .circle:nth-child(2) p { margin: 0 -8px; }
+  html[lang="ru"] .pcircle h3 { line-height: 28px; letter-spacing: -1.2px; }   /* Figma RU 30/28 */
+  html[lang="ru"] .ahero__bio p + p { margin-top: 0; }   /* Figma RU tablet: the inspiration column is one block */
+  html[lang="ru"] .xlist:not(.xlist--edu) .xrow__text p + p { margin-top: 0; }   /* and job descriptions have no paragraph gap */
+  html[lang="ru"] .xlist:not(.xlist--edu) .xrow:nth-child(5) .xrow__role { padding-top: 2px; }   /* freelance row: role 2px under the date */
+  html[lang="ru"] .xlist--edu .xrow__text p + p { margin-top: 4px; }   /* RU education notes 24px apart (EN 26) */
 }

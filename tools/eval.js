@@ -14,7 +14,7 @@ const srv = http.createServer((q, r) => {
 (async () => {
   await new Promise((r) => srv.listen(0, r));
   const b = await chromium.launch(); const W = +w;
-  const pg = await (await b.newContext({ viewport: { width: W, height: W < 744 ? 844 : W < 1280 ? 1194 : 1080 }, reducedMotion: "reduce" })).newPage();
+  const pg = await (await b.newContext({ viewport: { width: W, height: +(process.env.VH || (W < 744 ? 844 : W < 1280 ? 1194 : 1080)) }, reducedMotion: "reduce" })).newPage();
   await pg.goto(`http://localhost:${srv.address().port}/rarytu-site/${p}`, { waitUntil: "load" });
   await pg.evaluate(() => document.fonts.ready); await pg.waitForTimeout(300);
   console.log(JSON.stringify(await pg.evaluate(expr), null, 1));

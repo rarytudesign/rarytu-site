@@ -33,7 +33,7 @@
 
   const SVG = {
     chev: '<svg class="chev" viewBox="0 0 12 8" aria-hidden="true"><path d="M1 1.5 6 6.5l5-5" fill="none" stroke="currentColor" stroke-width="1.3"/></svg>',
-    burger: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M1 5h22M1 12h22M1 19h22" stroke="currentColor" stroke-width="1.3"/></svg>',
+    burger: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M1 5h22M1 12h22M1 19h22" stroke="currentColor" stroke-width="1.5"/></svg>',
     close: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="m3.5 3.5 17 17M20.5 3.5l-17 17" stroke="currentColor" stroke-width="1.3"/></svg>',
   };
 

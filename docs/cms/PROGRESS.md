@@ -65,6 +65,26 @@ Rule: one step at a time. Test, commit, push, then tick it here.
   go into each page's own JSON in A4–A6; case pages use the Work page tagline and their own title/description.
 
 ## Log
+- 2026-10-29: Figma Dev Mode check by numbers (all pages, EN+RU, 390 / 820 / 1920; Figma tablet frames are 820 wide).
+  How: Figma Plugin API in Nastya's logged-in Dev Mode tab dumped every frame (text, font size, line height, tracking, box,
+  real line breaks from SVG export, dots, images) → docs/figma/{mobile,tablet,desktop}.json. Site measured with
+  tools/measure.js (Playwright), compared with tools/figma-compare.py (matches text layers to site blocks, compares
+  cap-trimmed boxes the Figma way, spacing as the change of offset), tools/figma-reasons.py sorts what is left.
+  tools/figma-nbsp.py copies Figma's non-breaking spaces into content (a nbsp where any device has one and none breaks there).
+  tools/eval.js / shot.js: one-off page checks and element screenshots. Result: 751 differing layers → 166, all explained.
+  Changed: desktop trims (cap/baseline) on lists, section titles, captions, circles, principles, overview, split text;
+  experience columns 328/501/486 + 15 free; sidebar row 20px and nav rows 56px; cards 678px 17px apart; footer (name 24/20
+  Inter Tight, bar/hint spacing, tablet block 210px); last-screen title 60/54 (EN) and 40/36 Inter (RU) on phones, RU desktop
+  back to Inter Tight; circles: 26px under the cards (RU 44, wider gaps), ring moved not shrunk; card arrow after the title
+  on phones/tablets (glued to the last word), titles wrap like Figma, per-card tracking from Figma; case titles not balanced,
+  HEVY title break on phones/tablets (<br class="v-mt">, hidden in cards, plain() for <title>/alt); case overview widths per
+  case (article data-slug); DOM paragraph gap 6 (<1280); per-item text boxes from Figma (principles, circles, edu, last job);
+  RU vs EN frame differences kept as in each frame (end of styles.css block "Figma Dev Mode check, 29.10 (round 2)");
+  About desktop photo dots recomputed; menu icon stroke 1.5; RU About heading break phones only.
+  Left as is (see the report): last screen is one screen high (Figma: fixed block), no-orphans rule, RU hyphen rule,
+  rewritten RU case intros, cross-device line-break conflicts, Figma auto-layout glitches (circle text off-centre,
+  RU desktop Approach dots not moved with the video), font width rounding. Tablet/desktop Figma frames other than
+  Work 821 and Approach still show the old footer; checked the footer against the new frames only.
 - 2026-10-29: Desktop round. Brand footer (.sfoot: ©year, back to top, next page) hidden from 1280px: the sidebar menu does
   that job, pages end with the contact screen; the keep-scrolling-to-next-page logic stops when the footer is hidden.
   Approach: .principles margin-top 0 → 82px (Figma ~105px from caption to heading); EN principle text max-width 326 (Figma breaks);

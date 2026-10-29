@@ -9,6 +9,8 @@
   const ESC = { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" };
   // attribute / plain text: escape everything
   const esc = (s) => String(s == null ? "" : s).replace(/[&<>"]/g, (c) => ESC[c]);
+  // plain text of a rich string (for <title>, alt): line breaks become spaces, other tags go
+  const plain = (s) => String(s == null ? "" : s).replace(/<br\b[^>]*>/gi, " ").replace(/<[^>]+>/g, "").replace(/ {2,}/g, " ");
   // Content text may contain a few inline tags; everything else is escaped.
   const INLINE = /<(br|br class="[\w -]+"|span class="[\w -]+"|\/span|b|\/b|i|\/i|\/a|a href="[^"<>]*")>/g;
   function rich(s) {
@@ -174,14 +176,14 @@ ${btns}
     let i = order.indexOf(c.slug), n = order.length;
     if (i < 0) i = -1;   // a hidden project (preview only): link to the first and last visible ones
     const prev = cases[order[((i < 0 ? 0 : i) - 1 + n) % n]] || c, next = cases[order[(i + 1) % n]] || c;
-    const title = tr(c.title, lang), h = c.hero || {};
-    const heroImg = h.image ? `<img class="" ${imgSet(r, h.image, 960, 1920)} sizes="(max-width: 743px) 320px, (max-width: 1279px) 100vw, 72vw" alt="${esc(title)}" fetchpriority="high" decoding="async">` : "";
+    const title = tr(c.title, lang), h = c.hero || {}, titleText = plain(title);
+    const heroImg = h.image ? `<img class="" ${imgSet(r, h.image, 960, 1920)} sizes="(max-width: 743px) 320px, (max-width: 1279px) 100vw, 72vw" alt="${esc(titleText)}" fetchpriority="high" decoding="async">` : "";
     const heroVid = h.video ? `<video class="chero__v" src="${r}${h.video}" poster="${r}${h.poster}" muted loop playsinline disablepictureinpicture disableremoteplayback controlslist="nodownload nofullscreen noremoteplayback" autoplay preload="auto"></video>${poster(r, h.poster)}` : "";
     const gallery = (c.gallery || []).map((g, k) => g.video
       ? `<div class="gitem gitem--video" style="--ar:${g.ar}"><video class="gitem__v" src="${r}${g.video}" poster="${r}${g.poster}" muted loop playsinline disablepictureinpicture disableremoteplayback controlslist="nodownload nofullscreen noremoteplayback" autoplay preload="metadata"></video>${poster(r, g.poster)}</div>`
       : `<div class="gitem" style="--ar:${g.ar}"><img class="" ${imgSet(r, g.image, 960, 1920)} sizes="(max-width: 743px) 320px, (max-width: 1279px) 100vw, 1370px" alt="" ${k < 2 ? 'fetchpriority="high"' : 'loading="lazy"'} decoding="async"></div>`).join("");
     const paras = (pick(c.overview.text, lang) || []).map((p) => `<p>${rich(p)}</p>`).join("");
-    return `<article class="case">
+    return `<article class="case" data-slug="${esc(c.slug)}">
   <header class="chead">
     <a class="chead__back arrow-link" href="${r + pagePath(lang, "work")}"><span class="arr arr--left" aria-hidden="true">←</span> <span>${esc(ui.allWork)}</span></a>
     <h1 class="chead__title">${rich(title)}</h1>
@@ -224,7 +226,7 @@ ${btns}
       </div>
       <div class="card__meta">
         <p class="tags">${rich(tr(c.tags, lang))}</p>
-        <h3 class="card__title"><span class="card__arr" aria-hidden="true">→</span>${rich(tr(c.title, lang))}</h3>
+        <h3 class="card__title"><span class="card__arr" aria-hidden="true">→</span>${rich(tr(c.title, lang))}<span class="card__arr-t" aria-hidden="true">\u00a0\u00a0→</span></h3>
       </div>
     </a>`; }).join("\n");
     const circles = w.callouts.map((c) => `  <div class="circle">
@@ -444,7 +446,7 @@ ${pageEnd(ctx, NEXT[ctx.nav])}`;
     if (p.key === "case") {
       const cases = {}; for (const s of work.projects) cases[s] = data.read(`content/cases/${s}.json`);
       const c = cases[p.slug] || data.read(`content/cases/${p.slug}.json`);
-      Object.assign(ctx, { nav: "work", bodyClass: "page-case", title: `${tr(c.title, lang)} · ${site.name}`,
+      Object.assign(ctx, { nav: "work", bodyClass: "page-case", title: `${plain(tr(c.title, lang))} · ${site.name}`,
         description: tr(c.description, lang), tagline: tr(work.tagline, lang) });
       return shell(ctx, caseMain(ctx, c, work.projects, cases));
     }

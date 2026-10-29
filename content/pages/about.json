@@ -16,8 +16,8 @@
     "ru": "Брендинг и веб-дизайн"
   },
   "heading": {
-    "en": "I’m Anastasia,<br>a brand <br class=\"br-m\">& digital designer",
-    "ru": "Я Настя,<br class=\"v-mt\"> занимаюсь брендингом<br>и веб-дизайном"
+    "en": "I’m Anastasia,<br>a brand <br class=\"br-m\">& digital designer",
+    "ru": "Я Настя,<br class=\"br-m\"> занимаюсь брендингом<br>и веб-дизайном"
   },
   "bio": [
     {
@@ -32,7 +32,7 @@
         "mt": {
           "heading": "About me",
           "text": [
-            "I combine in-house experience with freelance practice, working closely with founders, marketing and product teams. I lead projects from brief to launch, connecting business goals with a clear visual direction."
+            "I combine in-house experience with freelance practice, working closely with founders, marketing and product teams. I lead projects from brief to launch, connecting business goals with a clear visual direction."
           ]
         }
       },
@@ -40,21 +40,21 @@
         "d": {
           "heading": "Обо мне",
           "text": [
-            "Работала в инхаус-командах и на фрилансе с крупными брендами и стартапами: запускала проекты с нуля и развивала визуальные системы.",
-            "Веду проекты сама или подключаюсь к команде. Работаю с основателями, маркетингом и продуктовыми командами: разбираю задачи и довожу решения до запуска."
+            "Работала в инхаус-командах и на фрилансе с крупными брендами и стартапами: запускала проекты с нуля и развивала визуальные системы.",
+            "Веду проекты сама или подключаюсь к команде. Работаю с основателями, маркетингом и продуктовыми командами: разбираю задачи и довожу решения до запуска."
           ]
         },
         "mt": {
-          "heading": "Обо мне",
+          "heading": "Обо мне",
           "text": [
-            "Объединяю опыт работы в инхаус-командах и на фрилансе. Создаю и развиваю визуальные системы для крупных брендов и стартапов.<br>Веду проекты от брифа до запуска самостоятельно или в команде. Работаю напрямую с фаундерами, маркетингом и продуктовыми командами."
+            "Объединяю опыт работы в инхаус-командах и на фрилансе. Создаю и развиваю визуальные системы для крупных брендов и стартапов.<br>Веду проекты от брифа до запуска самостоятельно или в команде. Работаю напрямую с фаундерами, маркетингом и продуктовыми командами."
           ]
         },
         "m": {
-          "heading": "Обо мне",
+          "heading": "Обо мне",
           "text": [
-            "Работала в инхаус-командах и на фрилансе с крупными брендами и стартапами: запускала проекты с нуля и развивала визуальные системы.",
-            "Веду проекты сама или подключаюсь к команде. Работаю с основателями, маркетингом и продуктовыми командами: разбираю задачи и довожу решения до запуска."
+            "Работала в инхаус-командах и на фрилансе с крупными брендами и стартапами: запускала проекты с нуля и развивала визуальные системы.",
+            "Веду проекты сама или подключаюсь к команде. Работаю с основателями, маркетингом и продуктовыми командами: разбираю задачи и довожу решения до запуска."
           ]
         }
       }
@@ -71,16 +71,16 @@
         "mt": {
           "heading": "What inspires me",
           "text": [
-            "I love travelling in Asia and draw inspiration from the visual cultures of South Korea, Japan and China.<br>Swiss typography, Dieter Rams’ principles and clean layouts shape my approach. I often start in black and white to focus on composition, hierarchy and content."
+            "I love travelling in Asia and draw inspiration from the visual cultures of South Korea, Japan and China.<br>Swiss typography, Dieter Rams’ principles and clean layouts shape my approach. I often start in black and white to focus on composition, hierarchy and content."
           ]
         }
       },
       "ru": {
         "d": {
-          "heading": "Что меня вдохновляет",
+          "heading": "Что меня вдохновляет",
           "text": [
-            "Люблю путешествовать по Азии, особенно по Южной Корее, Японии и Китаю. Меня вдохновляет культура этих стран.",
-            "Мне близки швейцарская типографика, принципы Дитера Рамса и лаконичная вёрстка. Часто начинаю с чёрно-белых макетов, чтобы сосредоточиться на композиции, иерархии и содержании."
+            "Люблю путешествовать по Азии, особенно по Южной Корее, Японии и Китаю. Меня вдохновляет культура этих стран.",
+            "Мне близки швейцарская типографика, принципы Дитера Рамса и лаконичная вёрстка. Часто начинаю с чёрно-белых макетов, чтобы сосредоточиться на композиции, иерархии и содержании."
           ]
         },
         "mt": {
@@ -100,34 +100,34 @@
     },
     "swipe": {
       "en": "Swipe →",
-      "ru": "Листайте →"
+      "ru": "Листайте →"
     },
     "items": [
       {
         "image": "assets/img/about/photo-1-crop",
         "caption": {
-          "en": "Hi, that’s me",
-          "ru": "Привет, это я"
+          "en": "Hi, that’s me",
+          "ru": "Привет, это я"
         }
       },
       {
         "image": "assets/img/about/photo-3-crop",
         "caption": {
-          "en": "My usual setup",
-          "ru": "Моё рабочее место"
+          "en": "My usual setup",
+          "ru": "Моё рабочее место"
         }
       },
       {
         "image": "assets/img/about/photo-2-crop",
         "caption": {
-          "en": "Learning beyond the screen",
+          "en": "Learning beyond the screen",
           "ru": "Посещаю воркшопы и конференции"
         }
       },
       {
         "image": "assets/img/about/photo-4-crop",
         "caption": {
-          "en": "Making time for art",
+          "en": "Making time for art",
           "ru": "Вдохновляюсь искусством"
         }
       }
@@ -145,19 +145,19 @@
           "ru": "С 2026"
         },
         "role": {
-          "en": "Senior Communication Designer",
+          "en": "Senior Communication Designer",
           "ru": "Старший дизайнер коммуникаций"
         },
         "company": {
           "en": "X5 Group",
-          "ru": "X5 Group · программа лояльности"
+          "ru": "X5 Group · программа лояльности"
         },
         "text": {
           "en": [
-            "I was invited back to design for X5’s loyalty and subscription services. I create campaigns, customer communications and reusable templates for X5 Club, Pyaterochka’s interest-based clubs and Paket."
+            "I was invited back to design for X5’s loyalty and subscription services. I create campaigns, customer communications and reusable templates for X5 Club, Pyaterochka’s interest-based clubs and Paket."
           ],
           "ru": [
-            "По приглашению вернулась в новую команду с более широким спектром задач. Работаю над коммуникациями всей лояльности X5: «X5 Клуба», «Апельсина», клубов по интересам «Пятёрочки» и сервиса «Пакет».",
+            "По приглашению вернулась в новую команду с более широким спектром задач. Работаю над коммуникациями всей лояльности X5: «X5 Клуба», «Апельсина», клубов по интересам «Пятёрочки» и сервиса «Пакет».",
             "Разрабатываю визуальные концепции и материалы для рекламных кампаний, цифровых каналов, CRM-коммуникаций и офлайн-рекламы. Развиваю брендбуки существующих направлений бизнеса, создаю гайды и шаблоны. Участвую во внутреннем дизайн-ревью: отсматриваю материалы агентства и даю обратную связь."
           ]
         },
@@ -172,19 +172,19 @@
       {
         "date": "2025–2026",
         "role": {
-          "en": "Senior Communication Designer",
+          "en": "Senior Communication Designer",
           "ru": "Старший дизайнер коммуникаций"
         },
         "company": {
           "en": "EQ LAB",
-          "ru": "EQ LAB · студия разработки"
+          "ru": "EQ LAB · студия разработки"
         },
         "text": {
           "en": [
-            "I designed marketing websites and launch assets for international tech and Web3 startups, working directly with founders and product teams. The work covered visual direction, website messaging and community content, with AI used for exploring ideas and producing images."
+            "I designed marketing websites and launch assets for international tech and Web3 startups, working directly with founders and product teams. The work covered visual direction, website messaging and community content, with AI used for exploring ideas and producing images."
           ],
           "ru": [
-            "Работала с проектами в сфере Web3 и блокчейна. Разрабатывала сайты и маркетинговые материалы для запуска продуктов. Вместе с фаундерами и продуктовыми командами работала над содержанием сайтов и визуальными концепциями.",
+            "Работала с проектами в сфере Web3 и блокчейна. Разрабатывала сайты и маркетинговые материалы для запуска продуктов. Вместе с фаундерами и продуктовыми командами работала над содержанием сайтов и визуальными концепциями.",
             "Создавала визуальный стиль и шаблоны для соцсетей и каналов сообществ. Использовала нейросети для разработки концепций, генерации изображений и доработки графики."
           ]
         },
@@ -199,19 +199,19 @@
       {
         "date": "2024–2025",
         "role": {
-          "en": "Senior Communication Designer",
+          "en": "Senior Communication Designer",
           "ru": "Старший дизайнер коммуникаций"
         },
         "company": {
-          "en": "Apelsin · X5 and Alfa-Bank partner programme",
-          "ru": "«Апельсин» · сервис лояльности"
+          "en": "Apelsin · X5 and Alfa-Bank partner programme",
+          "ru": "«Апельсин» · сервис лояльности"
         },
         "text": {
           "en": [
-            "I joined before launch and helped establish the programme’s visual language. I designed campaigns, landing pages and materials for digital and print, including guidelines and templates the team still uses."
+            "I joined before launch and helped establish the programme’s visual language. I designed campaigns, landing pages and materials for digital and print, including guidelines and templates the team still uses."
           ],
           "ru": [
-            "Присоединилась к команде до запуска сервиса и участвовала в разработке визуальных коммуникаций бренда с нуля. Разрабатывала кивижуалы, лендинги и материалы для продвижения в интернете и офлайн. Создавала гайды и шаблоны, которыми команда пользуется до сих пор."
+            "Присоединилась к команде до запуска сервиса и участвовала в разработке визуальных коммуникаций бренда с нуля. Разрабатывала кивижуалы, лендинги и материалы для продвижения в интернете и офлайн. Создавала гайды и шаблоны, которыми команда пользуется до сих пор."
           ]
         },
         "logo": {
@@ -225,16 +225,16 @@
       {
         "date": "2023–2024",
         "role": {
-          "en": "Senior Communication Designer",
+          "en": "Senior Communication Designer",
           "ru": "Старший дизайнер коммуникаций"
         },
         "company": {
           "en": "SberSpasibo",
-          "ru": "СберСпасибо · экосистема Сбера"
+          "ru": "СберСпасибо · экосистема Сбера"
         },
         "text": {
           "en": [
-            "I designed campaigns, CRM communications and landing pages for Sber’s loyalty programme, plus 3D bonus assets for Sberbank Online and campaign materials for partners including Burger King, Okko and Litres."
+            "I designed campaigns, CRM communications and landing pages for Sber’s loyalty programme, plus 3D bonus assets for Sberbank Online and campaign materials for partners including Burger King, Okko and Litres."
           ],
           "ru": [
             "Разрабатывала лендинги, материалы для рекламных кампаний и CRM-коммуникаций. Пополнила библиотеку 3D-графики иконками бонусов, которые размещались в приложении «СберБанк Онлайн» и цифровых каналах СберСпасибо. Готовила рекламные материалы для партнёров программы: Burger King, Okko, «Литрес» и других."
@@ -254,16 +254,16 @@
           "ru": "С 2020"
         },
         "role": {
-          "en": "Independent Brand & Digital Designer",
+          "en": "Independent Brand & Digital Designer",
           "ru": "Фриланс"
         },
         "company": {
-          "en": "Freelance alongside in-house roles",
+          "en": "Freelance alongside in-house roles",
           "ru": ""
         },
         "text": {
           "en": [
-            "I work with companies and agencies on brand identities, websites and advertising campaigns, as well as motion graphics, presentations and other visual materials. I work independently or join a team, taking ideas from early concepts to finished designs."
+            "I work with companies and agencies on brand identities, websites and advertising campaigns, as well as motion graphics, presentations and other visual materials. I work independently or join a team, taking ideas from early concepts to finished designs."
           ],
           "ru": [
             "Разрабатываю айдентику, сайты и различные графические материалы для компаний, стартапов и агентств: от рекламы и презентаций до анимации и полиграфии. Веду полный цикл работы с заказчиком: брифинг, разработка концепции, презентация решений и подготовка макетов.",
@@ -282,8 +282,8 @@
       {
         "date": "2020–2024",
         "role": {
-          "en": "BA in Graphic Design",
-          "ru": "Графический дизайн · бакалавриат"
+          "en": "BA in Graphic Design",
+          "ru": "Графический дизайн · бакалавриат"
         },
         "company": {
           "en": "",
@@ -291,17 +291,17 @@
         },
         "text": {
           "en": [
-            "Institute of Business and Design (B&D) · Rector’s Grant"
+            "Institute of Business and Design (B&D) · Rector’s Grant"
           ],
           "ru": [
-            "Институт бизнеса и дизайна (B&D) · грант ректора"
+            "Институт бизнеса и дизайна (B&D) · грант ректора"
           ]
         }
       },
       {
         "date": "2024",
         "role": {
-          "en": "Strategic Management · Professional retraining",
+          "en": "Strategic Management · Professional retraining",
           "ru": "Стратегический менеджмент. Профессиональная переподготовка"
         },
         "company": {
@@ -310,7 +310,7 @@
         },
         "text": {
           "en": [
-            "Institute of Business and Design (B&D)"
+            "Institute of Business and Design (B&D)"
           ],
           "ru": [
             "Институт бизнеса и дизайна (B&D)"
@@ -332,16 +332,16 @@
         },
         "text": {
           "en": [
-            "Google UX Design Professional Certificate, Google / Coursera · 2026",
-            "Communication Design, HSE Art and Design School · 2019–2020",
-            "Introduction to Art & Design, BHSAD · 2018–2019",
-            "Additional design courses at BBE, UPROCK, and other institutions.",
-            "I regularly attend design workshops and professional meetups."
+            "Google UX Design Professional Certificate, Google / Coursera · 2026",
+            "Communication Design, HSE Art and Design School · 2019–2020",
+            "Introduction to Art & Design, BHSAD · 2018–2019",
+            "Additional design courses at BBE, UPROCK, and other institutions.",
+            "I regularly attend design workshops and professional meetups."
           ],
           "ru": [
-            "Google UX Design Professional Certificate, Coursera · 2026",
-            "Коммуникационный дизайн, Школа дизайна НИУ ВШЭ · 2019–2020",
-            "Introduction to Art & Design · British Higher School of Art and Design · 2018–2019",
+            "Google UX Design Professional Certificate, Coursera · 2026",
+            "Коммуникационный дизайн, Школа дизайна НИУ ВШЭ · 2019–2020",
+            "Introduction to Art & Design · British Higher School of Art and Design · 2018–2019",
             "Курсы по дизайну в BBE, UPROCK и других",
             "Регулярно посещаю профессиональные воркшопы, конференции и мероприятия."
           ]
@@ -379,14 +379,14 @@
         "icon": "<svg viewBox=\"0 0 24 24\" width=\"24\" height=\"24\" aria-hidden=\"true\" fill=\"currentColor\"><path d=\"M0 8.68571C0 5.64543 0 4.12529 0.591679 2.96405C1.11213 1.9426 1.9426 1.11213 2.96405 0.591679C4.12529 0 5.64543 0 8.68571 0H15.3143C18.3546 0 19.8747 0 21.0359 0.591679C22.0574 1.11213 22.8879 1.9426 23.4083 2.96405C24 4.12529 24 5.64543 24 8.68571V15.3143C24 18.3546 24 19.8747 23.4083 21.0359C22.8879 22.0574 22.0574 22.8879 21.0359 23.4083C19.8747 24 18.3546 24 15.3143 24H8.68571C5.64543 24 4.12529 24 2.96405 23.4083C1.9426 22.8879 1.11213 22.0574 0.591679 21.0359C0 19.8747 0 18.3546 0 15.3143V8.68571Z\"/><path fill=\"#fff\" d=\"M5.14 16.97V6.18c0-.07.03-.12.1-.12 1.04 0 2.07-.06 3.11-.06 1.68 0 3.5.59 4.14 2.38.15.44.23.89.23 1.36 0 .9-.2 1.65-.6 2.23-1.12 1.64-3.06 1.61-4.8 1.61v3.37c.01.1-.07.15-.15.15H5.26c-.08 0-.12-.04-.12-.14Zm2.19-8.88v3.52c.69.05 1.41.06 2.08-.17.73-.22 1.13-.86 1.13-1.64.02-.66-.33-1.29-.93-1.53-.66-.28-1.57-.29-2.28-.19Z\"/><path fill=\"#fff\" d=\"M14.09 8.75h1.76c.1 0 .18.07.21.17.13.3.15.66.15.98.3-.37.67-.67 1.07-.9.44-.26.93-.39 1.44-.38.08-.01.16.06.15.15v2.04c0 .08-.05.12-.16.12-.75-.05-1.9.13-2.45.74v5.31c0 .1-.04.15-.13.15h-1.89c-.09.01-.17-.07-.16-.17v-5.77c0-.77.02-1.57-.1-2.33-.02-.07.05-.14.11-.12Z\"/></svg>",
         "label": {
           "en": "Premiere Pro",
-          "ru": "Premiere Pro"
+          "ru": "Premiere Pro"
         }
       },
       {
         "icon": "<svg viewBox=\"0 0 24.25 24\" width=\"24\" height=\"24\" aria-hidden=\"true\" fill=\"currentColor\"><path d=\"M12.91.65l.52 2.56c.75 3.73 3.66 6.65 7.39 7.43l2.78.58c.86.18.86 1.41-.01 1.58l-2.68.53c-3.78.74-6.73 3.69-7.48 7.46l-.51 2.57c-.17.87-1.42.86-1.58-.01l-.46-2.45c-.72-3.83-3.7-6.83-7.53-7.58L.65 12.79c-.87-.17-.87-1.4-.01-1.58l2.79-.57c3.78-.77 6.71-3.75 7.43-7.54l.46-2.44c.17-.87 1.41-.88 1.58-.01Z\"/><path d=\"M21.34.34c.26 1.28 1.26 2.29 2.54 2.55l.02.01c.47.1.46.77 0 .86-1.29.25-2.3 1.26-2.55 2.55-.09.45-.74.45-.83 0-.24-1.29-1.25-2.3-2.54-2.55l-.02-.01c-.47-.09-.47-.76 0-.86l.05-.01c1.28-.26 2.27-1.27 2.51-2.55.09-.45.74-.46.83-.01Z\"/></svg>",
         "label": {
           "en": "Generative AI",
-          "ru": "Generative AI"
+          "ru": "Generative AI"
         }
       },
       {
@@ -405,7 +405,7 @@
         "icon": "<svg viewBox=\"0 0 24 24\" width=\"24\" height=\"24\" aria-hidden=\"true\" fill=\"currentColor\"><path d=\"M12.05 0C5.39 0 0 5.41 0 11.98 0 18.65 5.48 23.98 11.98 24c6.54.02 12.06-5.31 12.02-12-.01-1.67-.53-5.37-1.84-5.27-1.98.14-2.16 4.12-2.38 5.41-.42 2.46-1.35 5.08-2.95 6.99-1.88 2.36-4.7 3.63-7.66 3.16-3.55-.56-5.89-3.28-6.68-5.2-.75-1.72-1.04-4.16-.07-6.32 1.16-2.77 3.73-4.63 6.28-5.58 2.01-.83 4.1-1.15 5.36-1.38 2.52-.5 2.86-1.46 2.81-2.15-.01-.25-.26-.72-.78-.94C15.03.27 13.27 0 12.05 0Zm5.1 1.34c.14.4.09.85-.15 1.26-.32.56-.97 1.05-1.9 1.29-1.64.43-2.98.55-4.34.96-1.31.39-3.4 1.02-5.32 2.55-.27.84-.34 1.89-.37 2.66.15 5.01 4.56 8.88 9.17 8.68.85-.04 1.92-.26 2.91-.68.56-.84 1.03-1.74 1.39-2.68.42-1.03.61-1.84.8-2.79.32-1.57.2-2.88 1.01-4.76.25-.58.71-1.11 1.26-1.35.25-.11.52-.13.79-.07-.89-2.47-3.12-4.33-5.26-5.07Z\"/></svg>",
         "label": {
           "en": "Cinema 4D",
-          "ru": "Cinema 4D"
+          "ru": "Cinema 4D"
         }
       },
       {

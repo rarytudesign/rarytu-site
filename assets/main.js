@@ -553,11 +553,11 @@
     addEventListener("pageshow", () => set(null));
   }
 
-  /* ---------- Project titles under covers: one line on phones, scaled down if needed ---------- */
+  /* ---------- Project titles under covers: wrap like in Figma; scaled down only if one word can't fit ---------- */
   const fitTitles = () => $$(".card__title").forEach((el) => {
     el.style.fontSize = "";
     if (!isMobile()) return;
-    for (let i = 0; i < 3 && el.scrollWidth > el.clientWidth + 0.5; i++) {
+    for (let i = 0; i < 3 && el.scrollWidth > el.clientWidth + 0.5; i++) {   // only when one word is longer than the line
       const fs = parseFloat(getComputedStyle(el).fontSize);
       el.style.fontSize = Math.max(16, fs * (el.clientWidth / el.scrollWidth) - 0.2).toFixed(2) + "px";
     }

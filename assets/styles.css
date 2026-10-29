@@ -29,7 +29,7 @@
 @media (min-width: 1280px) {
   :root {
     --gutter: 30px; --bar-h: 0px;
-    --sidebar-w: clamp(360px, 25.5vw, 490px);
+    --sidebar-w: clamp(360px, 25.521vw, 490px);
     /* label column: 328 of 1370 content width, + 20 gap */
     --col1: calc((100vw - var(--sidebar-w) - 60px) * 0.2394 + 20px);
   }
@@ -224,6 +224,7 @@ html.menu-open { background: var(--surface-muted); }
   .hero { padding: 30px; min-height: clamp(420px, 27.9vw, 536px); }
   .hero__text { gap: 32px; max-width: 566px; }
   .hero .display { font-size: clamp(48px, 3.646vw, 70px); line-height: 1.0286; letter-spacing: -0.5px; max-width: 8.1em; }
+  html[lang="ru"] .hero .display { line-height: 0.914; letter-spacing: -1.5px; text-box: none; }   /* Figma RU 70/64, not trimmed */
   .hero__lede { max-width: 421px; }
 }
 
@@ -326,7 +327,7 @@ html.menu-open { background: var(--surface-muted); }
 
 .grid { display: grid; grid-template-columns: minmax(0, 1fr); row-gap: 38px; margin-top: 30px; }
 @media (min-width: 744px) { .grid { grid-template-columns: repeat(2, minmax(0, 1fr)); column-gap: 20px; row-gap: 48px; } }
-@media (min-width: 1280px) { .grid { row-gap: 68px; margin-top: 32px; } }
+@media (min-width: 1280px) { .grid { row-gap: 68px; margin-top: 32px; column-gap: 17px; margin-right: -0.219%; } }   /* Figma: two 678px covers 17px apart (3px past the 1370 column) */
 
 .card { display: flex; flex-direction: column; gap: 16px; transition: opacity var(--t-fast); }
 .card:active { opacity: 0.6; }
@@ -340,7 +341,17 @@ html.menu-open { background: var(--surface-muted); }
 @media (min-width: 744px) { .card__title { font-size: 25px; line-height: 29px; } }
 @media (min-width: 1280px) { .card__title { font-size: clamp(28px, 1.98vw, 38px); line-height: 0.895; letter-spacing: -2px; } }
 .card__arr { display: inline-block; width: 1.605em; }
-@media (max-width: 743px) { .card__title { white-space: nowrap; } }
+/* Phones and tablets (Figma): the arrow follows the title, held to its last word; desktop slides it in before the title on hover */
+.card__title .nw { white-space: inherit; }
+.card__title br { display: none; }   /* a break in a project title is for its own page header only */   /* titles may break at the hyphen (RU tablet "Инфлюенс-/маркетинг") */
+/* Card titles, phones and tablets: Figma tracks some titles tighter by hand so they stay on one line (values from Figma);
+   3px of slack because browsers count the tracking after the last letter (the arrow), Figma doesn't */
+@media (max-width: 1279px) { .card__title { margin-right: -3px; } }
+@media (max-width: 743px) { html[lang="ru"] .card[href*="/dom/"] .card__title { letter-spacing: -1.5px; } }
+@media (max-width: 743px) { html[lang="ru"] .card[href*="/talktoast/"] .card__title { letter-spacing: -1.2px; } }
+@media (min-width: 744px) and (max-width: 1279px) { .card[href*="/talktoast/"] .card__title { letter-spacing: -2px; } }
+@media (max-width: 1279px) { .card__arr { display: none; } }
+@media (min-width: 1280px) { .card__arr-t { display: none; } }
 .card__cover img { transform: scale(1); }
 @media (min-width: 1280px) { .card .tags, .card__title { text-box: trim-both cap alphabetic; } }
 @media (hover: hover) {
@@ -351,7 +362,7 @@ html.menu-open { background: var(--surface-muted); }
 }
 
 /* Circles */
-.callouts { display: grid; grid-template-columns: 1fr; padding: 0 var(--gutter); margin-top: 44px; }
+.callouts { display: grid; grid-template-columns: 1fr; padding: 0 var(--gutter); margin-top: 26px; }   /* Figma 290:2985: 26px under the last card */
 @media (min-width: 744px) { .callouts { grid-template-columns: repeat(3, minmax(0, 1fr)); margin-top: 60px; } }
 @media (min-width: 1280px) { .callouts { grid-template-columns: repeat(3, minmax(0, 457px)); margin-top: 100px; } }
 .circle {
@@ -362,7 +373,13 @@ html.menu-open { background: var(--surface-muted); }
 .circle h3 { font-size: 26px; line-height: 24px; letter-spacing: -0.2px; margin-bottom: -8px; }
 .circle p { font-size: 15px; line-height: 20px; letter-spacing: 0.1px; max-width: 190px; }
 @media (max-width: 743px) { html[lang="ru"] .circle p { max-width: 248px; } }   /* Figma 290:2985: RU text box is wider, headings stay on one line */
-.circle__link { position: relative; z-index: 2; display: inline-flex; align-items: center; gap: 4px; font-weight: 500; letter-spacing: -0.2px; line-height: 20px; padding: 7px 0; transition: opacity var(--t-fast); }
+/* Figma RU phone frame (152:2560) spaces the circles wider than EN: 44px under the cards, 12px under the heading, 20px above the link */
+@media (max-width: 743px) {
+  html[lang="ru"] .callouts { margin-top: 44px; }
+  html[lang="ru"] .circle h3 { margin-bottom: -4px; }
+  html[lang="ru"] .circle__link { margin-top: -3px; }
+}
+.circle__link { position: relative; z-index: 2; display: inline-flex; align-items: center; gap: 4px; font-weight: 500; letter-spacing: -0.2px; line-height: 20px; padding: 7px 0; margin: -7px 0; transition: opacity var(--t-fast); }
 .ico-ne { width: 10px; height: 10px; transition: transform 250ms var(--ease); }
 @media (min-width: 744px) {
   .circle { gap: 18px; padding: 0 13%; }
@@ -371,13 +388,17 @@ html.menu-open { background: var(--surface-muted); }
   .circle__link { font-size: 14px; line-height: 18px; gap: 3px; }
   .circle__link .ico-ne { width: 8px; height: 8px; }
 }
+/* Figma RU tablet: the second circle's heading stays on one line, its text box is 200px */
+@media (min-width: 744px) and (max-width: 1279px) { html[lang="ru"] .callouts .circle:nth-child(2) h3 { white-space: nowrap; } html[lang="ru"] .callouts .circle:nth-child(2) p { max-width: 200px; } }
 @media (min-width: 1280px) {
   .circle { gap: 20px; padding: 0 11%; }
   /* Figma measures these gaps between cap height and baseline */
   .circle h3, .circle p, .circle__link { text-box: trim-both cap alphabetic; }
   .circle h3 { font-size: clamp(24px, 1.67vw, 32px); line-height: 20px; letter-spacing: -0.5px; margin-bottom: 0; }
   .circle p { font-size: 16px; line-height: 20px; letter-spacing: 0.2px; max-width: 261px; }
-  .circle__link { font-size: 16px; line-height: 20px; padding: 0; gap: 4px; }
+  html[lang="en"] .callouts .circle:nth-child(2) p { max-width: 294px; }   /* Figma: the second circle's text is 294px wide (2 lines) */
+  html[lang="ru"] .callouts .circle:nth-child(1) p { max-width: 291px; } html[lang="ru"] .callouts .circle:nth-child(2) p { max-width: 294px; }
+  .circle__link { font-size: 16px; line-height: 20px; padding: 0; margin: -4.2px 0; gap: 4px; }   /* inline-flex ignores text-box: trim its line by hand (cap to baseline, as in Figma) */
   .circle__link .ico-ne { width: 10px; height: 10px; }
 }
 .circle__hit { position: absolute; inset: 0; border-radius: 50%; z-index: 1; }
@@ -391,11 +412,11 @@ html.menu-open { background: var(--surface-muted); }
 .circle__link:focus-visible .ico-ne { transform: translate(3px, -3px); }
 .circle__link:active { opacity: 0.6; }
 .circle--ring { border: 0; }
-@media (max-width: 743px) { .circle--ring { margin-top: 14px; } }
-@media (min-width: 744px) and (max-width: 1279px) { .circle--ring { margin-left: 4px; } }
+@media (max-width: 743px) { .circle--ring { margin-top: 6px; } }
+@media (min-width: 744px) and (max-width: 1279px) { .circle--ring { margin-left: 4px; margin-right: -4px; } }
 .ring { position: absolute; inset: 0; width: 100%; height: 100%; will-change: transform; overflow: visible; }
 .ring path { fill: var(--brand); }
-@media (min-width: 1280px) { .circle--ring { margin-left: 6px; } }
+@media (min-width: 1280px) { .circle--ring { margin-left: 6px; margin-right: -6px; } }   /* moved, not shrunk: the ring stays 457px */
 .circle .ring__center { max-width: none; font-size: 26px; line-height: 24px; letter-spacing: -0.2px; font-weight: 500; }
 @media (min-width: 744px) { .circle .ring__center { font-size: 20px; line-height: 20px; letter-spacing: -0.42px; } }
 @media (min-width: 1280px) { .circle .ring__center { font-size: clamp(24px, 1.67vw, 32px); line-height: 1; letter-spacing: -0.5px; } }
@@ -450,8 +471,8 @@ html.menu-open { background: var(--surface-muted); }
 .xlist { padding: 0 var(--gutter); margin-top: 64px; }
 @media (min-width: 744px) { .xlist { margin-top: 60px; } }
 @media (min-width: 1280px) { .xlist { margin-top: 100px; } }
-.xlist__head { display: flex; justify-content: space-between; align-items: baseline; gap: 16px; margin-bottom: 20px; }
-.xlist__head .u-link { font-size: 15px; letter-spacing: -0.2px; }
+.xlist__head { display: flex; justify-content: space-between; align-items: center; gap: 16px; margin-bottom: 20px; }   /* Figma: the link is centred on the title row */
+.xlist__head .u-link { font-size: 15px; line-height: 20px; letter-spacing: -0.2px; }
 .sec-title { font-size: 26px; line-height: 30px; letter-spacing: -0.8px; font-weight: 500; }
 @media (min-width: 744px) { .sec-title { font-size: 31px; line-height: 36px; letter-spacing: -0.9px; } }
 @media (min-width: 1280px) { .sec-title { font-size: 32px; line-height: 34px; letter-spacing: -1px; } .xlist__head .u-link { font-size: 16px; letter-spacing: 0; } }
@@ -484,7 +505,8 @@ html.menu-open { background: var(--surface-muted); }
 }
 @media (min-width: 1280px) {
   .xlist__head { margin-left: var(--col1); margin-bottom: 26px; }
-  .xrow { grid-template-columns: 328fr 501fr 486fr; column-gap: 20px; padding: 14px 0; border-bottom: 0; position: relative; }
+  /* Figma: columns 328 / 501 / 486 with 20px gaps leave 15px free at the right (1370 wide) */
+  .xrow { grid-template-columns: 328fr 501fr 486fr; column-gap: 20px; padding: 14px 1.095% 14px 0; border-bottom: 0; position: relative; }
   .xrow + .xrow::before { content: ""; position: absolute; top: 0; height: 1px; background: var(--brand); left: var(--col1); right: 0; }
   .xlist ul, .steps { border-bottom: 1px solid var(--brand); }
   .xrow__date, .xrow__n { grid-column: 1; grid-row: 1; letter-spacing: -0.5px; }
@@ -493,8 +515,11 @@ html.menu-open { background: var(--surface-muted); }
   .xrow__role h3 { font-size: 22px; line-height: 20px; }
   .xrow__logo { margin: 0 0 22px; }
   .xlist:not(.xlist--edu) .xrow__text p + p { margin-top: 20px; }
+  html[lang="en"] .xlist:not(.xlist--edu) .xrow:nth-child(5) .xrow__text { max-width: 501px; margin-right: -15px; }   /* Figma: the last job's text box is 501px */
   .xrow__role p { margin-top: 12px; }
   .xrow__text p + p { margin-top: 0; }
+  .xlist--edu .xrow__text p + p { margin-top: 4px; }   /* Figma: one-line notes 24px apart */
+  .xlist--edu .xrow__text { margin-right: -35px; }   /* Figma: education notes run in 521px boxes, past the 486px column */
   .steps .xrow + .xrow::before { left: 0; }
   .steps .xrow__n { font-size: 22px; line-height: 20px; letter-spacing: -0.2px; }
 }
@@ -503,7 +528,7 @@ html.menu-open { background: var(--surface-muted); }
 @media (min-width: 744px) { .tools { margin-top: 60px; } }
 .tools .sec-title { margin-bottom: 20px; }
 .chips { display: flex; flex-wrap: wrap; gap: 8px; }
-.chip { display: inline-flex; align-items: center; gap: 8px; height: 44px; padding: 0 14px; border: 1px solid var(--brand); border-radius: 100px; font-size: 16px; line-height: 20px; letter-spacing: 0.2px; white-space: nowrap; }
+.chip { display: inline-flex; align-items: center; gap: 8px; height: 44px; padding: 0 14px; box-shadow: inset 0 0 0 1px var(--brand); border-radius: 100px; font-size: 16px; line-height: 20px; letter-spacing: 0.2px; white-space: nowrap; }
 .chip svg { width: 24px; height: 24px; flex: none; }
 .chip { transition: background-color 200ms var(--easy), color 200ms var(--easy); }
 @media (hover: hover) { .chip:hover { background: var(--brand); color: var(--surface); } .chip:hover svg { color: var(--surface); } .chip:hover svg [fill="#fff"], .chip:hover svg[fill="#fff"] { fill: var(--brand); } }
@@ -523,6 +548,7 @@ html.menu-open { background: var(--surface-muted); }
 .intro__head { display: flex; flex-direction: column; gap: 16px; margin-bottom: 48px; }
 .intro__head p { max-width: 298px; }
 html[lang="ru"] .intro__head p { max-width: 500px; }
+@media (min-width: 744px) and (max-width: 1279px) { html[lang="ru"] .intro__head p { max-width: 379px; } }   /* Figma RU tablet: 379px, as EN */
 @media (min-width: 744px) {
   .intro { padding-top: 40px; }
   .intro__head { gap: 20px; margin-bottom: 24px; }
@@ -580,7 +606,8 @@ html[lang="ru"] .intro__head p { max-width: 500px; }
   .pcircle p { font-size: 14px; line-height: 20px; letter-spacing: 0; }
 }
 @media (min-width: 1280px) {
-  .principles { margin-top: 82px; padding: 0 var(--gutter); }   /* Figma: about 105px from the video caption to the heading */
+  .principles { margin-top: 100px; padding: 0 var(--gutter); }   /* Figma 194:4349: 100px from the caption to the heading, both trimmed */
+  .principles .display { text-box: trim-both cap alphabetic; }
   .principles .display { padding: 0; margin-bottom: 36px; }
   .pgrid { grid-template-columns: repeat(3, minmax(0, 1fr)); padding: 0; }
   .pcircle { gap: 20px; padding: 0 8%; }
@@ -588,6 +615,14 @@ html[lang="ru"] .intro__head p { max-width: 500px; }
   html[lang="ru"] .pcircle h3 { line-height: 0.906; letter-spacing: -1px; }
   .pcircle p { font-size: 16px; line-height: 20px; letter-spacing: 0.2px; max-width: 380px; }
   html[lang="en"] .pcircle p { max-width: 326px; }   /* EN line breaks as in Figma */
+  html[lang="en"] .pcircle:nth-child(3) h3 { line-height: 31px; letter-spacing: -1px; }   /* Figma: "Recognisable / in every detail" is set 32/31 */
+  /* Figma gives each principle its own text box width (in content order) */
+  html[lang="en"] .pcircle:nth-child(1) p { max-width: 325px; } html[lang="en"] .pcircle:nth-child(2) p { max-width: 265px; }
+  html[lang="en"] .pcircle:nth-child(3) p { max-width: 317px; } html[lang="en"] .pcircle:nth-child(4) p { max-width: 348px; }
+  html[lang="en"] .pcircle:nth-child(5) p, html[lang="en"] .pcircle:nth-child(6) p { max-width: 311px; }
+  html[lang="ru"] .pcircle:nth-child(1) p { max-width: 325px; } html[lang="ru"] .pcircle:nth-child(2) p { max-width: 378px; }
+  html[lang="ru"] .pcircle:nth-child(3) p { max-width: 317px; } html[lang="ru"] .pcircle:nth-child(4) p { max-width: 348px; }
+  html[lang="ru"] .pcircle:nth-child(5) p { max-width: 342px; } html[lang="ru"] .pcircle:nth-child(6) p { max-width: 367px; }
 }
 
 .split { padding: 0 var(--gutter); margin-top: 64px; display: flex; flex-direction: column; gap: 24px; }
@@ -601,14 +636,15 @@ html[lang="ru"] .intro__head p { max-width: 500px; }
   .split__text { gap: 20px; }
   .split__text h2 { font-size: 34px; line-height: 36px; letter-spacing: -1.2px; }
   .split__text > div { max-width: 384px; }
-  html[lang="ru"] .split__text > div { max-width: 500px; }
+  html[lang="ru"] .split__text > div { max-width: 384px; }   /* Figma RU tablet: 384px, as EN */
 }
 @media (min-width: 1280px) {
-  .split { margin-top: 100px; flex-direction: row; align-items: stretch; gap: 20px; max-width: 1226px; }
+  .split { margin-top: 100px; flex-direction: row; align-items: stretch; gap: 20px; max-width: 1256px; }   /* Figma: video 675 + 20 + text 501 */
   .split__media { flex: 675 1 0; }
   .split .media { aspect-ratio: 675 / 520; height: 100%; }
   .split__text { flex: 501 1 0; justify-content: space-between; gap: 32px; }
-  .split__text h2 { font-size: clamp(26px, 1.67vw, 32px); line-height: 0.97; letter-spacing: -1px; max-width: 8.6em; }   /* "The right tools for / each task": room for Safari's wider metrics */
+  .split__text h2 { font-size: clamp(26px, 1.67vw, 32px); line-height: 0.97; letter-spacing: -1px; max-width: 8.6em; }
+  html[lang="en"] .split__text h2 { max-width: 6.9em; }   /* Figma 194:4424: a 220px box, "The right tools / for each task" */
   .split__text > div, html[lang="ru"] .split__text > div { max-width: 486px; }
   .split__text p + p { margin-top: 12px; }
 }
@@ -634,7 +670,8 @@ html[lang="ru"] .intro__head p { max-width: 500px; }
 
 .chead { display: flex; flex-direction: column; gap: 8px; margin-bottom: 38px; }
 .chead__back { align-self: flex-start; font-size: 15px; line-height: 20px; letter-spacing: -0.2px; font-weight: 500; padding: 12px 0; margin: -12px 0 0; }
-.chead__title { font-family: var(--font-inter); font-size: 36px; line-height: 38px; letter-spacing: -1.5px; text-wrap: balance; }
+.chead__title { font-family: var(--font-inter); font-size: 36px; line-height: 38px; letter-spacing: -1.5px; }   /* Figma wraps titles greedily, no balancing */
+@media (max-width: 743px) { html[lang="ru"] .chead__title { line-height: 34px; } }
 @media (min-width: 744px) {
   .chead { gap: 14px; margin-bottom: 36px; }
   .chead__title { font-size: 43px; line-height: 42px; letter-spacing: -2px; }
@@ -654,7 +691,9 @@ html[lang="ru"] .intro__head p { max-width: 500px; }
 @media (min-width: 1280px) {
   .cover-text { display: grid; grid-template-columns: max-content minmax(0, 514px); column-gap: 190px; margin: 70px 0; }
   .cover-text h2 { font-size: 22px; line-height: 20px; }
-  .cover-text > div { letter-spacing: 0.2px; }
+  .cover-text > div { letter-spacing: 0.2px; max-width: 501px; }
+  /* Figma: each case's overview has its own text box (501 by default) */
+  .case[data-slug="hevy"] .cover-text > div { max-width: 514px; } .case[data-slug="dom"] .cover-text > div { max-width: 484px; }
 }
 
 .gallery { display: flex; flex-direction: column; gap: 6px; }
@@ -676,6 +715,7 @@ html[lang="ru"] .intro__head p { max-width: 500px; }
 
 
 @media (min-width: 744px) { .wip { padding-bottom: 0; } }
+@media (min-width: 744px) and (max-width: 1279px) { .wip { padding-bottom: 32px; } }   /* Figma 141:13229: 32px under the caption, then 60px to the heading */
 /* line breaks that only exist in the phone layout */
 @media (min-width: 744px) { .br-m { display: none; } }
 /* phones: circles get an explicit height; iOS Safari could size the grid row shorter than the
@@ -688,8 +728,19 @@ html[lang="ru"] .intro__head p { max-width: 500px; }
 @media (min-width: 1280px) {
   .hero .display, .hero__lede, .work-head .display, .work-head p { text-box: trim-both cap alphabetic; }
   .sidebar .brand, .sidebar .lang a, .sidebar .lang span, .sidebar__tagline, .sidebar .utility a { text-box: trim-both cap alphabetic; }
-  .sidebar .nav a { height: 55px; }
+  .sidebar .nav a { height: 56px; }   /* Figma 132:6936: 56px rows + 1px rules */
+  .sidebar__row { min-height: 20px; }   /* trimmed name and EN | RU sit centred in a 20px row, caps at 34px */
   .intro__head .display, .intro__head p, .ahero__bio h2 { text-box: trim-both cap alphabetic; }
+  .circle .ring__center, .pcircle h3, .pcircle p, .split__text h2, .cover-text h2 { text-box: trim-both cap alphabetic; }
+  .cover-text p:first-child { text-box: trim-start cap alphabetic; } .cover-text p:last-child { text-box: trim-end cap alphabetic; } .cover-text p:only-child { text-box: trim-both cap alphabetic; }
+  html[lang="ru"] .card .tags, html[lang="ru"] .card__title { text-box: none; }   /* Figma RU cards: tags and titles are not trimmed */
+  .split__text p:first-child { text-box: trim-start cap alphabetic; } .split__text p:last-child { text-box: trim-end cap alphabetic; }
+  /* lists, section titles and captions are trimmed the same way in Figma (rows 14 + text + 14) */
+  .sec-title, .xrow__date, .xrow__n, .xrow__role h3, .xrow__role p, .photo figcaption, .wip__fig figcaption { text-box: trim-both cap alphabetic; }
+  .xrow__text p:first-child, p.xrow__text { text-box: trim-start cap alphabetic; }
+  .xrow__text p:last-child, p.xrow__text { text-box: trim-end cap alphabetic; }
+  p.xrow__text, .xrow__text p:only-child { text-box: trim-both cap alphabetic; }
+  .steps .xrow__role { padding-top: 0; }   /* the tablet 8px must not reach desktop: number, title and text share one cap line */
   .ahero__bio p:first-of-type { text-box: trim-start cap alphabetic; }
   .ahero__bio p:last-child { text-box: trim-end cap alphabetic; }
 }
@@ -699,6 +750,10 @@ html[lang="ru"] .intro__head p { max-width: 500px; }
 
 /* Figma check (mobile + tablet): the company line under a role is trimmed to its capital height, like in the layout */
 @media (max-width: 1279px) { .xrow__role p { text-box: trim-both cap alphabetic; } }
+/* Figma tablet: RU company lines are 14px; in EN only the long Apelsin line is (3rd job in content/pages/about.json) */
+@media (min-width: 744px) and (max-width: 1279px) {
+  html[lang="ru"] .xlist:not(.xlist--edu) .xrow__role p, html[lang="en"] .xlist:not(.xlist--edu) .xrow:nth-child(3) .xrow__role p { font-size: 14px; }
+}
 /* Figma check (mobile): 24px above the principles' swipe line; the tools text box is 346px wide */
 @media (max-width: 743px) { .principles .swipe { padding-top: 24px; } html[lang="en"] .split__text > div { max-width: 346px; } }
 /* Figma check: space between the gallery and the previous/next links (mobile 54px, tablet 52px) */
@@ -713,12 +768,21 @@ html[lang="ru"] .intro__head p { max-width: 500px; }
 /* Figma check (mobile): browsers count the letter-spacing after the last letter, Figma doesn't, so a line that
    exactly fills the 358px box in Figma wrapped one word early here. 2px of slack into the side margin fixes that. */
 @media (max-width: 743px) { .ahero__bio p, .hero__lede, .intro__head p, .xrow__text p, p.xrow__text, .cover-text p, .split__text p { margin-right: -2px; } }
+@media (max-width: 743px) { html[lang="ru"] .hero__lede { max-width: 331px; } }   /* Figma RU phone: 331px text box */
+@media (min-width: 744px) and (max-width: 1279px) { html[lang="ru"] .hero__lede { max-width: 322px; } }   /* Figma RU tablet: 322px */
 /* Figma check (mobile): 8px between the paragraphs of an education entry */
 @media (max-width: 743px) { .xlist--edu .xrow__text p + p { margin-top: 8px; } }
 /* Figma check (RU mobile): "Что для меня важно" wraps to two lines */
 @media (max-width: 743px) { html[lang="ru"] .principles .display { text-wrap: wrap; } }
 /* Figma check (RU mobile, Approach): heading 40/36, intro text box 276px wide */
 @media (max-width: 743px) { html[lang="ru"] .intro__head .display { line-height: 36px; } html[lang="ru"] .intro__head p { max-width: 276px; } }
+/* Figma (phones): a few principle circles have a wider or narrower text box than the standard 216px (order as in content/pages/approach.json) */
+@media (max-width: 743px) {
+  html[lang="en"] .pcircle:nth-child(4) p { margin: 0 -12px; }   /* Think beyond the image: 240px */
+  html[lang="en"] .pcircle:nth-child(6) p { margin: 0 -18px; }   /* Room to experiment: 252px */
+  html[lang="ru"] .pcircle:nth-child(1) p { margin: 0 9px; }     /* Задача важнее трендов: 198px */
+  html[lang="ru"] .split__text h2 { letter-spacing: -0.5px; }
+}
 /* Figma check (RU mobile, Approach tools): paragraphs follow each other without a gap */
 @media (max-width: 743px) { html[lang="ru"] .split__text p + p { margin-top: 0; } }
 /* Figma check (RU mobile, About): 6px between bio paragraphs */
@@ -743,8 +807,8 @@ html[lang="ru"] .intro__head p { max-width: 500px; }
 .dfoot__block { position: absolute; z-index: 1; left: var(--gutter); right: var(--gutter); top: 38%; transform: translateY(-50%);
   display: flex; flex-direction: column; align-items: center; gap: 24px; pointer-events: none; }
 .dfoot__block > * { pointer-events: auto; }
-.dfoot__title { text-align: center; text-wrap: balance; font-family: var(--font-inter); font-weight: 500; font-size: 56px; line-height: 0.93; letter-spacing: -2px; max-width: 330px; }
-html[lang="ru"] .dfoot__title { font-family: var(--font); font-size: 40px; line-height: 0.92; letter-spacing: -1.3px; max-width: none; }
+.dfoot__title { text-align: center; text-wrap: balance; font-family: var(--font-inter); font-weight: 500; font-size: 60px; line-height: 54px; letter-spacing: -2px; max-width: 358px; }
+html[lang="ru"] .dfoot__title { font-family: var(--font-inter); font-size: 40px; line-height: 36px; letter-spacing: -1.3px; max-width: none; }
 .dfoot__btns { display: flex; gap: 8px; flex-wrap: wrap; justify-content: center; }
 @media (min-width: 744px) and (max-width: 1279px) {
   .dfoot__title, html[lang="ru"] .dfoot__title { font-family: var(--font); font-size: 50px; line-height: 50px; letter-spacing: -1px; max-width: none; }
@@ -757,33 +821,33 @@ html[lang="ru"] .dfoot__title { font-family: var(--font); font-size: 40px; line-
 
 /* The footer: brand colour, ©year and the arrow up on top; the next page (Work → About → Approach) at the bottom,
    full width on phones, the right half from tablet up. The line fills while you keep scrolling (main.js). */
-.sfoot { display: grid; grid-template-columns: 1fr; grid-template-rows: auto 1fr auto; min-height: 236px; padding: 24px var(--gutter) 20px; background: var(--brand); color: #fff; }
+.sfoot { display: grid; grid-template-columns: 1fr; grid-template-rows: auto 1fr auto; min-height: 236px; padding: 24px var(--gutter) 17.6px; background: var(--brand); color: #fff; }
 .sfoot__top { grid-column: 1 / -1; display: flex; justify-content: space-between; align-items: center; }
-.sfoot__copy { font-size: 14px; line-height: 20px; letter-spacing: 0.2px; }
+.sfoot__copy { font-size: 14px; line-height: 20px; letter-spacing: 0; }
 .sfoot__up { display: grid; place-items: center; width: 44px; height: 44px; border-radius: 50%; background: #fff; color: var(--brand); transition: opacity var(--t-fast); }
 .sfoot__uparrow { width: 19px; height: 14px; transform: rotate(-90deg); }
 .sfoot__up:active { opacity: 0.6; }
 .sfoot__next { grid-row: 3; display: flex; flex-direction: column; color: #fff; }
-.sfoot__name { font-family: var(--font-inter); font-size: 28px; line-height: 28px; letter-spacing: -0.5px; text-transform: uppercase; }
-.sfoot__bar { display: flex; align-items: center; gap: 12px; margin-top: 16px; }
+.sfoot__name { font-size: 24px; line-height: 20px; letter-spacing: 0; text-transform: uppercase; }
+/* Figma 290:2985: 12px from the name's baseline to the bar, 8px from the bar to the hint's capitals, 24px from its baseline to the bottom */
+.sfoot__bar { display: flex; align-items: center; gap: 2px; margin-top: 10.75px; height: 12.5px; }
 .sfoot__track { position: relative; flex: 1; height: 2px; background: rgba(255, 255, 255, 0.2); overflow: hidden; }
 .sfoot__fill { position: absolute; inset: 0; background: #fff; transform: scaleX(var(--p, 0)); transform-origin: left; transition: transform 120ms linear; }
-.sfoot__arrow { flex: none; width: 19px; height: 14px; transition: transform 250ms var(--ease); }
-.sfoot__hint { margin-top: 12px; font-size: 10px; line-height: 12px; letter-spacing: 0.3px; text-transform: uppercase; color: rgba(255, 255, 255, 0.6); }
+.sfoot__arrow { flex: none; width: 17.4px; height: 12.5px; transition: transform 250ms var(--ease); }
+.sfoot__hint { margin-top: 1.6px; font-size: 10px; line-height: 20px; letter-spacing: 0; font-weight: 500; text-transform: uppercase; color: rgba(255, 255, 255, 0.6); }
 .sfoot__hint-d { display: none; }
 @media (hover: hover) { .sfoot__next:hover .sfoot__arrow { transform: translateX(4px); } }
 .sfoot__next:focus-visible .sfoot__arrow { transform: translateX(4px); }
 @media (min-width: 744px) {
   .sfoot { grid-template-columns: 1fr 1fr; column-gap: 20px; min-height: 280px; padding: 32px var(--gutter) 32px; }
   .sfoot__next { grid-column: 2; }
-  .sfoot__bar { margin-top: 36px; }
-  .sfoot__hint { margin-top: 14px; font-size: 12px; line-height: 14px; }
+  .sfoot__next { max-width: 210px; }   /* Figma 286:2079: the next-page block is 210px wide, the bar 4px from the arrow */
+  .sfoot__bar { margin-top: 30.3px; gap: 4px; }
   .sfoot__hint-m { display: none; } .sfoot__hint-d { display: inline; }
 }
 @media (min-width: 1280px) {
   .sfoot { min-height: 320px; padding: 30px; }
   .sfoot__copy { font-size: 16px; }
-  .sfoot__name { font-size: 32px; line-height: 32px; }
 }
 
 /* Videos are pictures that move: never any player interface (iOS shows a play button when it won't autoplay,

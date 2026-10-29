@@ -5,8 +5,8 @@
     "ru": "тест проект"
   },
   "title": {
-    "en": "test project",
-    "ru": "тест проект"
+    "en": "test project 2",
+    "ru": "тест проект 2"
   },
   "tags": {
     "en": "testing",
@@ -33,12 +33,11 @@
   "cover": "assets/img/laptop-mockup-02-aaff",
   "gallery": [
     {
-      "image": "assets/img/test-project/ukxsn5ipsalgdjsakccb-1-jymu",
+      "image": "assets/img/test-project/ukxsn5ipsalgdjsakccb-1-nvr2",
       "ar": 1
     },
     {
-      "video": "assets/video/test-project-7980675451679399753-w98c.mp4",
-      "poster": "assets/video/test-project-7980675451679399753-w98c-poster.webp",
+      "image": "assets/img/test-project/wwtqlqm62i0p3o446239-0-5a8k",
       "ar": 1
     }
   ]

@@ -790,6 +790,14 @@ video { pointer-events: none; }
 video::-webkit-media-controls, video::-webkit-media-controls-enclosure, video::-webkit-media-controls-panel,
 video::-webkit-media-controls-overlay-play-button, video::-webkit-media-controls-start-playback-button,
 video::-webkit-media-controls-play-button { display: none !important; -webkit-appearance: none; opacity: 0 !important; }
+/* So a video is hidden until it really plays (main.js adds .is-playing) and its still (.vposter) stands in.
+   Without JS the video shows as usual and the still is not used. */
+.vposter { display: none; }
+.js .vposter { display: block; position: absolute; inset: 0; width: 100%; height: 100%; max-width: none; object-fit: cover; pointer-events: none; transition: opacity 200ms linear; }
+.js video:not(.is-playing) { opacity: 0; }
+.js video.is-playing + .vposter { opacity: 0; }
+.vbox { position: relative; display: block; overflow: hidden; border-radius: 4px; }
+@media (min-width: 1280px) { .split__media .vbox { height: 100%; } }
 
 /* Figma (RU mobile, About): the first column's phone text: 16/20, +0.2px, 12px between paragraphs, 348px wide */
 @media (max-width: 743px) {

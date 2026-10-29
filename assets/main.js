@@ -588,7 +588,14 @@
       if (e.isIntersecting) { visible.add(v); tryPlay(v); } else { visible.delete(v); v.pause(); }
     }), { threshold: 0.1 });
     vids.forEach((v) => { near.observe(v); vio.observe(v); });
+    // iOS in Low Power Mode refuses autoplay but allows play after a touch: try again on the first one
+    addEventListener("touchend", () => vids.forEach(tryPlay), { once: true, passive: true });
   }
+  // the video shows only once frames really move; until then its still stands in (no native play button on iOS)
+  vids.forEach((v) => {
+    v.addEventListener("playing", () => v.classList.add("is-playing"));
+    if (!v.paused && v.readyState > 2) v.classList.add("is-playing");
+  });
 
   /* ---------- Swipe indicators for mobile carousels ---------- */
   $$("[data-carousel]").forEach((track) => {

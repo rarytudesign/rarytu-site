@@ -65,6 +65,12 @@ Rule: one step at a time. Test, commit, push, then tick it here.
   go into each page's own JSON in A4–A6; case pages use the Work page tagline and their own title/description.
 
 ## Log
+- 2026-10-29: Round "bottom of pages". Approach now leads on to Work (NEXT approach→work, a full loop). Project pages end at the
+  prev/next row: no last screen, no footer (mobile and desktop); their "Contact" opens approach/#contact. Videos: every video gets a
+  still on top (img.vposter, Approach videos wrapped in span.vbox) and stays invisible until it really plays (.is-playing on
+  "playing"), so iOS never shows its play button (Low Power Mode); first touch retries play. Typography: noOrphans no longer
+  lengthens an existing nbsp chain; hyphenated words over 14 letters are not kept whole (RU HEVY title ran off the phone);
+  RU Work circle text had "и что меня вдохновляет" glued with nbsp, which pushed it out of the circle.
 - 2026-10-29: Mobile round (Figma 290:2985). Menu icon 22px lines 7px apart (as Figma). Dots: a dot keeps its Figma spot
   whenever nothing is under it, even just outside its group's box (that rule had pushed 4 dots off); RU About photo dots
   have their own mobile/tablet positions (Figma RU differs); Approach desktop dots recomputed from Figma relative to the

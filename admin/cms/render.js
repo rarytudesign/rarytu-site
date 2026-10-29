@@ -48,7 +48,9 @@
     const langNav = `<nav class="lang" aria-label="Language / Язык">` + ["en", "ru"].map((l) => l === lang
       ? `<a aria-current="true" lang="${l}">${l.toUpperCase()}</a>`
       : `<a href="${href(ctx.altPath)}" hreflang="${l}" lang="${l}" data-lang-switch>${l.toUpperCase()}</a>`).join('<span aria-hidden="true">|</span>') + `</nav>`;
-    const utility = `<div class="utility"><a class="u-link" href="#contact" data-contact>${esc(ui.contact)}</a>
+    // project pages have no last screen: "Contact" opens the one on Approach
+    const contactHref = ctx.bodyClass === "page-case" ? href(pagePath(lang, "approach")) + "#contact" : "#contact";
+    const utility = `<div class="utility"><a class="u-link" href="${contactHref}" data-contact>${esc(ui.contact)}</a>
       <a class="u-link" href="${href(site.cv[lang])}" download data-cv>${esc(ui.downloadCV)}</a></div>`;
     const enPath = lang === "en" ? path : ctx.altPath, ruPath = lang === "ru" ? path : ctx.altPath;
     const title = esc(ctx.title), desc = esc(ctx.description);
@@ -125,7 +127,7 @@ ${main}
   }
 
   // ---------- end of every page: the last screen and the footer ----------
-  const NEXT = { work: "about", about: "approach" };   // Approach (and project pages) end without a next page
+  const NEXT = { work: "about", about: "approach", approach: "work" };   // the round Work → About → Approach → Work; project pages end at prev/next
   // the line arrow from the layout (19×14), drawn as a stroke so its weight always matches the 2px progress line
   const ARROW = '<svg class="sfoot__arrow" viewBox="0 0 19 14" width="19" height="14" aria-hidden="true"><path d="M0 6.98h17.4M11.17.7l6.96 6.28-6.96 6.27" fill="none" stroke="currentColor" stroke-width="2"/></svg>';
   /* The last screen: exactly one screen high, "Let's work together" and the round contact buttons a little above
@@ -161,6 +163,9 @@ ${btns}
   const pageEnd = (ctx, next) => lastScreen(ctx) + "\n" + siteFooter(ctx, next);
 
   // ---------- media ----------
+  /* A still on top of every video until it really plays: iOS draws its own play button on a video that can't
+     autoplay (Low Power Mode), so the video stays hidden until then (main.js, CSS .vposter). */
+  const poster = (r, p) => p ? `<img class="vposter" src="${r}${p}" alt="" aria-hidden="true" decoding="async">` : "";
   const imgSet = (r, base, w1, w2) => `src="${r}${base}-sm.webp" srcset="${r}${base}-sm.webp ${w1}w, ${r}${base}.webp ${w2}w"`;
 
   // ---------- case page ----------
@@ -171,9 +176,9 @@ ${btns}
     const prev = cases[order[((i < 0 ? 0 : i) - 1 + n) % n]] || c, next = cases[order[(i + 1) % n]] || c;
     const title = tr(c.title, lang), h = c.hero || {};
     const heroImg = h.image ? `<img class="" ${imgSet(r, h.image, 960, 1920)} sizes="(max-width: 743px) 320px, (max-width: 1279px) 100vw, 72vw" alt="${esc(title)}" fetchpriority="high" decoding="async">` : "";
-    const heroVid = h.video ? `<video class="chero__v" src="${r}${h.video}" poster="${r}${h.poster}" muted loop playsinline disablepictureinpicture disableremoteplayback controlslist="nodownload nofullscreen noremoteplayback" autoplay preload="auto"></video>` : "";
+    const heroVid = h.video ? `<video class="chero__v" src="${r}${h.video}" poster="${r}${h.poster}" muted loop playsinline disablepictureinpicture disableremoteplayback controlslist="nodownload nofullscreen noremoteplayback" autoplay preload="auto"></video>${poster(r, h.poster)}` : "";
     const gallery = (c.gallery || []).map((g, k) => g.video
-      ? `<div class="gitem gitem--video" style="--ar:${g.ar}"><video class="gitem__v" src="${r}${g.video}" poster="${r}${g.poster}" muted loop playsinline disablepictureinpicture disableremoteplayback controlslist="nodownload nofullscreen noremoteplayback" autoplay preload="metadata"></video></div>`
+      ? `<div class="gitem gitem--video" style="--ar:${g.ar}"><video class="gitem__v" src="${r}${g.video}" poster="${r}${g.poster}" muted loop playsinline disablepictureinpicture disableremoteplayback controlslist="nodownload nofullscreen noremoteplayback" autoplay preload="metadata"></video>${poster(r, g.poster)}</div>`
       : `<div class="gitem" style="--ar:${g.ar}"><img class="" ${imgSet(r, g.image, 960, 1920)} sizes="(max-width: 743px) 320px, (max-width: 1279px) 100vw, 1370px" alt="" ${k < 2 ? 'fetchpriority="high"' : 'loading="lazy"'} decoding="async"></div>`).join("");
     const paras = (pick(c.overview.text, lang) || []).map((p) => `<p>${rich(p)}</p>`).join("");
     return `<article class="case">
@@ -195,8 +200,7 @@ ${btns}
     <a class="arrow-link" href="${r + casePath(lang, prev.slug)}" rel="prev"><span class="arr arr--left" aria-hidden="true">←</span> <span>${rich(tr(prev.name, lang))}</span></a>
     <a class="arrow-link" href="${r + casePath(lang, next.slug)}" rel="next"><span>${rich(tr(next.name, lang))}</span> <span class="arr arr--right" aria-hidden="true">→</span></a>
   </nav>
-</article>
-${pageEnd(ctx, null)}`;
+</article>`;
   }
 
   // ---------- shared bits ----------
@@ -329,6 +333,7 @@ ${pageEnd(ctx, NEXT[ctx.nav])}`;
     const tt = pick(a.tools.text, lang);
     const toolsText = isVar(tt) ? `<div class="v-d">${paras(tt.d)}</div><div class="v-mt">${paras(tt.mt)}</div>` : `<div>${paras(tt)}</div>`;
     const media = (m) => `<video class="media" src="${r}${m.video}" poster="${r}${m.poster}" muted loop playsinline disablepictureinpicture disableremoteplayback controlslist="nodownload nofullscreen noremoteplayback" autoplay preload="metadata" width="${m.width}" height="${m.height}"></video>`;
+    const vbox = (m) => `<span class="vbox">${media(m)}${poster(r, m.poster)}</span>`;
     return `<section class="intro">
   <div class="intro__head">
     <h1 class="display">${rich(tr(a.heading, lang))}</h1>
@@ -342,7 +347,7 @@ ${steps}
 <section class="wip">
   ${pick(a.wip.dots, lang) || ""}
   <figure class="wip__fig">
-    ${media(a.wip)}
+    ${vbox(a.wip)}
     <figcaption>${rich(tr(a.wip.caption, lang))}</figcaption>
   </figure>
 </section>
@@ -356,14 +361,14 @@ ${items}
 </section>
 
 <section class="split">
-  <div class="split__media">${media(a.tools)}</div>
+  <div class="split__media">${vbox(a.tools)}</div>
   <div class="split__text">
     <h2>${rich(tr(a.tools.title, lang))}</h2>
     ${toolsText}
   </div>
 </section>
 
-${pageEnd(ctx, null)}`;
+${pageEnd(ctx, NEXT[ctx.nav])}`;
   }
   // icon for a contact that has none: a plain circle with an arrow, same size as the others
   const DEFAULT_ICON = '<svg viewBox="0 0 52 52" width="52" height="52" aria-hidden="true"><circle cx="26" cy="26" r="26" fill="currentColor"/><path d="M20 32 32 20M23 20h9v9" fill="none" stroke="#fff" stroke-width="2"/></svg>';
@@ -373,6 +378,7 @@ ${pageEnd(ctx, null)}`;
   const HYPH = /(^|[^\p{L}\p{N}-])([\p{L}\p{N}]+(?:-[\p{L}\p{N}]+)+)(?=$|[^\p{L}\p{N}-])/gu;
   // Russian typography: a one- or two-letter word (в, с, и, к, на, по, не…) never stays alone at the end of a line
   const SHORT = /(?<=^|[\s\u00a0(«"])([А-Яа-яЁё]{1,2}) (?=[^\s])/g;
+  // (a very long word like "Инфлюенс-маркетинг" may still break at its hyphen: better than running off a phone screen)
   function keepHyphens(html) {
     const at = html.indexOf("<body"); if (at < 0) return html;
     let skip = 0, nw = 0;
@@ -382,7 +388,7 @@ ${pageEnd(ctx, null)}`;
         if (/^<span class="nw">/.test(part)) nw++; else if (nw && part === "</span>") nw--;
         return part;
       }
-      return skip || nw ? part : part.replace(HYPH, '$1<span class="nw">$2</span>').replace(SHORT, "$1\u00a0");
+      return skip || nw ? part : part.replace(HYPH, (m, a, w) => w.length > 14 ? m : `${a}<span class="nw">${w}</span>`).replace(SHORT, "$1\u00a0");
     }).join("");
     return html.slice(0, at) + body;
   }
@@ -410,6 +416,7 @@ ${pageEnd(ctx, null)}`;
       for (let i = parts.length - 1; i >= 0; i -= 1) {
         if (i % 2 === 1) { if (/^<br/.test(parts[i])) break; continue; }   // stop at a line break: the last line is handled
         const t = parts[i].replace(/\s+$/, ""), k = t.lastIndexOf(" ");
+        if (k > 0 && /\u00a0/.test(t.slice(k + 1))) break;   // the last words are already held together: don't make the chain longer
         if (k > 0) { parts[i] = t.slice(0, k) + "\u00a0" + t.slice(k + 1) + parts[i].slice(t.length); break; }
         if (t.trim()) {   // the last word starts this text piece: join it with the end of the previous text piece
           for (let j = i - 2; j >= 0; j -= 2) { if (/ $/.test(parts[j])) { parts[j] = parts[j].replace(/ $/, "\u00a0"); break; } if (parts[j].trim()) break; }

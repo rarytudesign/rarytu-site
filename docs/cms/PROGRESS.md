@@ -65,6 +65,8 @@ Rule: one step at a time. Test, commit, push, then tick it here.
   go into each page's own JSON in A4–A6; case pages use the Work page tagline and their own title/description.
 
 ## Log
+- 2026-10-29: Sign-in: "Forgot the password?" on the sign-in screen = new GitHub token + new login/password (rewrites admin/auth.json).
+  GitHub's own email reset is the recovery path; no server, so nothing is mailed. test-auth.js: 22 checks.
 - 2026-10-29: Sign-in for the panel (admin/cms/auth.js, loaded before github.js; window.Auth). No server, so the password protects
   the GitHub token: admin/auth.json = token encrypted with AES-GCM, key = PBKDF2-SHA-256(login lowercased + "\n" + password,
   600 000 rounds). "Remember this device": token encrypted with a non-extractable AES key in IndexedDB "rarytu-auth", record in

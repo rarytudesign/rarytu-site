@@ -117,7 +117,13 @@
       login: `<h1>Sign in</h1>
         <label class="auth__f"><span>Login</span><input name="login" autocomplete="username" autocapitalize="none" spellcheck="false" required></label>
         <label class="auth__f"><span>Password</span><input name="password" type="password" autocomplete="current-password" required></label>
-        ${remember}<button class="primary" type="submit">Sign in</button>`,
+        ${remember}<button class="primary" type="submit">Sign in</button>
+        <button class="auth__link" type="button" data-forgot>Forgot the password?</button>`,
+      reset: `<h1>New password</h1><p>The password can’t be recovered, but a new GitHub token replaces it: sign in to GitHub (its password resets by email), make a token and set a new login and password here.</p>
+        ${tokenField(true)}
+        <label class="auth__f"><span>New login</span><input name="login" autocomplete="username" autocapitalize="none" spellcheck="false" required></label>
+        ${pass2}${remember}<button class="primary" type="submit">Save and sign in</button>
+        <button class="auth__link" type="button" data-back>Back to sign in</button>`,
       setup: `<h1>Set up sign-in</h1><p>Choose a login and password for the panel. ${token ? "" : "This device also needs the GitHub token once; after that the login and password are enough on any device."}</p>
         ${token ? "" : tokenField(true)}
         <label class="auth__f"><span>Login</span><input name="login" autocomplete="username" autocapitalize="none" spellcheck="false" required></label>
@@ -138,6 +144,8 @@
     const form = box.querySelector("form"), say = (t, err) => { const m = form.querySelector(".auth__msg"); m.textContent = t; m.classList.toggle("error", !!err); };
     form.querySelector("input")?.focus();
     form.querySelector("[data-later]")?.addEventListener("click", () => { box.hidden = true; unlock(); });
+    form.querySelector("[data-forgot]")?.addEventListener("click", () => screen("reset"));
+    form.querySelector("[data-back]")?.addEventListener("click", () => screen("login"));
     form.addEventListener("submit", async (e) => {
       e.preventDefault();
       const f = Object.fromEntries(new FormData(form)); const btn = form.querySelector('[type="submit"]');

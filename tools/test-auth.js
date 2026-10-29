@@ -87,5 +87,18 @@ const check = (name, cond) => { console.log((cond ? "ok   " : "FAIL ") + name); 
   await fill(pg, { login: "nastya", password: "correct horse 42" });
   check("another device gets the new token", !(await locked(pg)) && (await pg.evaluate(() => Auth.token())) === "github_pat_NEW");
 
+  // 5. forgot the password: a new GitHub token sets a new login and password on any device
+  const F = await b.newContext(); pg = await open(F);
+  await pg.click(".auth [data-forgot]"); await pg.waitForTimeout(300);
+  await fill(pg, { token: "github_pat_WRONG", login: "rarytu", password: "new password 2026", password2: "new password 2026" });
+  check("reset with a bad token refused", await locked(pg));
+  await fill(pg, { token: "github_pat_NEW", login: "rarytu", password: "new password 2026", password2: "new password 2026" });
+  check("reset with a new token: unlocked", !(await locked(pg)));
+  const G = await b.newContext(); pg = await open(G);
+  await fill(pg, { login: "nastya", password: "correct horse 42" });
+  check("old password no longer works", await locked(pg));
+  await fill(pg, { login: "rarytu", password: "new password 2026" });
+  check("new password works on another device", !(await locked(pg)));
+
   await b.close(); srv.close();
 })();

@@ -201,3 +201,4 @@ html.auth-locked .top, html.auth-locked .shell { visibility: hidden; }
 .auth__help ol { margin: 6px 0 0; padding-left: 18px; }
 .auth__card button { height: 46px; }
 .auth__msg { min-height: 20px; font-size: 14px; }
+.auth__link { align-self: center; height: auto !important; padding: 4px; font: inherit; font-size: 14px; color: var(--brand); background: none; border: 0; text-decoration: underline; text-underline-offset: 3px; cursor: pointer; }

@@ -917,3 +917,15 @@ video::-webkit-media-controls-play-button { display: none !important; -webkit-ap
   html[lang="ru"] .xlist:not(.xlist--edu) .xrow:nth-child(5) .xrow__role { padding-top: 2px; }   /* freelance row: role 2px under the date */
   html[lang="ru"] .xlist--edu .xrow__text p + p { margin-top: 4px; }   /* RU education notes 24px apart (EN 26) */
 }
+
+/* Next page by scrolling on (phones and tablets; main.js adds .sfoot-run after the footer and .is-run here).
+   The footer is pinned to the bottom of the screen while the stretch scrolls; the brand colour rises from it (--p 0→1),
+   the next page's name moves to the middle and grows, the ©/arrow row fades. */
+.sfoot.is-run { position: sticky; top: calc(100vh - var(--fh, 236px)); top: calc(100dvh - var(--fh, 236px)); z-index: 4; }
+.sfoot.is-run::before { content: ""; position: absolute; left: 0; right: 0; bottom: 100%; pointer-events: none; background: var(--brand);
+  height: calc(var(--p, 0) * (100vh - var(--fh, 236px))); height: calc(var(--p, 0) * (100dvh - var(--fh, 236px))); }
+.sfoot.is-run .sfoot__top { opacity: calc(1 - var(--p, 0) * 2.5); }
+.sfoot.is-run .sfoot__next { transform: translateY(calc(var(--p, 0) * var(--rise, 0px) * -1)); }
+.sfoot.is-run .sfoot__name { display: inline-block; transform-origin: 0 100%; transform: scale(calc(1 + var(--p, 0) * 0.75)); }
+.sfoot-run { pointer-events: none; }
+@media (min-width: 1280px) { .sfoot-run { display: none; } }

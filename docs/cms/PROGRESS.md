@@ -65,6 +65,13 @@ Rule: one step at a time. Test, commit, push, then tick it here.
   go into each page's own JSON in A4–A6; case pages use the Work page tagline and their own title/description.
 
 ## Log
+- 2026-10-29: Phones/tablets: next page by scrolling on (replaces "push past the end"). main.js adds .sfoot-run (80% of a 100lvh
+  screen) after the footer; .sfoot.is-run is sticky at the bottom (top = 100dvh - --fh), ::before rises in brand colour by --p,
+  the next-page block moves to the middle (--rise) and the name grows; at the end the link opens. Stop after 6% in → it eases to
+  the end by itself (scrollTo behavior "instant": html has smooth scrolling); scrolling up cancels; back button / restored
+  scroll stand at the start, nothing opens without a touch, wheel or key. Desktop: footer hidden, no stretch.
+  CV link: on the real site the PDF is fetched and saved from a blob (Chrome on iOS and in-app browsers ignore `download`
+  and open a viewer); if that fails the PDF opens as before.
 - 2026-10-29: Figma Dev Mode check by numbers (all pages, EN+RU, 390 / 820 / 1920; Figma tablet frames are 820 wide).
   How: Figma Plugin API in Nastya's logged-in Dev Mode tab dumped every frame (text, font size, line height, tracking, box,
   real line breaks from SVG export, dots, images) → docs/figma/{mobile,tablet,desktop}.json. Site measured with

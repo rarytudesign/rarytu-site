@@ -476,8 +476,20 @@
   document.addEventListener("click", (e) => {
     const a = e.target.closest("[data-cv]");
     const inPreview = /claudeusercontent\.com$/.test(location.hostname);
-    if (!a || !inPreview) return; // real site: the link downloads the file itself
+    if (!a) return;
     e.preventDefault();
+    if (!inPreview) {
+      // Phone browsers (Chrome on iOS, Telegram and other in-app browsers) ignore the download attribute and open the PDF
+      // in a viewer. Fetching the file and saving it from memory gives a real download wherever the browser allows one;
+      // if it can't, the PDF still opens as before.
+      const url = a.href, name = decodeURIComponent(url.split("/").pop());
+      fetch(url).then((r) => { if (!r.ok) throw 0; return r.blob(); }).then((blob) => {
+        const tmp = document.createElement("a"), href = URL.createObjectURL(new Blob([blob], { type: "application/pdf" }));
+        tmp.href = href; tmp.download = name; tmp.rel = "noopener"; document.body.appendChild(tmp); tmp.click(); tmp.remove();
+        setTimeout(() => URL.revokeObjectURL(href), 60000);
+      }).catch(() => { location.href = url; });
+      return;
+    }
     const url = a.href, name = decodeURIComponent(url.split("/").pop());
     (async () => {
       try {
@@ -636,38 +648,72 @@
   });
   if (location.hash === "#contact") { requestAnimationFrame(() => toContact("instant")); addEventListener("load", () => toContact("instant"), { once: true }); }
 
-  /* ---------- Footer: keep scrolling at the very end of the page to go on to the next page ----------
-     Wheel, trackpad or finger: the white line fills up and at the end the next page opens. Let go and it drains
-     back. The momentum of the scroll that brought you to the bottom doesn't count: only a new push does. */
-  const nextLink = $("[data-next]");
-  if (nextLink) {
-    let p = 0, last = 0, raf = 0, going = false, arrived = 0, prevWheel = 0, armed = false;
-    const atEnd = () => scrollY + innerHeight >= document.documentElement.scrollHeight - 2;
-    const set = (v) => {
-      p = Math.max(0, Math.min(1, v)); nextLink.style.setProperty("--p", p.toFixed(3));
-      if (p >= 1 && !going) { going = true; setTimeout(() => nextLink.click(), 120); }
+  /* ---------- Footer: scrolling on past the end opens the next page (phones and tablets) ----------
+     After the footer there is a stretch of real scroll (.sfoot-run, 80% of a screen). The footer stays pinned to the bottom
+     of the screen while the brand colour rises from it and fills the screen; the line fills with it and the next page's
+     name moves to the middle. At the end the next page opens (its loader is the same colour, so it reads as one move).
+     Once the visitor is a little way in and stops, the page finishes the move by itself; scrolling back up cancels it.
+     The scroll bar moves the whole way, so it's clear that the page goes on. */
+  const nextLink = $("[data-next]"), sfoot = $(".sfoot");
+  if (nextLink && sfoot) {
+    const run = document.createElement("div"); run.className = "sfoot-run"; run.setAttribute("aria-hidden", "true"); sfoot.after(run);
+    const probe = document.createElement("div"); probe.style.cssText = "position:fixed;top:0;height:100lvh;width:0;visibility:hidden;pointer-events:none";
+    document.body.appendChild(probe);
+    let R = 0, p = 0, going = false, user = false, holding = false, lastY = scrollY, down = true, idle = 0, anim = 0;
+    const on = () => getComputedStyle(sfoot).display !== "none";
+    const start = () => run.getBoundingClientRect().top + scrollY - innerHeight;
+    const measure = () => {
+      if (!on()) { run.style.height = "0px"; sfoot.classList.remove("is-run"); return; }
+      R = Math.round((probe.offsetHeight || innerHeight) * 0.8);
+      run.style.height = R + "px"; sfoot.classList.add("is-run");
+      sfoot.style.setProperty("--fh", sfoot.offsetHeight + "px");
+      // how far the next-page block travels to sit in the middle of the screen at the end
+      const fromBottom = sfoot.offsetHeight - (nextLink.offsetTop + nextLink.offsetHeight / 2);   // layout values: the transform doesn't count
+      sfoot.style.setProperty("--rise", Math.max(0, innerHeight / 2 - fromBottom) + "px");
+      update();
     };
-    const drain = () => { raf = 0; if (going || p <= 0) return; if (performance.now() - last > 350) set(p - 0.025); raf = requestAnimationFrame(drain); };
-    const push = (d) => { if (going || !nextLink.offsetParent) return; /* hidden on desktop */ last = performance.now(); set(p + d); if (!raf) raf = requestAnimationFrame(drain); };
-    addEventListener("scroll", () => { const e = atEnd(); if (e && !arrived) { arrived = performance.now(); armed = false; } else if (!e) { arrived = 0; } }, { passive: true });
-    addEventListener("wheel", (e) => {
-      const now = performance.now(), gap = now - prevWheel; prevWheel = now;
-      if (e.deltaY <= 0 || !atEnd()) return;
-      if (!arrived) { arrived = now; armed = false; }
-      if (!armed) { if (gap > 180 || now - arrived > 900) armed = true; else return; }   // still the momentum of the way down
-      push(Math.min(120, e.deltaY * (e.deltaMode === 1 ? 33 : 1)) / 700);
+    const go = () => { if (going) return; going = true; cancelAnimationFrame(anim); setTimeout(() => nextLink.click(), 60); };
+    const update = () => {
+      if (!R) return;
+      p = Math.max(0, Math.min(1, (scrollY - start()) / R));
+      sfoot.style.setProperty("--p", p.toFixed(4)); nextLink.style.setProperty("--p", p.toFixed(4));
+      if (p >= 0.995 && user && !holding) go();
+    };
+    // finish the move: ease the page to the end of the stretch, then open the next page
+    const finish = () => {
+      const from = scrollY, to = start() + R, dist = to - from;
+      if (dist <= 1) { update(); return; }
+      if (reduce) { scrollTo({ top: to, behavior: "instant" }); update(); return; }
+      const t0 = performance.now(), dur = 380 + 420 * Math.min(1, dist / R);
+      const ease = (t) => 1 - Math.pow(1 - t, 3);
+      const step = (now) => {
+        const t = Math.min(1, (now - t0) / dur);
+        scrollTo({ top: from + dist * ease(t), behavior: "instant" });   // html has smooth scrolling on
+        if (t < 1) anim = requestAnimationFrame(step); else { update(); go(); }
+      };
+      anim = requestAnimationFrame(step);
+    };
+    const stopAnim = () => { if (anim) { cancelAnimationFrame(anim); anim = 0; } };
+    addEventListener("scroll", () => {
+      down = scrollY >= lastY; lastY = scrollY; update();
+      clearTimeout(idle);
+      if (anim || going || !user) return;
+      idle = setTimeout(() => { if (!holding && down && p > 0.06 && p < 0.995) finish(); }, 180);
     }, { passive: true });
-    // a finger counts only when the swipe starts at the end of the page (not the one that brought you there)
-    let ty = null;
-    addEventListener("touchstart", (e) => { ty = atEnd() ? e.touches[0]?.clientY ?? null : null; }, { passive: true });
-    addEventListener("touchmove", (e) => {
-      const t = e.touches[0]; if (!t || ty === null) return;
-      const d = ty - t.clientY; ty = t.clientY;
-      if (d > 0 && atEnd()) push(d / 520);
-    }, { passive: true });
-    addEventListener("touchend", () => { ty = null; }, { passive: true });
-    addEventListener("keydown", (e) => { if ((e.key === "ArrowDown" || e.key === "PageDown" || e.key === " ") && atEnd() && !e.target.closest?.("input, textarea")) push(0.2); });
-    addEventListener("pageshow", () => { going = false; set(0); });
+    const touched = () => { user = true; stopAnim(); };
+    addEventListener("touchstart", () => { holding = true; touched(); }, { passive: true });
+    addEventListener("touchend", () => { holding = false; if (p >= 0.995) go(); }, { passive: true });
+    addEventListener("touchcancel", () => { holding = false; }, { passive: true });
+    addEventListener("wheel", touched, { passive: true });
+    addEventListener("keydown", (e) => { if (["ArrowDown", "ArrowUp", "PageDown", "PageUp", " ", "End", "Home"].includes(e.key)) touched(); });
+    addEventListener("resize", measure);
+    addEventListener("load", measure);
+    if (document.fonts && document.fonts.ready) document.fonts.ready.then(measure);
+    measure();
+    // coming back (back button, restored scroll): stand at the start of the stretch, nothing opens by itself
+    const reset = () => { going = false; user = false; stopAnim(); if (R && scrollY > start()) scrollTo({ top: start(), behavior: "instant" }); update(); };
+    addEventListener("pageshow", reset);
+    requestAnimationFrame(reset);
   }
 
   /* ---------- Liquid of spheres on the last screen ----------

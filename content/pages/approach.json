@@ -198,16 +198,23 @@
       "ru": "Выбираю инструменты<br class=\"v-mt\"> под задачу"
     },
     "text": {
-      "en": [
-        "I use Figma for most of my daily work, including prototyping and animation. For print work, I use Illustrator; for photo editing, Photoshop.",
-        "My workflow has changed with AI. I previously created 3D visuals in Cinema 4D and drew illustrations in Procreate. That experience helps me work with AI today: I know how to describe what I need, spot problems and refine the results. AI lets me try more ideas and produce assets faster.",
-        "I enjoy trying new tools and attending workshops. Recently, I’ve also started experimenting with code to understand how my designs become working websites."
-      ],
+      "en": {
+        "d": [
+          "I use Figma for most of my daily work, including prototyping and animation. For print work, I use Illustrator; for photo editing, Photoshop.",
+          "My workflow has changed with AI. I previously created 3D visuals in Cinema 4D and drew illustrations in Procreate. That experience helps me work with AI today: I know how to describe what I need, spot problems and refine the results. AI lets me try more ideas and produce assets faster.",
+          "I enjoy trying new tools and attending workshops. Recently, I’ve also started experimenting with code to understand how my designs become working websites."
+        ],
+        "mt": [
+          "I use Figma for most of my daily work, including prototyping and animation. For print work, I use Illustrator; for photo editing, Photoshop.",
+          "My workflow has changed with AI. I previously created 3D visuals in Cinema 4D and drew illustrations in Procreate. That experience helps me work with AI today: I know how to describe what I need, spot problems and refine the results. AI lets me try more ideas and produce assets faster.",
+          "I enjoy trying new tools and attending workshops. Recently, I’ve also started experimenting with code to understand how my designs become working websites."
+        ]
+      },
       "ru": {
         "d": [
-          "Основную часть работы веду в Figma: от первых драфтов до готовых макетов, прототипов и анимации. Для векторной графики использую Illustrator, для обработки фотографий и растровой графики Photoshop.",
-          "Работаю с 3D в Cinema 4D и иллюстрацией в Procreate. С появлением нейросетей мой пайплайн расширился: часть задач, которые раньше требовали моделирования или создания иллюстраций вручную, теперь решаю с их помощью. Использую нейросети для проверки визуальных гипотез, генерации изображений и видео, доработки графики.",
-          "Выбор инструментов зависит от задачи: где-то нейросети позволяют быстрее получить нужный результат, а где-то необходим точный контроль в графическом редакторе или 3D-софте. Комбинирую эти подходы с учётом сроков и требований к качеству. Изучаю вёрстку, чтобы лучше понимать возможности и ограничения реализации дизайна в браузере."
+          "Основную часть работы веду в Figma: от первых драфтов до готовых макетов, прототипов и анимации. Для векторной графики использую Illustrator, для растровой графики Photoshop.",
+          "Раньше я много работала с 3D и иллюстрацией, создавая визуалы вручную. Этот опыт помогает мне эффективнее работать с AI: проверять визуальные гипотезы, точнее формулировать запросы, замечать недочёты и дорабатывать результаты.",
+          "Комбинирую инструменты под задачу с учётом сроков, качества и необходимого контроля над результатом. Сейчас также экспериментирую с кодом и углубляю знания в вёрстке, чтобы лучше понимать возможности и ограничения реализации дизайна в браузере."
         ],
         "mt": [
           "Основную часть работы веду в Figma: от драфтов до макетов, прототипов и анимации. Для векторной графики использую Illustrator, для растровой Photoshop.",

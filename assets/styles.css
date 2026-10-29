@@ -580,13 +580,14 @@ html[lang="ru"] .intro__head p { max-width: 500px; }
   .pcircle p { font-size: 14px; line-height: 20px; letter-spacing: 0; }
 }
 @media (min-width: 1280px) {
-  .principles { margin-top: 0; padding: 0 var(--gutter); }
+  .principles { margin-top: 82px; padding: 0 var(--gutter); }   /* Figma: about 105px from the video caption to the heading */
   .principles .display { padding: 0; margin-bottom: 36px; }
   .pgrid { grid-template-columns: repeat(3, minmax(0, 1fr)); padding: 0; }
   .pcircle { gap: 20px; padding: 0 8%; }
   .pcircle h3 { font-size: clamp(24px, 1.67vw, 32px); line-height: 0.8125; letter-spacing: -1.5px; }
   html[lang="ru"] .pcircle h3 { line-height: 0.906; letter-spacing: -1px; }
   .pcircle p { font-size: 16px; line-height: 20px; letter-spacing: 0.2px; max-width: 380px; }
+  html[lang="en"] .pcircle p { max-width: 326px; }   /* EN line breaks as in Figma */
 }
 
 .split { padding: 0 var(--gutter); margin-top: 64px; display: flex; flex-direction: column; gap: 24px; }
@@ -607,7 +608,7 @@ html[lang="ru"] .intro__head p { max-width: 500px; }
   .split__media { flex: 675 1 0; }
   .split .media { aspect-ratio: 675 / 520; height: 100%; }
   .split__text { flex: 501 1 0; justify-content: space-between; gap: 32px; }
-  .split__text h2 { font-size: clamp(26px, 1.67vw, 32px); line-height: 0.97; letter-spacing: -1px; max-width: 8em; }
+  .split__text h2 { font-size: clamp(26px, 1.67vw, 32px); line-height: 0.97; letter-spacing: -1px; max-width: 8.6em; }   /* "The right tools for / each task": room for Safari's wider metrics */
   .split__text > div, html[lang="ru"] .split__text > div { max-width: 486px; }
   .split__text p + p { margin-top: 12px; }
 }
@@ -806,4 +807,18 @@ video::-webkit-media-controls-play-button { display: none !important; -webkit-ap
   html[lang="ru"] .ahero__bio > div:first-child .v-m p + p { margin-top: 12px; }
   html[lang="ru"] .ahero__bio > div:first-child .v-m p:first-of-type { text-box: trim-start cap alphabetic; }
   html[lang="ru"] .ahero__bio > div:first-child .v-m p:last-child { text-box: trim-end cap alphabetic; }
+}
+
+/* Desktop: the menu is always on the left, so pages end with the contact screen; no brand footer, no "next page" */
+@media (min-width: 1280px) { .sfoot { display: none; } }
+
+/* Gallery and case cover: start as they enter and arrive faster, so scrolling never feels stuck */
+@media (prefers-reduced-motion: no-preference) {
+  .js .gitem.rv, .js .chero.rv { transform: translateY(16px); }
+  .js .gitem.rv.in, .js .chero.rv.in { transition: opacity 450ms var(--easy), transform 600ms var(--easy); transition-delay: min(var(--d, 0ms), 80ms); }
+  .js .gitem img, .js .chero img { transition: opacity 300ms var(--easy), transform 700ms var(--ease); }
+}
+/* About photo dots on desktop: quicker one after another */
+@media (min-width: 1280px) and (prefers-reduced-motion: no-preference) {
+  .js .dots--photos.is-in i { animation-duration: 480ms, 360ms; animation-delay: calc(var(--i) * 90ms); }
 }

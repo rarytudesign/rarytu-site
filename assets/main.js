@@ -161,7 +161,7 @@
     const seen = (entries, obs) => entries.forEach((e) => { if (e.isIntersecting) { e.target.classList.add("is-in"); obs.unobserve(e.target); } });
     const io = new IntersectionObserver(seen, { threshold: 0.2 });
     // the About photo dots wait until the photos are well on screen (they sit around them, partly above)
-    const late = new IntersectionObserver(seen, { threshold: 0, rootMargin: "0px 0px -40% 0px" });
+    const late = new IntersectionObserver(seen, { threshold: 0, rootMargin: isMobile() || innerWidth < 1280 ? "0px 0px -40% 0px" : "0px 0px -10% 0px" });
     shown.then(() => dotGroups.forEach((g) => (g.classList.contains("dots--photos") ? late : io).observe(g)));
   } else dotGroups.forEach((g) => g.classList.add("is-in"));
 
@@ -204,7 +204,11 @@
   const renumber = () => textEls.forEach((el) => !el.classList.contains("in") && numberLines(el));
   if (document.fonts && document.fonts.ready) document.fonts.ready.then(renumber); else renumber();
   renumber();
-  addEventListener("resize", () => { clearTimeout(renumber.t); renumber.t = setTimeout(renumber, 150); });
+  /* After a window resize Safari can keep the old line breaks of balanced headings made of word spans
+     ("First, I ask / questions" on a wide screen): switch wrapping off and on so every block is laid out again */
+  const rewrap = () => $$(".ls, .display, .chead__title, .dfoot__title").forEach((el) => { el.style.textWrap = "wrap"; void el.offsetWidth; el.style.textWrap = ""; });
+  let lastW = innerWidth;
+  addEventListener("resize", () => { clearTimeout(renumber.t); renumber.t = setTimeout(() => { if (innerWidth !== lastW) { lastW = innerWidth; rewrap(); } renumber(); }, 150); });
 
   /* ---------- Reveal on scroll: nothing is visible until it reaches the screen ---------- */
   if (!reduce && "IntersectionObserver" in window) {
@@ -228,18 +232,20 @@
         .forEach((e) => { show(e.target); rio.unobserve(e.target); });
       clearTimeout(batchTimer); batchTimer = setTimeout(() => (batch = 0), 140);
     }, { threshold: 0.12, rootMargin: "0px 0px -5% 0px" });
+    // gallery images and the case cover are tall: start them as soon as their top edge comes in
+    const gio = new IntersectionObserver((entries) => entries.forEach((e) => { if (e.isIntersecting) { show(e.target); gio.unobserve(e.target); } }), { threshold: 0, rootMargin: "0px 0px 6% 0px" });
     // Blocks at the very end of the page (footer contacts, "Back to top") can sit below that trigger line
     // even when scrolled all the way down, especially on tall screens: reveal whatever is left once the
     // bottom is reached, and anything already on screen after the page opens.
     const flush = () => all.forEach((el) => {
       if (el.classList.contains("in")) return;
       const r = el.getBoundingClientRect();
-      if (r.top < innerHeight && r.bottom > 0) { show(el); rio.unobserve(el); }
+      if (r.top < innerHeight && r.bottom > 0) { show(el); rio.unobserve(el); gio.unobserve(el); }
     });
     const atBottom = () => { if (scrollY + innerHeight >= document.documentElement.scrollHeight - 4) flush(); };
     addEventListener("scroll", atBottom, { passive: true });
     addEventListener("resize", atBottom, { passive: true });
-    shown.then(() => requestAnimationFrame(() => { all.forEach((el) => rio.observe(el)); setTimeout(() => { flush(); atBottom(); }, 400); }));
+    shown.then(() => requestAnimationFrame(() => { all.forEach((el) => (el.matches(".gitem, .chero") ? gio : rio).observe(el)); setTimeout(() => { flush(); atBottom(); }, 400); }));
   }
 
   /* ---------- Images fade in once decoded (no half-painted frames) ---------- */
@@ -642,7 +648,7 @@
       if (p >= 1 && !going) { going = true; setTimeout(() => nextLink.click(), 120); }
     };
     const drain = () => { raf = 0; if (going || p <= 0) return; if (performance.now() - last > 350) set(p - 0.025); raf = requestAnimationFrame(drain); };
-    const push = (d) => { if (going) return; last = performance.now(); set(p + d); if (!raf) raf = requestAnimationFrame(drain); };
+    const push = (d) => { if (going || !nextLink.offsetParent) return; /* hidden on desktop */ last = performance.now(); set(p + d); if (!raf) raf = requestAnimationFrame(drain); };
     addEventListener("scroll", () => { const e = atEnd(); if (e && !arrived) { arrived = performance.now(); armed = false; } else if (!e) { arrived = 0; } }, { passive: true });
     addEventListener("wheel", (e) => {
       const now = performance.now(), gap = now - prevWheel; prevWheel = now;

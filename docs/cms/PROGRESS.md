@@ -65,6 +65,14 @@ Rule: one step at a time. Test, commit, push, then tick it here.
   go into each page's own JSON in A4–A6; case pages use the Work page tagline and their own title/description.
 
 ## Log
+- 2026-10-29: Desktop round. Brand footer (.sfoot: ©year, back to top, next page) hidden from 1280px: the sidebar menu does
+  that job, pages end with the contact screen; the keep-scrolling-to-next-page logic stops when the footer is hidden.
+  Approach: .principles margin-top 0 → 82px (Figma ~105px from caption to heading); EN principle text max-width 326 (Figma breaks);
+  .split__text h2 max-width 8em → 8.6em ("The right tools for / each task" also in Safari).
+  Resize: after a width change, split text and balanced headings get text-wrap toggled off/on (Safari kept stale breaks; not
+  reproducible in Chromium). Case pages: gallery and cover reveal on their own observer (threshold 0, +6% margin), 450/600ms.
+  About photo dots on desktop: trigger at -10% (was -40%), 90ms apart, 480ms. Not checked against Figma (browser link down):
+  desktop RU typography on all pages, spacing on Work/About/cases.
 - 2026-10-29: Work circles on phones checked against Figma 290:2985 (EN and RU): text box was too narrow, so headings
   wrapped ("First, I ask / questions", "От задачи / к решению") and body lines broke differently. Mobile .circle padding 19% → 12%,
   body max-width 178 → 190 (EN) and 248 (RU, phones only). Circle text (p.circle__text) is skipped by noOrphans: Figma lets

@@ -1,0 +1,45 @@
+{
+  "slug": "test-project",
+  "name": {
+    "en": "test project",
+    "ru": "тест проект"
+  },
+  "title": {
+    "en": "test project",
+    "ru": "тест проект"
+  },
+  "tags": {
+    "en": "testing",
+    "ru": "тестинг"
+  },
+  "description": {
+    "en": "",
+    "ru": ""
+  },
+  "overview": {
+    "heading": {
+      "en": "Project overview",
+      "ru": "О проекте"
+    },
+    "text": {
+      "en": [],
+      "ru": []
+    }
+  },
+  "hero": {
+    "bg": "#f6f6f6",
+    "image": "assets/img/test-project/st20-2-scvz"
+  },
+  "cover": "assets/img/laptop-mockup-02-aaff",
+  "gallery": [
+    {
+      "image": "assets/img/test-project/ukxsn5ipsalgdjsakccb-1-jymu",
+      "ar": 1
+    },
+    {
+      "video": "assets/video/test-project-7980675451679399753-w98c.mp4",
+      "poster": "assets/video/test-project-7980675451679399753-w98c-poster.webp",
+      "ar": 1
+    }
+  ]
+}

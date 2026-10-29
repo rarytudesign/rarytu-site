@@ -65,6 +65,12 @@ Rule: one step at a time. Test, commit, push, then tick it here.
   go into each page's own JSON in A4–A6; case pages use the Work page tagline and their own title/description.
 
 ## Log
+- 2026-10-29: Work circles on phones checked against Figma 290:2985 (EN and RU): text box was too narrow, so headings
+  wrapped ("First, I ask / questions", "От задачи / к решению") and body lines broke differently. Mobile .circle padding 19% → 12%,
+  body max-width 178 → 190 (EN) and 248 (RU, phones only). Circle text (p.circle__text) is skipped by noOrphans: Figma lets
+  "вдохновляет" sit alone. Checked equal to Figma: Work hero dots EN+RU, About photo dots EN, Approach video dots EN.
+  Not checked yet (browser link dropped): RU About/Approach dots, RU principle circles, case page footers in Figma.
+  Seen in Figma, not changed: EN principle 1 breaks after "express"; EN card title "Talk & Toast / Conversation club" wraps in Figma.
 - 2026-10-29: Round "bottom of pages". Approach now leads on to Work (NEXT approach→work, a full loop). Project pages end at the
   prev/next row: no last screen, no footer (mobile and desktop); their "Contact" opens approach/#contact. Videos: every video gets a
   still on top (img.vposter, Approach videos wrapped in span.vbox) and stays invisible until it really plays (.is-playing on

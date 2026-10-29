@@ -357,10 +357,11 @@ html.menu-open { background: var(--surface-muted); }
 .circle {
   position: relative; aspect-ratio: 1; border-radius: 50%; border: 1px solid var(--brand);
   display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center;
-  gap: 16px; padding: 0 19%; transition: background-color 300ms var(--easy), color 300ms var(--easy);
+  gap: 16px; padding: 0 12%; transition: background-color 300ms var(--easy), color 300ms var(--easy);
 }
 .circle h3 { font-size: 26px; line-height: 24px; letter-spacing: -0.2px; margin-bottom: -8px; }
-.circle p { font-size: 15px; line-height: 20px; letter-spacing: 0.1px; max-width: 178px; }
+.circle p { font-size: 15px; line-height: 20px; letter-spacing: 0.1px; max-width: 190px; }
+@media (max-width: 743px) { html[lang="ru"] .circle p { max-width: 248px; } }   /* Figma 290:2985: RU text box is wider, headings stay on one line */
 .circle__link { position: relative; z-index: 2; display: inline-flex; align-items: center; gap: 4px; font-weight: 500; letter-spacing: -0.2px; line-height: 20px; padding: 7px 0; transition: opacity var(--t-fast); }
 .ico-ne { width: 10px; height: 10px; transition: transform 250ms var(--ease); }
 @media (min-width: 744px) {

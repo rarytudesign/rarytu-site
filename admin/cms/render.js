@@ -230,7 +230,7 @@ ${btns}
     const circles = w.callouts.map((c) => `  <div class="circle">
     <a class="circle__hit" href="${r + pagePath(lang, c.target)}" tabindex="-1" aria-hidden="true"></a>
     <h3>${rich(tr(c.title, lang))}</h3>
-    ${vp(c.text, lang)}
+    ${vp(c.text, lang, "circle__text")}
     <a class="circle__link" href="${r + pagePath(lang, c.target)}">${rich(tr(c.link, lang))} ${ICO_NE}</a>
   </div>`).join("\n");
     return `<section class="hero">
@@ -409,7 +409,7 @@ ${pageEnd(ctx, NEXT[ctx.nav])}`;
   function noOrphans(html) {
     const at = html.indexOf("<body"); if (at < 0) return html;
     const body = html.slice(at).replace(/(<(p|figcaption)\b[^>]*>)([\s\S]*?)(<\/\2>)/g, (m, open, tag, inner, close) => {
-      if (/<svg/i.test(inner) || /class="[^"]*tagline/.test(open)) return m;   // taglines are display type with their own line breaks
+      if (/<svg/i.test(inner) || /class="[^"]*(tagline|circle__text)/.test(open)) return m;   // taglines: display type with their own breaks; circle text: Figma lets the last word sit alone
       const parts = inner.split(/(<[^>]+>)/);
       const words = parts.filter((x, i) => i % 2 === 0).join(" ").trim().split(/[ \u00a0]+/).filter(Boolean);
       if (words.length < 4) return m;

@@ -16,6 +16,8 @@
   const ls = { get: (k) => { try { return localStorage.getItem(k); } catch { return null; } }, set: (k, v) => { try { v == null ? localStorage.removeItem(k) : localStorage.setItem(k, v); } catch {} } };
   const ss = { get: (k) => { try { return sessionStorage.getItem(k); } catch { return null; } }, set: (k, v) => { try { v == null ? sessionStorage.removeItem(k) : sessionStorage.setItem(k, v); } catch {} } };
 
+  // the panel never works inside someone else's frame (a site could lay invisible buttons over it)
+  if (window.top !== window.self) { document.documentElement.innerHTML = ""; throw new Error("The admin panel can't be opened inside a frame."); }
   let token = "", remembered = false, vault = null, vaultLoaded = false;
   document.documentElement.classList.add("auth-locked");
 

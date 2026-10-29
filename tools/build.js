@@ -3,6 +3,9 @@
 const fs = require("fs"), path = require("path");
 const ROOT = path.join(__dirname, "..");
 const R = require(path.join(ROOT, "admin/cms/render.js"));
+// the pages' security policy allows exactly one inline script, by its hash: stop if the two drifted apart
+{ const h = "sha256-" + require("crypto").createHash("sha256").update(R.HEAD_JS).digest("base64");
+  if (h !== R.HEAD_JS_HASH) { console.error("render.js: HEAD_JS_HASH must be " + h); process.exit(1); } }
 const read = (p) => JSON.parse(fs.readFileSync(path.join(ROOT, p), "utf8"));
 // Site styles and script: their content hash goes into site.json (assetsVersion) and the pages link
 // assets/styles.css?v=<hash>, so after a change visitors get the new files at once, not after the ~10 minute cache.
@@ -35,4 +38,6 @@ const stamped = admin.replace(/(src|href)="(cms\/[\w.-]+\.(?:js|css))(?:\?v=\w+)
   const hash = crypto.createHash("sha1").update(fs.readFileSync(path.join(ROOT, "admin", f))).digest("hex").slice(0, 8);
   return `${attr}="${f}?v=${hash}"`;
 });
-if (stamped !== admin) { fs.writeFileSync(adminFile, stamped); console.log("upd  admin/index.html (asset versions)"); }
+// the panel's preview shows real pages inside the panel, so the panel's policy allows the pages' inline line too
+const final = stamped.replace(/script-src 'self'( 'sha256-[^']+')?/, `script-src 'self' '${R.HEAD_JS_HASH}'`);
+if (final !== admin) { fs.writeFileSync(adminFile, final); console.log("upd  admin/index.html (asset versions, policy)"); }

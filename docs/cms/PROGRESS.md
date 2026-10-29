@@ -65,6 +65,12 @@ Rule: one step at a time. Test, commit, push, then tick it here.
   go into each page's own JSON in A4–A6; case pages use the Work page tagline and their own title/description.
 
 ## Log
+- 2026-10-29: Security. Every page has a Content-Security-Policy meta (render.js CSP): scripts and files only from the site, the
+  one inline head script allowed by hash (HEAD_JS / HEAD_JS_HASH; build.js stops if they drift and writes the same hash into
+  the panel's policy, since the preview shows real pages), no plugins/forms/frames/foreign <base>; referrer policy.
+  Panel: its own CSP (GitHub API and raw only), no-referrer, jszip served from admin/cms/vendor (identical to npm and cdnjs
+  3.10.1), refuses to run inside a frame. Checked: 54 page loads × 3 widths, panel, preview, sign-in, store, backups,
+  next-page and CV download: no violations. GitHub Pages already sends HSTS (HTTPS only).
 - 2026-10-29: Sign-in: "Forgot the password?" on the sign-in screen = new GitHub token + new login/password (rewrites admin/auth.json).
   GitHub's own email reset is the recovery path; no server, so nothing is mailed. test-auth.js: 22 checks.
 - 2026-10-29: Sign-in for the panel (admin/cms/auth.js, loaded before github.js; window.Auth). No server, so the password protects

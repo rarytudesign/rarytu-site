@@ -8,6 +8,12 @@
   // ---------- text helpers ----------
   const ESC = { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" };
   // attribute / plain text: escape everything
+  // Security policy for every page: scripts and files only from the site itself (plus the one inline line below, by its hash),
+  // no plugins, no forms, no foreign <base>. If you change HEAD_JS, update HEAD_JS_HASH (tools/build.js checks it).
+  const HEAD_JS = 'document.documentElement.classList.add("js");try{history.scrollRestoration="manual"}catch(e){}';
+  const HEAD_JS_HASH = "sha256-y+EidEHu7nVIDMKFpc2eAf0ijblpxvdxOZVds/wgcqs=";
+  const CSP = `default-src 'self'; script-src 'self' '${HEAD_JS_HASH}'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; ` +
+    `media-src 'self' blob:; font-src 'self'; connect-src 'self'; object-src 'none'; base-uri 'self'; form-action 'none'; frame-src 'none'`;
   const esc = (s) => String(s == null ? "" : s).replace(/[&<>"]/g, (c) => ESC[c]);
   // plain text of a rich string (for <title>, alt): line breaks become spaces, other tags go
   const plain = (s) => String(s == null ? "" : s).replace(/<br\b[^>]*>/gi, " ").replace(/<[^>]+>/g, "").replace(/ {2,}/g, " ");
@@ -62,6 +68,8 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="theme-color" content="#F6F6F6">
+<meta http-equiv="Content-Security-Policy" content="${CSP}">
+<meta name="referrer" content="strict-origin-when-cross-origin">
 <title>${title}</title>
 <meta name="description" content="${desc}">
 <meta property="og:title" content="${title}">
@@ -73,7 +81,7 @@
 <link rel="preload" href="${href("assets/fonts/inter-tight-latin-500-normal.woff2")}" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="${href("assets/fonts.css")}">
 <link rel="stylesheet" href="${href("assets/styles.css")}${site.assetsVersion ? "?v=" + site.assetsVersion : ""}">
-<script>document.documentElement.classList.add("js");try{history.scrollRestoration="manual"}catch(e){}</script>
+<script>${HEAD_JS}</script>
 </head>
 <body id="top" class="${ctx.bodyClass}" data-copied="${esc(ui.copied)}">
 <div class="skel" aria-hidden="true"></div>
@@ -481,7 +489,7 @@ ${pageEnd(ctx, NEXT[ctx.nav])}`;
     return out;
   }
 
-  const api = { noOrphans, keepHyphens, headingVar, listPages, renderPage, approachMain, aboutMain, caseMain, workMain, vp, esc, rich, pick, variant, tr, up, pagePath, casePath, shell, lastScreen, siteFooter, SVG };
+  const api = { HEAD_JS, HEAD_JS_HASH, noOrphans, keepHyphens, headingVar, listPages, renderPage, approachMain, aboutMain, caseMain, workMain, vp, esc, rich, pick, variant, tr, up, pagePath, casePath, shell, lastScreen, siteFooter, SVG };
   root.RarytuRender = api;
   if (typeof module !== "undefined" && module.exports) module.exports = api;
 })(typeof window !== "undefined" ? window : globalThis);

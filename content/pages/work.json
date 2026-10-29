@@ -86,7 +86,6 @@
     }
   },
   "projects": [
-    "test-project",
     "hevy",
     "dom",
     "lumo",

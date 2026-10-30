@@ -97,5 +97,8 @@
       "moreProjects": "Другие проекты"
     }
   },
-  "assetsVersion": "2f2d37e7"
+  "assetsVersion": "2f2d37e7",
+  "analytics": {
+    "cloudflare": "749f3739e7294b409add455049c9eb19"
+  }
 }

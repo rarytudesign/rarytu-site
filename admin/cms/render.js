@@ -12,8 +12,12 @@
   // no plugins, no forms, no foreign <base>. If you change HEAD_JS, update HEAD_JS_HASH (tools/build.js checks it).
   const HEAD_JS = 'document.documentElement.classList.add("js");try{history.scrollRestoration="manual"}catch(e){}';
   const HEAD_JS_HASH = "sha256-y+EidEHu7nVIDMKFpc2eAf0ijblpxvdxOZVds/wgcqs=";
-  const CSP = `default-src 'self'; script-src 'self' '${HEAD_JS_HASH}'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; ` +
-    `media-src 'self' blob:; font-src 'self'; connect-src 'self'; object-src 'none'; base-uri 'self'; form-action 'none'; frame-src 'none'`;
+  // Visit counter: Cloudflare Web Analytics (no cookies, nothing stored on the visitor's device, so no consent banner).
+  // Its script is served from the site itself (assets/vendor/cf-beacon.min.js) so only the small report goes to Cloudflare.
+  const CF_REPORT = "https://cloudflareinsights.com";
+  const cfToken = (site) => { const t = site && site.analytics && site.analytics.cloudflare; return /^[0-9a-f]{32}$/.test(t || "") ? t : ""; };
+  const csp = (site) => `default-src 'self'; script-src 'self' '${HEAD_JS_HASH}'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; ` +
+    `media-src 'self' blob:; font-src 'self'; connect-src 'self'${cfToken(site) ? " " + CF_REPORT : ""}; object-src 'none'; base-uri 'self'; form-action 'none'; frame-src 'none'`;
   const esc = (s) => String(s == null ? "" : s).replace(/[&<>"]/g, (c) => ESC[c]);
   // plain text of a rich string (for <title>, alt): line breaks become spaces, other tags go
   const plain = (s) => String(s == null ? "" : s).replace(/<br\b[^>]*>/gi, " ").replace(/<[^>]+>/g, "").replace(/ {2,}/g, " ");
@@ -68,7 +72,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="theme-color" content="#F6F6F6">
-<meta http-equiv="Content-Security-Policy" content="${CSP}">
+<meta http-equiv="Content-Security-Policy" content="${csp(site)}">
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <title>${title}</title>
 <meta name="description" content="${desc}">
@@ -131,7 +135,7 @@ ${main}
 <script src="${href("assets/liquid-gl.js")}${site.assetsVersion ? "?v=" + site.assetsVersion : ""}"></script>
 <script src="${href("assets/liquid.js")}${site.assetsVersion ? "?v=" + site.assetsVersion : ""}"></script>
 <script src="${href("assets/main.js")}${site.assetsVersion ? "?v=" + site.assetsVersion : ""}"></script>
-</body>
+${cfToken(site) ? `<script defer src="${href("assets/vendor/cf-beacon.min.js")}" data-cf-beacon='{"token": "${cfToken(site)}"}'></script>\n` : ""}</body>
 </html>
 `;
   }

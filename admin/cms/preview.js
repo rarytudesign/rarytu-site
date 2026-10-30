@@ -26,6 +26,7 @@
       const u = URL.createObjectURL(blob); urls.push(u);
       out = out.split(new RegExp("(?:\\.\\./)*" + p.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"), "g")).join(u);
     }
+    out = out.replace(/<script[^>]*data-cf-beacon[^>]*><\/script>\n?/, "");   // previews are not visits
     const base = `<base href="${new URL(path, SITE).href}">`;
     return out.replace("<head>", "<head>" + base).replace("</head>", STILL + "</head>");
   }

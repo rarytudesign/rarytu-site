@@ -54,6 +54,8 @@ My suggestion: **GitHub Pages**. It's free, and it gives us one place where the 
 
 ### Step 3. Connect the domain
 
+**Done 30.10.2026:** rarytu.com is live on GitHub Pages with HTTPS (DNS at Spaceweb, domain verified in GitHub). www.rarytu.com and the old rarytudesign.github.io/rarytu-site address redirect to it; rarytu.ru redirects to https://rarytu.com through Spaceweb «Переадресация». rarytu.ru still needs the Gosuslugi (ЕСИА) identification in Spaceweb before it can be renewed.
+
 At the registrar, open the domain's **DNS settings** and add the records your host gives you.
 For GitHub Pages they are:
 
@@ -63,7 +65,7 @@ A      @      185.199.108.153
 A      @      185.199.109.153
 A      @      185.199.110.153
 A      @      185.199.111.153
-CNAME  www    <your-github-username>.github.io
+CNAME  www    rarytudesign.github.io
 ```
 
 Then in the GitHub repository go to Settings → Pages → Custom domain, enter rarytu.com, and once the check passes tick **Enforce HTTPS**.
@@ -80,7 +82,7 @@ DNS changes take from a few minutes up to 24 hours.
 
 ## Панель управления
 
-Адрес: **rarytudesign.github.io/rarytu-site/admin/** (добавь в закладки; на сайте ссылки на неё нет).
+Адрес: **rarytu.com/admin/** (добавь в закладки; на сайте ссылки на неё нет).
 
 **Вход по логину и паролю.**
 - Один раз: открой панель на компьютере, где она уже работает, и нажми **Set up sign-in** вверху. Придумай логин и пароль (от 10 символов).

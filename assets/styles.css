@@ -21,7 +21,7 @@
 
   --gutter: 16px;
   --sidebar-w: 0px;
-  --bar-h: 72px;
+  --bar-h: 64px;   /* 72 before 31.10: 8px less above the name and the menu button */
   --col1: 0px;
   color-scheme: light;
 }
@@ -175,13 +175,13 @@ html { scrollbar-color: rgba(84, 23, 37, 0.45) transparent; scrollbar-width: thi
 
 /* Mobile bar: pl16 pr6 py14 (72 tall); open menu radius 20 at the bottom */
 .mbar { position: fixed; inset: 0 0 auto; z-index: 30; background: var(--surface-muted); }
-.mbar__row { display: flex; justify-content: space-between; align-items: center; padding: 14px 6px 14px 16px; font-weight: 500; letter-spacing: 0; line-height: 20px; }
+.mbar__row { display: flex; justify-content: space-between; align-items: center; padding: 6px 6px 14px 16px; font-weight: 500; letter-spacing: 0; line-height: 20px; }
 .mbar__btn { width: 44px; height: 44px; display: grid; place-items: center; }
 .mbar__btn svg { width: 24px; height: 24px; }
 /* Open menu: full screen (Figma "Mobile nav_new"): p32, title block on top, nav + links at the bottom */
 .mmenu {
   position: fixed; inset: 0 0 auto; z-index: 31; height: 100vh; height: 100lvh;
-  display: flex; flex-direction: column; padding: 32px 32px calc(32px + env(safe-area-inset-bottom));
+  display: flex; flex-direction: column; padding: 24px 32px calc(32px + env(safe-area-inset-bottom));
   padding-bottom: calc(32px + 100lvh - 100dvh + env(safe-area-inset-bottom));
   background: var(--surface-muted); overflow-y: auto; overscroll-behavior: contain;
   animation: menu-in 320ms var(--easy);

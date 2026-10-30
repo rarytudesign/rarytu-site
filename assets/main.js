@@ -652,7 +652,7 @@
      Two steps, so a fast fling from the middle of the page never opens the next one by accident (Nastya, 31.10):
      1. The page ends at the footer. Arriving there, the footer only hints: the brand colour rises a little and the
         line fills to 25%, then both go back to 0.
-     2. After that (finger lifted, page at rest) a stretch of real scroll (.sfoot-run, 80% of a screen) opens up after
+     2. After that (finger lifted, page at rest) a stretch of real scroll (.sfoot-run, 1.6 screens) opens up after
         the footer. Scrolling into it, the footer stays pinned to the bottom while the brand colour rises and fills the
         screen; the line fills with it and the next page's name moves to the middle. Only at a full line does the next
         page open (its loader is the same colour, so it reads as one move). Stopping short eases back to the footer.
@@ -670,7 +670,7 @@
     const setP = (v) => { sfoot.style.setProperty("--p", v.toFixed(4)); nextLink.style.setProperty("--p", v.toFixed(4)); };
     const measure = () => {
       if (!on()) { run.style.height = "0px"; sfoot.classList.remove("is-run"); return; }
-      R = Math.round((probe.offsetHeight || innerHeight) * 0.8);
+      R = Math.round((probe.offsetHeight || innerHeight) * 1.6);   // 0.8 before 31.10: twice as long (Nastya)
       run.style.height = (armed ? R : 0) + "px"; sfoot.classList.add("is-run");
       sfoot.style.setProperty("--fh", sfoot.offsetHeight + "px");
       // how far the next-page block travels to sit in the middle of the screen at the end

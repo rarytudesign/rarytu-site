@@ -749,14 +749,13 @@
      Physics in assets/spheres.js (tuned in Nastya's fluid-sim tool, v8.6). It rests until the pointer or a finger
      goes through it: spheres are pushed out of a circle around it, scatter like grains and settle again.
      They never touch: there is always a small gap. The last screen is the container; sphere size follows its area
-     (24px on a 1440×900 desktop, 22px on phones, bigger on large monitors). */
+     (24px on a 1440×900 desktop, 18px at least on phones, bigger on large monitors). */
   const foot = $(".dfoot");
   if (foot && window.RarytuSpheres) liquid(foot, reduce);
 
   function liquid(section, still) {
-    const COLOR = "#541725";
-    let DPR = 1;
-    let sim = null, cv = null, ctx = null, W = 0, H = 0, running = false, visible = false, pointer = null, prev = null, lastActive = -1e9, near = false;
+    const DPR = Math.min(devicePixelRatio || 1, 2), COLOR = "#541725";
+    let sim = null, cv = null, ctx = null, W = 0, H = 0, running = false, visible = false, pointer = null, prev = null, lastActive = -1e9;
 
     function build() {
       const r = section.getBoundingClientRect();
@@ -766,9 +765,6 @@
       const old = section.querySelector(".dfoot__canvas");
       cv = document.createElement("canvas"); cv.className = "dfoot__canvas"; cv.setAttribute("aria-hidden", "true");
       if (old) old.replaceWith(cv); else section.prepend(cv);
-      // sharp on retina, but at most ~6 million canvas pixels: a big monitor at 2× would mean redrawing 12+ million
-      // every frame, which is what made it stutter (spheres there are 30-40px, still crisp at a lower ratio)
-      DPR = Math.max(1, Math.min(devicePixelRatio || 1, 2, Math.sqrt(6e6 / (W * H))));
       cv.width = Math.round(W * DPR); cv.height = Math.round(H * DPR);
       // the water starts a little below the buttons (measured by layout: the reveal animation may still move them)
       const k = section.querySelector(".dfoot__block").getBoundingClientRect(), b = section.querySelector(".dfoot__btns");
@@ -783,47 +779,26 @@
       ctx = cv.getContext("2d", { alpha: true }); ctx.setTransform(DPR, 0, 0, DPR, 0, 0);
       try { sim = RarytuSpheres.create({ width: W, height: H, level, block }); } catch (e) { console.warn("spheres", e); sim = null; }
       section.dataset.liquid = sim ? "spheres" : "none";
-      // the pile is prepared in slices of a few ms while the browser is idle (no stall on page load);
-      // nothing is drawn until it's ready, and it starts only when the last screen is getting close
-      prep();
-    }
-    const idle = window.requestIdleCallback || ((f) => setTimeout(() => f({ timeRemaining: () => 6 }), 16));
-    let prepping = false;
-    function prep() {
-      if (prepping || !sim || sim.ready() || !near) return;
-      prepping = true;
-      const own = sim;
-      const slice = (d) => {
-        if (sim !== own) { prepping = false; return; }
-        const done = sim.prepare(Math.max(2, Math.min(8, d.timeRemaining() - 1)));
-        if (done) { prepping = false; draw(); kick(); return; }
-        idle(slice);
-      };
-      idle(slice);
+      draw();
     }
     function draw() {
       if (!sim) return;
       ctx.clearRect(0, 0, W, H); ctx.fillStyle = COLOR; ctx.beginPath();
       const { x, y, N, R } = sim;
-      // only whole spheres: one the screen edge would cut is not drawn (the pile goes on past the edge,
-      // so the border stays ragged, never a straight cut row)
-      for (let i = 0; i < N; i++) {
-        if (x[i] - R < 0 || x[i] + R > W || y[i] - R < 0 || y[i] + R > H) continue;
-        ctx.moveTo(x[i] + R, y[i]); ctx.arc(x[i], y[i], R, 0, 6.2832);
-      }
+      for (let i = 0; i < N; i++) { if (y[i] < -R || y[i] > H + R) continue; ctx.moveTo(x[i] + R, y[i]); ctx.arc(x[i], y[i], R, 0, 6.2832); }
       ctx.fill();
     }
-    // runs while the pointer or a finger moves, then until the spheres come to rest (8 s at most).
-    // A cursor resting over the spheres doesn't keep the page busy.
-    let energy = 1;
-    const live = () => { const t = performance.now() - lastActive; return t < 1500 || (t < 8000 && energy > 0.004); };
+    // runs while touched and for a while after, so splashes land and the surface settles
+    const live = () => pointer || performance.now() - lastActive < 8000;
     function tick() {
-      if (!visible || !sim || !sim.ready() || !live()) { running = false; return; }
-      energy = sim.step(pointer ? { x: pointer.x, y: pointer.y } : null) / (sim.R * sim.R / 144);
+      if (!visible || !sim || !live()) { running = false; return; }
+      let pp = null;
+      if (pointer) { pp = { x: pointer.x, y: pointer.y }; lastActive = performance.now(); }
+      sim.step(pp);
       draw();
       requestAnimationFrame(tick);
     }
-    const kick = () => { if (!running && visible && !still && sim && sim.ready() && live()) { running = true; requestAnimationFrame(tick); } };
+    const kick = () => { if (!running && visible && !still && sim && live()) { running = true; requestAnimationFrame(tick); } };
     const toLocal = (e) => { const r = section.getBoundingClientRect(); return { x: e.clientX - r.left, y: e.clientY - r.top }; };
     if (!still) {
       section.addEventListener("pointermove", (e) => { if (e.pointerType === "touch") return; pointer = toLocal(e); lastActive = performance.now(); kick(); }, { passive: true });
@@ -837,12 +812,10 @@
       section.addEventListener("touchcancel", lift, { passive: true });
     }
     new IntersectionObserver(([e]) => { visible = e.isIntersecting; if (visible) kick(); }, { rootMargin: "100px" }).observe(section);
-    // start preparing the pile when the last screen is within about two screens
-    new IntersectionObserver(([e]) => { if (e.isIntersecting) { near = true; prep(); } }, { rootMargin: "200% 0px" }).observe(section);
     // rebuild when the size changes (the section is 100lvh, so a phone's browser bars sliding in and out don't change it)
     let rt;
     new ResizeObserver(() => { clearTimeout(rt); rt = setTimeout(() => { if (section.clientWidth !== W || section.clientHeight !== H) build(); }, 150); }).observe(section);
-    // built once the fonts are in (the level is measured from the title and the buttons)
-    if (document.fonts) document.fonts.ready.then(build); else build();
+    document.fonts?.ready.then(build);
+    build();
   }
 })();

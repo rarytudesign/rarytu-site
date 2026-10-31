@@ -300,6 +300,3 @@ Rule: one step at a time. Test, commit, push, then tick it here.
   the last screen's area (18px minimum on phones), a 2px gap that is never closed, pointer pushes spheres out with a scatter.
   Water fills 40% of the screen (never above the buttons); the title and buttons are solid. Tuning values: `TUNE` at the top
   of spheres.js. render.js links spheres.js instead of the two old files; build.js hashes it into assetsVersion.
-- 2026-10-31: spheres: walls and floor are off screen and only whole spheres are drawn (no cut spheres, no straight rows
-  at the edges); the pile starts from random positions and settles under gravity in a short warm-up (main.js), so at rest
-  it looks loose rather than honeycomb; a bit more scatter and bounce.

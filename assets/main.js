@@ -780,28 +780,12 @@
       try { sim = RarytuSpheres.create({ width: W, height: H, level, block }); } catch (e) { console.warn("spheres", e); sim = null; }
       section.dataset.liquid = sim ? "spheres" : "none";
       draw();
-      // warm-up: let the random start pile settle under gravity (a few steps per tick, so the page never stalls)
-      const own = sim; let left = 150;
-      const warm = () => {
-        if (sim !== own || running) return;   // rebuilt, or the pointer took over
-        const n = Math.min(8, left);
-        for (let i = 0; i < n; i++) sim.step(null);
-        left -= n;
-        if (!still || !left) draw();
-        if (left > 0) setTimeout(warm, 0);
-      };
-      if (sim) setTimeout(warm, 0);
     }
     function draw() {
       if (!sim) return;
       ctx.clearRect(0, 0, W, H); ctx.fillStyle = COLOR; ctx.beginPath();
       const { x, y, N, R } = sim;
-      // only whole spheres: one the screen edge would cut is not drawn (the pile goes on past the edge,
-      // so the border stays ragged, never a straight cut row)
-      for (let i = 0; i < N; i++) {
-        if (x[i] - R < 0 || x[i] + R > W || y[i] - R < 0 || y[i] + R > H) continue;
-        ctx.moveTo(x[i] + R, y[i]); ctx.arc(x[i], y[i], R, 0, 6.2832);
-      }
+      for (let i = 0; i < N; i++) { if (y[i] < -R || y[i] > H + R) continue; ctx.moveTo(x[i] + R, y[i]); ctx.arc(x[i], y[i], R, 0, 6.2832); }
       ctx.fill();
     }
     // runs while touched and for a while after, so splashes land and the surface settles

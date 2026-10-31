@@ -10,12 +10,12 @@
 (function (root) {
   const TUNE = {
     refW: 1072, refH: 900, scaleMin: 0.75, scaleMax: 2,   // reference box, limits of the scale
-    size: 24, gap: 2, spacing: 26, jitter: 1,             // px at scale 1
+    size: 24, gap: 2, spacing: 26,             // px at scale 1
     reach: 36, push: 1.5,                                  // pressure reach (px) and strength
     gravity: 0.2, maxSpeed: 12, damping: 0.98,            // px/frame², px/frame, per frame
     wallDamp: 0.6, wallStiff: 0.15,
-    iterations: 20, bounce: 0.5,                          // non-overlap passes, restitution on contact
-    pointerRadius: 5, pointerStrength: 0.035, scatter: 0.8
+    iterations: 20, bounce: 0.6,                          // non-overlap passes, restitution on contact
+    pointerRadius: 5, pointerStrength: 0.035, scatter: 1
   };
 
   function create(o) {
@@ -32,12 +32,11 @@
     // ---------- at rest: hexagonal rows at MIN from the floor up to the water level ----------
     const level = o.level != null ? o.level : H * 0.6;
     const block = o.block || null;   // { l, t, r, b }: the title and the buttons, solid
-    const pts = [], dy = MIN * Math.sqrt(3) / 2, jit = T.jitter * s;
-    const cols = Math.max(1, Math.floor((XR - XL) / MIN) + 1), x0 = (W - (cols - 1) * MIN) / 2;
-    for (let j = 0, yy = YB; yy >= level; j++, yy -= dy) {
-      const off = j % 2 ? MIN / 2 : 0, n = j % 2 ? cols - 1 : cols;
-      for (let k = 0; k < n; k++) pts.push(x0 + off + k * MIN + (Math.random() - 0.5) * jit, yy);
-    }
+    // Random positions (no honeycomb rows at rest, so the edges look loose, not like a container), then pushed
+    // apart to the gap by settle() below. A random pile is looser than a honeycomb; after settling under gravity
+    // (main.js runs a short warm-up) it ends up close to the water level.
+    const pts = [], area = (XR - XL) * (YB - level), count = Math.max(1, Math.floor(area / (MIN * MIN * 0.866) * 0.93));
+    for (let k = 0; k < count; k++) pts.push(XL + Math.random() * (XR - XL), level + Math.random() * (YB - level));
     const N = pts.length / 2;
     const x = new Float32Array(N), y = new Float32Array(N), vx = new Float32Array(N), vy = new Float32Array(N);
     const inside = new Uint8Array(N), rnd = new Float32Array(N), cellOf = new Int32Array(N);
@@ -180,6 +179,40 @@
       for (let i = 0; i < N; i++) e += vx[i] * vx[i] + vy[i] * vy[i];
       return e / Math.max(1, N);
     }
+
+    // Push the random start positions apart to the gap, without any motion.
+    (function settle() {
+      const C2 = (MIN * 1.6) * (MIN * 1.6);
+      for (let it = 0; it < 300; it++) {
+        if (it % 10 === 0) {
+          rebuild(); np = 0;
+          for (let i = 0; i < N; i++) around(i, (j) => {
+            if (j <= i) return;
+            const dx = x[i] - x[j], dyy = y[i] - y[j];
+            if (dx * dx + dyy * dyy >= C2) return;
+            if (np >= pa.length) { const g = new Int32Array(pa.length * 2); g.set(pa); pa = g; const h = new Int32Array(pb.length * 2); h.set(pb); pb = h; }
+            pa[np] = i; pb[np] = j; np++;
+          });
+        }
+        let worst = 0;
+        for (let p = 0; p < np; p++) {
+          const i = pa[p], j = pb[p];
+          let dx = x[i] - x[j], dyy = y[i] - y[j], d2 = dx * dx + dyy * dyy;
+          if (d2 >= MIN2) continue;
+          if (d2 < 1e-9) { dx = Math.random() - 0.5; dyy = Math.random() - 0.5; d2 = dx * dx + dyy * dyy; }
+          const d = Math.sqrt(d2), h = (MIN - d) * 0.5, nx = dx / d, ny = dyy / d;
+          if (h > worst) worst = h;
+          x[i] += nx * h; y[i] += ny * h; x[j] -= nx * h; y[j] -= ny * h;
+        }
+        // keep the pile in its box (sides and floor off screen, top at the water level)
+        for (let i = 0; i < N; i++) {
+          if (x[i] < XL) x[i] = XL; else if (x[i] > XR) x[i] = XR;
+          if (y[i] > YB) y[i] = YB;
+        }
+        solid();
+        if (worst < 0.01 * s) break;
+      }
+    })();
 
     return { N, x, y, R, scale: s, step };
   }

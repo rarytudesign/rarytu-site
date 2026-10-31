@@ -24,15 +24,17 @@
     const SIZE = T.size * s, R = SIZE / 2, MIN = Math.max(T.spacing * s, SIZE + T.gap * s), MIN2 = MIN * MIN;
     const REACH = T.reach * s, REACH2 = REACH * REACH, PUSH = T.push * s;
     const G = T.gravity * s, VMAX = T.maxSpeed * s, VMAX2 = VMAX * VMAX;
-    const INSET = R + T.gap * s;                 // walls: sphere edge stays a gap away from the box edge
+    // Walls and floor sit outside the screen (about two rows out), so the screen edge cuts through the pile
+    // at random places: no straight row along the bottom, no column along the sides, no visible container.
+    const OUT = Math.round(MIN * 1.8), XL = -OUT, XR = W + OUT, YB = H + OUT, YT = R;
     const PR = Math.max(REACH, T.spacing * s) * T.pointerRadius;
 
     // ---------- at rest: hexagonal rows at MIN from the floor up to the water level ----------
     const level = o.level != null ? o.level : H * 0.6;
     const block = o.block || null;   // { l, t, r, b }: the title and the buttons, solid
     const pts = [], dy = MIN * Math.sqrt(3) / 2, jit = T.jitter * s;
-    const cols = Math.max(1, Math.floor((W - 2 * INSET) / MIN) + 1), x0 = (W - (cols - 1) * MIN) / 2;
-    for (let j = 0, yy = H - INSET; yy >= level; j++, yy -= dy) {
+    const cols = Math.max(1, Math.floor((XR - XL) / MIN) + 1), x0 = (W - (cols - 1) * MIN) / 2;
+    for (let j = 0, yy = YB; yy >= level; j++, yy -= dy) {
       const off = j % 2 ? MIN / 2 : 0, n = j % 2 ? cols - 1 : cols;
       for (let k = 0; k < n; k++) pts.push(x0 + off + k * MIN + (Math.random() - 0.5) * jit, yy);
     }
@@ -42,11 +44,11 @@
     for (let i = 0; i < N; i++) { x[i] = pts[2 * i]; y[i] = pts[2 * i + 1]; rnd[i] = Math.random() * 2 - 1; }
 
     // spatial grid, cell = 2 × reach (also covers MIN)
-    const CS = Math.max(8, REACH * 2), GW = Math.floor(W / CS) + 1, GH = Math.floor(H / CS) + 1;
+    const CS = Math.max(8, REACH * 2), GW = Math.floor((XR - XL) / CS) + 1, GH = Math.floor((YB + CS) / CS) + 1;
     const head = new Int32Array(GW * GH), next = new Int32Array(N);
     let pa = new Int32Array(N * 8), pb = new Int32Array(N * 8), np = 0;
     const cell = (i) => {
-      const cx = Math.max(0, Math.min(GW - 1, Math.floor(x[i] / CS)));
+      const cx = Math.max(0, Math.min(GW - 1, Math.floor((x[i] - XL) / CS)));
       const cy = Math.max(0, Math.min(GH - 1, Math.floor(y[i] / CS)));
       return cy * GW + cx;
     };
@@ -66,20 +68,37 @@
       }
     }
 
+    // soft walls, as in Nastya's tool: they take speed out and push back, the non-overlap rule always wins
     function walls(i) {
-      const L = INSET, Rt = W - INSET, B = H - INSET, Tp = INSET, m = Math.max(REACH, 1), hard = Math.max(30, REACH);
-      let d = x[i] - Rt;
-      if (d > 0) { vx[i] *= T.wallDamp; vx[i] -= d * T.wallStiff; } else if (d > -m) vx[i] -= d * 0.02;
-      d = x[i] - L;
-      if (d < 0) { vx[i] *= T.wallDamp; vx[i] -= d * T.wallStiff; } else if (d < m) vx[i] -= d * 0.02;
-      d = y[i] - B;
-      if (d > 0) { vy[i] *= T.wallDamp; vy[i] -= d * T.wallStiff; } else if (d > -m) vy[i] -= d * 0.02;
-      d = y[i] - Tp;
+      let d = x[i] - XR;
+      if (d > 0) { vx[i] *= T.wallDamp; vx[i] -= d * T.wallStiff; }
+      d = x[i] - XL;
+      if (d < 0) { vx[i] *= T.wallDamp; vx[i] -= d * T.wallStiff; }
+      d = y[i] - YB;
+      if (d > 0) { vy[i] *= T.wallDamp; vy[i] -= d * T.wallStiff; }
+      d = y[i] - YT;
       if (d < 0) { vy[i] *= T.wallDamp; vy[i] -= d * T.wallStiff; }
-      if (x[i] > Rt + hard) { x[i] = Rt + hard; vx[i] = 0; }
-      if (x[i] < L - hard) { x[i] = L - hard; vx[i] = 0; }
-      if (y[i] > B + hard) { y[i] = B + hard; vy[i] = 0; }
-      if (y[i] < Tp - hard) { y[i] = Tp - hard; vy[i] = 0; }
+    }
+
+    // solid: the title block (and a far safety limit). Runs inside every non-overlap pass, so a sphere
+    // pushed against the block pushes its neighbours back instead of overlapping them.
+    function solid() {
+      for (let i = 0; i < N; i++) {
+        // walls are soft (walls()) and lie off screen; this is only a far safety limit
+        if (x[i] < XL - OUT) { x[i] = XL - OUT; vx[i] = 0; } else if (x[i] > XR + OUT) { x[i] = XR + OUT; vx[i] = 0; }
+        if (y[i] > YB + OUT) { y[i] = YB + OUT; vy[i] = 0; } else if (y[i] < YT - OUT) { y[i] = YT - OUT; vy[i] = 0; }
+        if (block) {
+          const l = block.l - R, r = block.r + R, t = block.t - R, b = block.b + R;
+          if (x[i] > l && x[i] < r && y[i] > t && y[i] < b) {
+            const dl = x[i] - l, dr = r - x[i], dt = y[i] - t, db = b - y[i], m = Math.min(dl, dr, dt, db);
+            // on top a sphere slides off towards the nearer side, so none stays lying on the title
+            if (m === dt) { y[i] = t; if (vy[i] > 0) vy[i] = 0; vx[i] += dl < dr ? -0.3 * s : 0.3 * s; }
+            else if (m === db) { y[i] = b; if (vy[i] < 0) vy[i] = 0; }
+            else if (m === dl) { x[i] = l; if (vx[i] > 0) vx[i] = 0; }
+            else { x[i] = r; if (vx[i] < 0) vx[i] = 0; }
+          }
+        }
+      }
     }
 
     /* One frame. pointer: { x, y } in the box's px, or null (not over the water / finger lifted).
@@ -141,6 +160,7 @@
         if (np >= pa.length) { const g = new Int32Array(pa.length * 2); g.set(pa); pa = g; const h = new Int32Array(pb.length * 2); h.set(pb); pb = h; }
         pa[np] = i; pb[np] = j; np++;
       });
+      solid();
       for (let it = 0; it < T.iterations; it++) {
         let moved = false;
         for (let p = 0; p < np; p++) {
@@ -153,25 +173,8 @@
           const vn = (vx[i] - vx[j]) * nx + (vy[i] - vy[j]) * ny;
           if (vn < 0) { const k = vn * 0.5 * (1 + B); vx[i] -= nx * k; vy[i] -= ny * k; vx[j] += nx * k; vy[j] += ny * k; }
         }
+        solid();
         if (!moved) break;
-      }
-      // last word: the floor, the sides and the title block are solid (nothing hides below the screen edge,
-      // nothing lies on the title or the buttons)
-      const L = INSET, Rt = W - INSET, Bt = H - INSET;
-      for (let i = 0; i < N; i++) {
-        if (x[i] < L) { x[i] = L; if (vx[i] < 0) vx[i] = 0; } else if (x[i] > Rt) { x[i] = Rt; if (vx[i] > 0) vx[i] = 0; }
-        if (y[i] > Bt) { y[i] = Bt; if (vy[i] > 0) vy[i] = 0; }
-        if (block) {
-          const l = block.l - R, r = block.r + R, t = block.t - R, b = block.b + R;
-          if (x[i] > l && x[i] < r && y[i] > t && y[i] < b) {
-            const dl = x[i] - l, dr = r - x[i], dt = y[i] - t, db = b - y[i], m = Math.min(dl, dr, dt, db);
-            // on top a sphere slides off towards the nearer side, so none stays lying on the title
-            if (m === dt) { y[i] = t; if (vy[i] > 0) vy[i] = 0; vx[i] += dl < dr ? -0.3 * s : 0.3 * s; }
-            else if (m === db) { y[i] = b; if (vy[i] < 0) vy[i] = 0; }
-            else if (m === dl) { x[i] = l; if (vx[i] > 0) vx[i] = 0; }
-            else { x[i] = r; if (vx[i] < 0) vx[i] = 0; }
-          }
-        }
       }
       let e = 0;
       for (let i = 0; i < N; i++) e += vx[i] * vx[i] + vy[i] * vy[i];

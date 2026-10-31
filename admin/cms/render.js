@@ -132,8 +132,7 @@
 <main class="main" id="main" tabindex="-1">
 ${main}
 </main>
-<script src="${href("assets/liquid-gl.js")}${site.assetsVersion ? "?v=" + site.assetsVersion : ""}"></script>
-<script src="${href("assets/liquid.js")}${site.assetsVersion ? "?v=" + site.assetsVersion : ""}"></script>
+<script src="${href("assets/spheres.js")}${site.assetsVersion ? "?v=" + site.assetsVersion : ""}"></script>
 <script src="${href("assets/main.js")}${site.assetsVersion ? "?v=" + site.assetsVersion : ""}"></script>
 ${cfToken(site) ? `<script defer src="${href("assets/vendor/cf-beacon.min.js")}" data-cf-beacon='{"token": "${cfToken(site)}"}'></script>\n` : ""}</body>
 </html>
@@ -145,7 +144,7 @@ ${cfToken(site) ? `<script defer src="${href("assets/vendor/cf-beacon.min.js")}"
   // the line arrow from the layout (19×14), drawn as a stroke so its weight always matches the 2px progress line
   const ARROW = '<svg class="sfoot__arrow" viewBox="0 0 19 14" width="19" height="14" aria-hidden="true"><path d="M0 6.98h17.4M11.17.7l6.96 6.28-6.96 6.27" fill="none" stroke="currentColor" stroke-width="2"/></svg>';
   /* The last screen: exactly one screen high, "Let's work together" and the round contact buttons a little above
-     the middle, the liquid of small spheres below (main.js). Same on every page and device. */
+     the middle, the spheres below (assets/spheres.js, run by main.js). Same on every page and device. */
   function lastScreen(ctx) {
     const { site, lang } = ctx;
     const btns = site.contacts.map((c) =>

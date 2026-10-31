@@ -745,12 +745,13 @@
     requestAnimationFrame(reset);
   }
 
-  /* ---------- Liquid of spheres on the last screen ----------
-     Runs on the GPU (assets/liquid-gl.js, WebGL2); browsers without it get the same physics on the CPU (assets/liquid.js).
-     It rests until the pointer or a finger goes through it, then flows, splashes and settles like water in a glass:
-     the last screen is the container. Spheres: 16px from tablet up, 8px on phones. */
+  /* ---------- Spheres on the last screen ----------
+     Physics in assets/spheres.js (tuned in Nastya's fluid-sim tool, v8.6). It rests until the pointer or a finger
+     goes through it: spheres are pushed out of a circle around it, scatter like grains and settle again.
+     They never touch: there is always a small gap. The last screen is the container; sphere size follows its area
+     (24px on a 1440×900 desktop, 18px at least on phones, bigger on large monitors). */
   const foot = $(".dfoot");
-  if (foot && (window.RarytuLiquidGL || window.RarytuLiquid)) liquid(foot, reduce);
+  if (foot && window.RarytuSpheres) liquid(foot, reduce);
 
   function liquid(section, still) {
     const DPR = Math.min(devicePixelRatio || 1, 2), COLOR = "#541725";
@@ -767,23 +768,21 @@
       cv.width = Math.round(W * DPR); cv.height = Math.round(H * DPR);
       // the water starts a little below the buttons (measured by layout: the reveal animation may still move them)
       const k = section.querySelector(".dfoot__block").getBoundingClientRect(), b = section.querySelector(".dfoot__btns");
-      const level = k.top - r.top + b.offsetTop + b.offsetHeight + (W < 744 ? 24 : 36);
-      const small = W < 744;
-      const opts = { width: W, height: H, dpr: DPR, radius: small ? 4 : 8, spacing: small ? 12 : 24, pointerRadius: small ? 60 : 80,
-        surface: (x) => level + 20 + Math.min(28, H * 0.035) * (Math.sin((x / W) * Math.PI * 2.1 + 0.6) * 0.6 + Math.sin((x / W) * Math.PI * 5.3 + 1.7) * 0.4) };
-      sim = null; ctx = null;
-      try { sim = window.RarytuLiquidGL ? RarytuLiquidGL.create(cv, opts) : null; } catch (e) { console.warn("liquid (WebGL)", e); sim = null; }
-      if (!sim && window.RarytuLiquid) {
-        if (cv.getContext("webgl2")) { const c2 = cv.cloneNode(); cv.replaceWith(c2); cv = c2; }   // the WebGL try already claimed this canvas
-        ctx = cv.getContext("2d", { alpha: true }); ctx.setTransform(DPR, 0, 0, DPR, 0, 0);
-        sim = RarytuLiquid.create(opts);
-      }
-      section.dataset.liquid = sim ? (sim.gpu ? "webgl" : "cpu") : "none";
+      // water: 40% of the screen (Nastya's tuning), never higher than a little below the buttons
+      const below = k.top - r.top + b.offsetTop + b.offsetHeight + (W < 744 ? 24 : 36);
+      const level = Math.max(below, H * 0.6);
+      // the title and the buttons are solid: splashes go around them, so they stay readable and clickable
+      // (by layout offsets inside the block, like the level: the reveal animation may still move them)
+      const ti = section.querySelector(".dfoot__title"), ox = k.left - r.left, oy = k.top - r.top, pad = 8;
+      const block = { l: ox + Math.min(ti.offsetLeft, b.offsetLeft) - pad, r: ox + Math.max(ti.offsetLeft + ti.offsetWidth, b.offsetLeft + b.offsetWidth) + pad,
+        t: oy + ti.offsetTop - pad, b: oy + b.offsetTop + b.offsetHeight + pad };
+      ctx = cv.getContext("2d", { alpha: true }); ctx.setTransform(DPR, 0, 0, DPR, 0, 0);
+      try { sim = RarytuSpheres.create({ width: W, height: H, level, block }); } catch (e) { console.warn("spheres", e); sim = null; }
+      section.dataset.liquid = sim ? "spheres" : "none";
       draw();
     }
     function draw() {
       if (!sim) return;
-      if (sim.gpu) { sim.draw(); return; }
       ctx.clearRect(0, 0, W, H); ctx.fillStyle = COLOR; ctx.beginPath();
       const { x, y, N, R } = sim;
       for (let i = 0; i < N; i++) { if (y[i] < -R || y[i] > H + R) continue; ctx.moveTo(x[i] + R, y[i]); ctx.arc(x[i], y[i], R, 0, 6.2832); }
@@ -794,7 +793,7 @@
     function tick() {
       if (!visible || !sim || !live()) { running = false; return; }
       let pp = null;
-      if (pointer) { pp = { x: pointer.x, y: pointer.y, vx: prev ? pointer.x - prev.x : 0, vy: prev ? pointer.y - prev.y : 0 }; prev = { ...pointer }; lastActive = performance.now(); }
+      if (pointer) { pp = { x: pointer.x, y: pointer.y }; lastActive = performance.now(); }
       sim.step(pp);
       draw();
       requestAnimationFrame(tick);

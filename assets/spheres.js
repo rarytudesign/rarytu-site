@@ -1,0 +1,185 @@
+/* Spheres on the last screen ("Let's work together"). Port of Nastya's fluid-sim v8.6 (p5 tuning tool), without p5.
+   Each sphere pushes its neighbours away (soft SPH-like pressure), and a hard rule keeps every pair at least
+   "size + gap" apart, so spheres never touch. The pointer pushes spheres out of a circle around it; each sphere
+   gets a slightly different push, so they scatter like grains instead of flying off in lumps.
+
+   All sizes are tuned for a reference box (the last screen of a 1440×900 desktop: 1072×900 next to the sidebar)
+   and scale with the box area, so phones, tablets and big monitors show the same picture with about the same
+   number of spheres. create(o: { width, height, level }) → { N, x, y, R, step(pointer) }.
+   Exposes window.RarytuSpheres (and module.exports for tests). */
+(function (root) {
+  const TUNE = {
+    refW: 1072, refH: 900, scaleMin: 0.75, scaleMax: 2,   // reference box, limits of the scale
+    size: 24, gap: 2, spacing: 26, jitter: 1,             // px at scale 1
+    reach: 36, push: 1.5,                                  // pressure reach (px) and strength
+    gravity: 0.2, maxSpeed: 12, damping: 0.98,            // px/frame², px/frame, per frame
+    wallDamp: 0.6, wallStiff: 0.15,
+    iterations: 20, bounce: 0.5,                          // non-overlap passes, restitution on contact
+    pointerRadius: 5, pointerStrength: 0.035, scatter: 0.8
+  };
+
+  function create(o) {
+    const W = o.width, H = o.height, T = Object.assign({}, TUNE, o.tune || {});
+    const s = Math.min(T.scaleMax, Math.max(T.scaleMin, Math.sqrt((W * H) / (T.refW * T.refH))));
+    const SIZE = T.size * s, R = SIZE / 2, MIN = Math.max(T.spacing * s, SIZE + T.gap * s), MIN2 = MIN * MIN;
+    const REACH = T.reach * s, REACH2 = REACH * REACH, PUSH = T.push * s;
+    const G = T.gravity * s, VMAX = T.maxSpeed * s, VMAX2 = VMAX * VMAX;
+    const INSET = R + T.gap * s;                 // walls: sphere edge stays a gap away from the box edge
+    const PR = Math.max(REACH, T.spacing * s) * T.pointerRadius;
+
+    // ---------- at rest: hexagonal rows at MIN from the floor up to the water level ----------
+    const level = o.level != null ? o.level : H * 0.6;
+    const block = o.block || null;   // { l, t, r, b }: the title and the buttons, solid
+    const pts = [], dy = MIN * Math.sqrt(3) / 2, jit = T.jitter * s;
+    const cols = Math.max(1, Math.floor((W - 2 * INSET) / MIN) + 1), x0 = (W - (cols - 1) * MIN) / 2;
+    for (let j = 0, yy = H - INSET; yy >= level; j++, yy -= dy) {
+      const off = j % 2 ? MIN / 2 : 0, n = j % 2 ? cols - 1 : cols;
+      for (let k = 0; k < n; k++) pts.push(x0 + off + k * MIN + (Math.random() - 0.5) * jit, yy);
+    }
+    const N = pts.length / 2;
+    const x = new Float32Array(N), y = new Float32Array(N), vx = new Float32Array(N), vy = new Float32Array(N);
+    const inside = new Uint8Array(N), rnd = new Float32Array(N), cellOf = new Int32Array(N);
+    for (let i = 0; i < N; i++) { x[i] = pts[2 * i]; y[i] = pts[2 * i + 1]; rnd[i] = Math.random() * 2 - 1; }
+
+    // spatial grid, cell = 2 × reach (also covers MIN)
+    const CS = Math.max(8, REACH * 2), GW = Math.floor(W / CS) + 1, GH = Math.floor(H / CS) + 1;
+    const head = new Int32Array(GW * GH), next = new Int32Array(N);
+    let pa = new Int32Array(N * 8), pb = new Int32Array(N * 8), np = 0;
+    const cell = (i) => {
+      const cx = Math.max(0, Math.min(GW - 1, Math.floor(x[i] / CS)));
+      const cy = Math.max(0, Math.min(GH - 1, Math.floor(y[i] / CS)));
+      return cy * GW + cx;
+    };
+    function rebuild() {
+      head.fill(-1);
+      for (let i = 0; i < N; i++) { const k = cell(i); cellOf[i] = k; next[i] = head[k]; head[k] = i; }
+    }
+    // calls f(j) for every sphere in the 3×3 cells around sphere i
+    function around(i, f) {
+      const k = cellOf[i], cx = k % GW, cy = (k / GW) | 0;
+      for (let oy = -1; oy <= 1; oy++) {
+        const Y = cy + oy; if (Y < 0 || Y >= GH) continue;
+        for (let ox = -1; ox <= 1; ox++) {
+          const X = cx + ox; if (X < 0 || X >= GW) continue;
+          for (let j = head[Y * GW + X]; j !== -1; j = next[j]) f(j);
+        }
+      }
+    }
+
+    function walls(i) {
+      const L = INSET, Rt = W - INSET, B = H - INSET, Tp = INSET, m = Math.max(REACH, 1), hard = Math.max(30, REACH);
+      let d = x[i] - Rt;
+      if (d > 0) { vx[i] *= T.wallDamp; vx[i] -= d * T.wallStiff; } else if (d > -m) vx[i] -= d * 0.02;
+      d = x[i] - L;
+      if (d < 0) { vx[i] *= T.wallDamp; vx[i] -= d * T.wallStiff; } else if (d < m) vx[i] -= d * 0.02;
+      d = y[i] - B;
+      if (d > 0) { vy[i] *= T.wallDamp; vy[i] -= d * T.wallStiff; } else if (d > -m) vy[i] -= d * 0.02;
+      d = y[i] - Tp;
+      if (d < 0) { vy[i] *= T.wallDamp; vy[i] -= d * T.wallStiff; }
+      if (x[i] > Rt + hard) { x[i] = Rt + hard; vx[i] = 0; }
+      if (x[i] < L - hard) { x[i] = L - hard; vx[i] = 0; }
+      if (y[i] > B + hard) { y[i] = B + hard; vy[i] = 0; }
+      if (y[i] < Tp - hard) { y[i] = Tp - hard; vy[i] = 0; }
+    }
+
+    /* One frame. pointer: { x, y } in the box's px, or null (not over the water / finger lifted).
+       Returns the mean squared speed. */
+    function step(pointer) {
+      const scatter = T.scatter, PR2 = PR * PR;
+      // move, gravity, pointer
+      for (let i = 0; i < N; i++) {
+        x[i] += vx[i]; y[i] += vy[i]; vy[i] += G;
+        if (pointer) {
+          const dx = x[i] - pointer.x, dyy = y[i] - pointer.y;
+          if (dx * dx + dyy * dyy < PR2) {
+            const ax = Math.abs(dx), ay = Math.abs(dyy), dist = Math.max(ax, ay) + 0.4 * Math.min(ax, ay);
+            if (dist > 0.0001 && dist < PR) {
+              const f = (PR - dist) * T.pointerStrength * (1 + rnd[i] * scatter);
+              const a = rnd[i] * scatter * 0.6, ca = Math.cos(a), sa = Math.sin(a), nx = dx / dist, ny = dyy / dist;
+              vx[i] += (nx * ca - ny * sa) * f; vy[i] += (nx * sa + ny * ca) * f;
+            }
+          }
+        }
+      }
+      rebuild();
+      // pressure: spheres inside the body push their neighbours; spheres on the surface don't (no lumps sticking)
+      for (let i = 0; i < N; i++) {
+        let lx = 0, ly = 0, n = 0;
+        around(i, (j) => {
+          if (j === i) return;
+          const dx = x[i] - x[j], dyy = y[i] - y[j], d2 = dx * dx + dyy * dyy;
+          if (d2 >= REACH2 || d2 < 0.01) return;
+          n++; lx += dx > 0 ? 1.1 : dx < 0 ? -1.1 : 0; ly += dyy > 0 ? 1.1 : dyy < 0 ? -1.1 : 0;
+        });
+        inside[i] = (Math.abs(lx) > n - 6 || Math.abs(ly) > n - 6) ? 0 : 1;
+        if (inside[i]) around(i, (j) => {
+          if (j === i) return;
+          const dx = x[i] - x[j], dyy = y[i] - y[j], d2 = dx * dx + dyy * dyy;
+          if (d2 >= REACH2 || d2 < 0.01) return;
+          const ax = Math.abs(dx), ay = Math.abs(dyy), D = Math.max(ax, ay) + 0.4 * Math.min(ax, ay);
+          if (D <= 0.001) return;
+          const q = D / REACH, p1 = 1 - q, f = p1 * p1 * (1 + 2 * q) * 0.5 * PUSH;
+          const fx = (dx / D) * f, fy = (dyy / D) * f;
+          vx[i] += fx; vy[i] += fy; vx[j] -= fx; vy[j] -= fy;
+        });
+        walls(i);
+      }
+      // damping and speed limit
+      for (let i = 0; i < N; i++) {
+        vx[i] *= T.damping; vy[i] *= T.damping;
+        const v2 = vx[i] * vx[i] + vy[i] * vy[i];
+        if (v2 > VMAX2) { const k = VMAX / Math.sqrt(v2); vx[i] *= k; vy[i] *= k; }
+      }
+      // hard rule: centres never closer than MIN; the closing speed is taken out (with a little bounce).
+      // Candidate pairs are found once per frame (with a margin), then the passes only walk that list.
+      const B = T.bounce, C2 = (MIN * 1.4) * (MIN * 1.4);
+      rebuild(); np = 0;
+      for (let i = 0; i < N; i++) around(i, (j) => {
+        if (j <= i) return;
+        const dx = x[i] - x[j], dyy = y[i] - y[j];
+        if (dx * dx + dyy * dyy >= C2) return;
+        if (np >= pa.length) { const g = new Int32Array(pa.length * 2); g.set(pa); pa = g; const h = new Int32Array(pb.length * 2); h.set(pb); pb = h; }
+        pa[np] = i; pb[np] = j; np++;
+      });
+      for (let it = 0; it < T.iterations; it++) {
+        let moved = false;
+        for (let p = 0; p < np; p++) {
+          const i = pa[p], j = pb[p];
+          let dx = x[i] - x[j], dyy = y[i] - y[j], d2 = dx * dx + dyy * dyy;
+          if (d2 >= MIN2) continue;
+          if (d2 < 1e-9) { dx = (Math.random() - 0.5) * 0.01; dyy = (Math.random() - 0.5) * 0.01; d2 = dx * dx + dyy * dyy; }
+          const d = Math.sqrt(d2), nx = dx / d, ny = dyy / d, h = (MIN - d) * 0.5;
+          x[i] += nx * h; y[i] += ny * h; x[j] -= nx * h; y[j] -= ny * h; moved = true;
+          const vn = (vx[i] - vx[j]) * nx + (vy[i] - vy[j]) * ny;
+          if (vn < 0) { const k = vn * 0.5 * (1 + B); vx[i] -= nx * k; vy[i] -= ny * k; vx[j] += nx * k; vy[j] += ny * k; }
+        }
+        if (!moved) break;
+      }
+      // last word: the floor, the sides and the title block are solid (nothing hides below the screen edge,
+      // nothing lies on the title or the buttons)
+      const L = INSET, Rt = W - INSET, Bt = H - INSET;
+      for (let i = 0; i < N; i++) {
+        if (x[i] < L) { x[i] = L; if (vx[i] < 0) vx[i] = 0; } else if (x[i] > Rt) { x[i] = Rt; if (vx[i] > 0) vx[i] = 0; }
+        if (y[i] > Bt) { y[i] = Bt; if (vy[i] > 0) vy[i] = 0; }
+        if (block) {
+          const l = block.l - R, r = block.r + R, t = block.t - R, b = block.b + R;
+          if (x[i] > l && x[i] < r && y[i] > t && y[i] < b) {
+            const dl = x[i] - l, dr = r - x[i], dt = y[i] - t, db = b - y[i], m = Math.min(dl, dr, dt, db);
+            // on top a sphere slides off towards the nearer side, so none stays lying on the title
+            if (m === dt) { y[i] = t; if (vy[i] > 0) vy[i] = 0; vx[i] += dl < dr ? -0.3 * s : 0.3 * s; }
+            else if (m === db) { y[i] = b; if (vy[i] < 0) vy[i] = 0; }
+            else if (m === dl) { x[i] = l; if (vx[i] > 0) vx[i] = 0; }
+            else { x[i] = r; if (vx[i] < 0) vx[i] = 0; }
+          }
+        }
+      }
+      let e = 0;
+      for (let i = 0; i < N; i++) e += vx[i] * vx[i] + vy[i] * vy[i];
+      return e / Math.max(1, N);
+    }
+
+    return { N, x, y, R, scale: s, step };
+  }
+  const api = { create, TUNE };
+  if (typeof module !== "undefined" && module.exports) module.exports = api; else root.RarytuSpheres = api;
+})(typeof window !== "undefined" ? window : this);

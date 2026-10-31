@@ -11,7 +11,7 @@ const read = (p) => JSON.parse(fs.readFileSync(path.join(ROOT, p), "utf8"));
 // assets/styles.css?v=<hash>, so after a change visitors get the new files at once, not after the ~10 minute cache.
 {
   const h = require("crypto").createHash("sha1");
-  for (const f of ["assets/styles.css", "assets/main.js", "assets/liquid.js", "assets/liquid-gl.js"]) h.update(fs.readFileSync(path.join(ROOT, f)));
+  for (const f of ["assets/styles.css", "assets/main.js", "assets/spheres.js"]) h.update(fs.readFileSync(path.join(ROOT, f)));
   const v = h.digest("hex").slice(0, 8), s = read("content/site.json");
   if (s.assetsVersion !== v) { s.assetsVersion = v; fs.writeFileSync(path.join(ROOT, "content/site.json"), JSON.stringify(s, null, 2) + "\n"); console.log("upd  content/site.json (assetsVersion " + v + ")"); }
 }

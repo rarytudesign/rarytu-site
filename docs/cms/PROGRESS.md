@@ -370,3 +370,8 @@ Rule: one step at a time. Test, commit, push, then tick it here.
   (root index.html): the visitor's own choice on the site wins (main.js stores `rarytu-lang` in localStorage when the EN/RU
   switch is used), else the first of ru/en in navigator.languages (a Kazakh phone with Russian second gets RU), else EN.
   No location-based choice (static hosting has no visitor location; device language is the better signal anyway).
+- 2026-11-01 (9): phone top bar as Figma "menu new" (383:941): EN | RU moved into the bar (.mbar__right: lang 16px gaps, 20px
+  before the menu button, taller tap area), removed from the open menu's foot. Close icon: 16px cross, 1.5px lines, square ends,
+  absolutely placed 8px below the name's top and 16px from the right edge (was a 23px cross). Menu buttons: no iOS tap highlight
+  (the grey rounded patch on tap), opacity 0.6 when pressed. About menuTagline EN: "in brands" non-breaking (Figma breaks).
+  The open menu stays full screen (Figma frame shows a 714px panel with rounded bottom; full screen was chosen earlier).

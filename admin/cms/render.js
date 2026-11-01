@@ -44,7 +44,7 @@
   const SVG = {
     chev: '<svg class="chev" viewBox="0 0 12 8" aria-hidden="true"><path d="M1 1.5 6 6.5l5-5" fill="none" stroke="currentColor" stroke-width="1.3"/></svg>',
     burger: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M1 5h22M1 12h22M1 19h22" stroke="currentColor" stroke-width="1.5"/></svg>',
-    close: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="m3.5 3.5 17 17M20.5 3.5l-17 17" stroke="currentColor" stroke-width="1.3"/></svg>',
+    close: '<svg viewBox="0 0 16 16" aria-hidden="true"><path d="m0 0 16 16M16 0 0 16" stroke="currentColor" stroke-width="1.5" stroke-linecap="butt"/></svg>',
   };
 
   // ---------- shell ----------
@@ -134,7 +134,7 @@
 <header class="mbar">
   <div class="mbar__row">
     ${brand}
-    <button class="mbar__btn" aria-expanded="false" aria-controls="mmenu" aria-label="${esc(ui.menu)}">${SVG.burger}</button>
+    <div class="mbar__right">${langNav}<button class="mbar__btn" aria-expanded="false" aria-controls="mmenu" aria-label="${esc(ui.menu)}">${SVG.burger}</button></div>
   </div>
   <div id="mmenu" class="mmenu" hidden>
     <div class="mbar__row">
@@ -143,7 +143,7 @@
     </div>
     <p class="mmenu__tagline">${rich(ctx.menuTagline != null ? ctx.menuTagline : ctx.tagline)}</p>
     <nav aria-label="Main"><ul class="nav nav--m">${navItems}</ul></nav>
-    <div class="mmenu__foot">${utility}${langNav}</div>
+    <div class="mmenu__foot">${utility}</div>
   </div>
 </header>
 <main class="main" id="main" tabindex="-1">

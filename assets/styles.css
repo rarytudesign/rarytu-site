@@ -176,7 +176,12 @@ html { scrollbar-color: rgba(84, 23, 37, 0.45) transparent; scrollbar-width: thi
 /* Mobile bar: pl16 pr6 py14 (72 tall); open menu radius 20 at the bottom */
 .mbar { position: fixed; inset: 0 0 auto; z-index: 30; background: var(--surface-muted); }
 .mbar__row { display: flex; justify-content: space-between; align-items: center; padding: 6px 6px 14px 16px; font-weight: 500; letter-spacing: 0; line-height: 20px; }
-.mbar__btn { width: 44px; height: 44px; display: grid; place-items: center; }
+.mbar__btn { width: 44px; height: 44px; display: grid; place-items: center; -webkit-tap-highlight-color: transparent; transition: opacity var(--t-fast); }
+.mbar__btn:active { opacity: 0.6; }   /* no grey rounded tap highlight on iPhone: the icons stay sharp (Nastya 01.11) */
+/* Figma "Mobile nav/Closed" (380:623): EN | RU next to the menu button, 16px apart, 20px before the button */
+.mbar__right { display: flex; align-items: center; gap: 20px; }
+.mbar .lang { gap: 16px; font-size: 16px; line-height: 20px; }
+.mbar .lang a { padding: 12px 0; margin: -12px 0; -webkit-tap-highlight-color: transparent; }   /* taller tap area, same look */
 .mbar__btn svg { width: 24px; height: 24px; }
 /* Open menu: full screen (Figma "Mobile nav_new"): p32, title block on top, nav + links at the bottom */
 .mmenu {
@@ -190,8 +195,9 @@ html { scrollbar-color: rgba(84, 23, 37, 0.45) transparent; scrollbar-width: thi
 .mmenu[hidden] { display: none; }
 .mmenu > .mbar__row { padding: 0 0 14px; align-items: flex-start; }
 .mmenu .brand { font-size: 16px; line-height: 20px; text-box: trim-both cap alphabetic; }
-.mmenu [data-close] { margin: -14px -14px -30px 0; }
-.mmenu [data-close] svg { width: 32px; height: 32px; }
+/* Figma "Mobile nav_new" (380:579): a 16px cross of 1.5px lines, square ends, 8px below the name's top, 16px from the right edge */
+.mmenu [data-close] { position: absolute; top: 18px; right: 2px; }
+.mmenu [data-close] svg { width: 16px; height: 16px; overflow: visible; }
 .mmenu__tagline { padding: 6px 0 0; max-width: 224px; font-size: 30px; line-height: 32px; letter-spacing: -0.8px; font-weight: 500; }
 .mmenu > nav { margin-top: auto; padding-top: 40px; }
 .nav--m { border-top-width: 2px; }
@@ -201,7 +207,6 @@ html { scrollbar-color: rgba(84, 23, 37, 0.45) transparent; scrollbar-width: thi
 .mmenu__foot { display: flex; justify-content: space-between; align-items: center; padding-top: 32px; font-size: 16px; line-height: 20px; }
 .mmenu__foot .utility { gap: 32px; }
 .mmenu__foot .utility a { padding: 2px 0; }
-.mmenu__foot .lang { gap: 16px; }
 .menu-open { overflow: hidden; }
 html.menu-open { background: var(--surface-muted); }
 .main { padding-top: var(--bar-h); }

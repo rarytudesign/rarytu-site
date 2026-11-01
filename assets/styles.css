@@ -939,13 +939,13 @@ video::-webkit-media-controls-play-button { display: none !important; -webkit-ap
 }
 
 /* Next page by scrolling on (phones and tablets). main.js adds .has-run and a stretch of real scroll at the end of the
-   footer (.sfoot__run, 160lvh), so the footer is always that much taller and the page never changes height mid-gesture.
+   footer (.sfoot__run, 40lvh), so the footer is always that much taller and the page never changes height mid-gesture.
    Scrolling into the stretch, the page, the spheres and the footer move up as one piece; ©year and the arrow up keep their
    place under the footer's top edge. The next page's block is pinned to the bottom of the screen (.is-pin, sticky inside the
    footer) and, as the brand colour fills the screen (--p 0→1), moves to the middle and grows; the line fills with --p. */
 .sfoot__next { grid-row: 2 / 4; align-self: end; }
 @media (max-width: 743px) { .sfoot__next { grid-column: 1; } }   /* explicit column (tablets: 2): it may share rows with the stretch (.is-pin) */
-.sfoot.has-run { --run: 160vh; --run: 160lvh; }   /* lvh: the large screen height, it doesn't change when a phone's browser bars slide */
+.sfoot.has-run { --run: 40vh; --run: 40lvh; }   /* 160 before 01.11: shorter, so the footer doesn't fill the whole screen */   /* lvh: the large screen height, it doesn't change when a phone's browser bars slide */
 .sfoot__run { grid-column: 1 / -1; grid-row: 4; height: var(--run); pointer-events: none; }
 /* inside the stretch the block's area runs to the end of the stretch, and sticky keeps it at the bottom of the screen */
 .sfoot.is-pin .sfoot__next { grid-row: 2 / 5; position: sticky; bottom: 17.6px; }

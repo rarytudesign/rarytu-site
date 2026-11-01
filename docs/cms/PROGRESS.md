@@ -350,3 +350,10 @@ Rule: one step at a time. Test, commit, push, then tick it here.
   stretch (nearEnd()). And when scrolling stops after a counted swipe with the line at 80% or more, the next page opens instead
   of easing back. WebKit scenarios (/tmp/tf5.js style): swipe from the last screen opens, 85% from the footer opens, 30% eases
   back, a fling from a third of the page down stays.
+- 2026-11-01 (6): Nastya: still not always, and the footer stretches too far. Stretch 40lvh (was 160lvh); the next-page block
+  rises at most 80% of the stretch. The line now counts to an end that is always reachable: endY() = scrollHeight - the largest
+  of innerHeight / clientHeight / visualViewport.height (iOS Safari's innerHeight can differ from the scrolling area, so 100%
+  may have been unreachable). A swipe counts if it starts with the last screen's top at 75% of the screen height or higher.
+  Debug: add ?debug to a page address (e.g. rarytu.com/ru/?debug) for a live readout (scroll, end, start, heights, p, fresh,
+  holding). Simulated a wrong innerHeight (±80px) in WebKit: opens in all cases. Still no iPhone-only cause confirmed:
+  next step is a screen recording with ?debug from Nastya.

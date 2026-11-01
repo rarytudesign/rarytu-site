@@ -669,7 +669,7 @@
   if (location.hash === "#contact") { requestAnimationFrame(() => toContact("instant")); addEventListener("load", () => toContact("instant"), { once: true }); }
 
   /* ---------- Footer: scrolling on past the end opens the next page (phones and tablets) ----------
-     The footer always ends with a stretch of real scroll (.sfoot__run, 1.6 screens, CSS 160lvh). The page never changes its
+     The footer always ends with a stretch of real scroll (.sfoot__run, 0.4 of a screen, CSS 40lvh; 1.6 before 01.11). The page never changes its
      height while you scroll (01.11: on iPhone, opening the stretch mid-gesture fought Safari's sliding bars, so it often
      didn't open at all). Scrolling into the stretch, the whole page moves up as one piece; ©year and the arrow up stay at the
      footer's top edge, the next page's block stays at the bottom of the screen (.is-pin), the brand colour fills the screen,
@@ -681,27 +681,37 @@
   if (nextLink && sfoot) {
     const run = document.createElement("div"); run.className = "sfoot__run"; run.setAttribute("aria-hidden", "true");
     sfoot.appendChild(run); sfoot.classList.add("has-run");
+    // ?debug on the address: a small live readout of the numbers below, for checking on a phone
+    const dbg = /[?&]debug\b/.test(location.search) ? document.body.appendChild(Object.assign(document.createElement("pre"), {
+      style: "position:fixed;left:8px;top:80px;z-index:9999;margin:0;padding:6px 8px;font:11px/1.35 monospace;background:rgba(0,0,0,.75);color:#fff;pointer-events:none;white-space:pre" })) : null;
     let R = 0, padB = 0, p = 0, going = false, holding = false, fresh = false, idle = 0, anim = 0, lastWheel = 0;
     const on = () => getComputedStyle(sfoot).display !== "none";
     // the scroll position where the page ends without the stretch (the footer's own bottom edge at the bottom of the screen)
     const start = () => run.getBoundingClientRect().top + scrollY + padB - innerHeight;
-    const atEnd = () => scrollY >= document.documentElement.scrollHeight - innerHeight - 2;
+    // The real end of the page. iOS Safari's innerHeight can differ from the area that actually scrolls (its bars float over
+    // the page), so the line could never reach 100% there (01.11). The largest of the viewport heights gives an end that is
+    // always reachable; the line counts to it.
+    const vpH = () => Math.max(innerHeight, document.documentElement.clientHeight, window.visualViewport ? visualViewport.height : 0);
+    const endY = () => document.documentElement.scrollHeight - vpH();
+    const atEnd = () => scrollY >= endY() - 2;
     const setP = (v) => { sfoot.style.setProperty("--p", v.toFixed(4)); nextLink.style.setProperty("--p", v.toFixed(4)); };
     const measure = () => {   // reads layout only, never changes the page height
       if (!on()) { R = 0; sfoot.classList.remove("is-pin"); return; }
       R = run.offsetHeight; padB = parseFloat(getComputedStyle(sfoot).paddingBottom) || 0;
-      // how far the next-page block travels to sit in the middle of the screen at the end
-      sfoot.style.setProperty("--rise", Math.max(0, innerHeight / 2 - padB - nextLink.offsetHeight / 2) + "px");
+      // how far the next-page block rises at the end: towards the middle of the screen, at most 80% of the stretch
+      // (the stretch is short, 40% of the screen: the footer no longer fills the whole screen, Nastya 01.11)
+      sfoot.style.setProperty("--rise", Math.max(0, Math.min(R * 0.8, innerHeight / 2 - padB - nextLink.offsetHeight / 2)) + "px");
       update();
     };
     const go = () => { if (going) return; going = true; stopAnim(); setTimeout(() => nextLink.click(), 60); };
     const update = () => {
       if (!R) return;
       const st = start();
-      p = Math.max(0, Math.min(1, (scrollY - st) / R));
+      p = Math.max(0, Math.min(1, (scrollY - st) / Math.max(1, Math.min(R, endY() - st))));
       sfoot.classList.toggle("is-pin", scrollY >= st - 1);   // arriving, the footer looks as usual; inside the stretch the block stays at the bottom
       setP(p);
       if (fresh && !holding && (p >= 0.995 || (p > 0.5 && atEnd()))) go();
+      if (dbg) dbg.textContent = `y ${Math.round(scrollY)} end ${Math.round(endY())} st ${Math.round(st)} R ${R}\nih ${innerHeight} ch ${document.documentElement.clientHeight} vv ${window.visualViewport ? Math.round(visualViewport.height) : "-"}\np ${p.toFixed(2)} fresh ${fresh} hold ${holding} going ${going}`;
     };
     // stopping inside the stretch short of the end (or a fling that ran in): ease back to the footer
     const back = () => {
@@ -732,7 +742,7 @@
     // screen), at the footer or inside the stretch (01.11: one swipe from the last screen is deliberate too; only a fling
     // from further up the page must not open the next page)
     const lastScreen = $(".dfoot");
-    const nearEnd = () => R > 0 && (scrollY >= start() - 8 || (lastScreen && lastScreen.getBoundingClientRect().top <= innerHeight / 2));
+    const nearEnd = () => R > 0 && (scrollY >= start() - 8 || (lastScreen && lastScreen.getBoundingClientRect().top <= innerHeight * 0.75));
     addEventListener("touchstart", () => { holding = true; stopAnim(); clearTimeout(idle); fresh = nearEnd(); }, { passive: true });
     addEventListener("touchend", () => { holding = false; update(); if (!going) settle(); }, { passive: true });
     addEventListener("touchcancel", () => { holding = false; settle(); }, { passive: true });

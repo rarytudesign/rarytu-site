@@ -391,3 +391,8 @@ Rule: one step at a time. Test, commit, push, then tick it here.
   gets the newest assets when they are not cached). Kept compatibility: CSS still bolds `.lang a[aria-current="true"]`, and
   main.js turns a tap anywhere on an old <nav class="lang"> into a click on its other-language link. Lesson: when markup and
   CSS/JS change together, keep old selectors working for at least 10 minutes' worth of cached pages (or for good).
+- 2026-11-01 (13): docs for life without this chat: docs/RESTORE.md (Russian, for Nastya: what a backup holds and what it
+  can't, the accounts and DNS records, four restore scenarios: bad edit, panel down, repo/account lost, other hosting) and
+  docs/AI-CONTEXT.md (English, for any AI: how to work with Nastya, architecture, golden rules, gotchas, test method).
+  ASCII file names on purpose (Windows' unzip garbles Cyrillic names). README links both. Backup v15 (22:23) matched the live
+  site exactly (fingerprint 5d8f2b1235e55703); a new backup is needed so the zip contains these two files.

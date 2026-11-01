@@ -1,5 +1,7 @@
 # rarytu: personal website
 
+**Восстановить сайт: `docs/RESTORE.md`. Продолжить работу с ИИ: `docs/AI-CONTEXT.md`.**
+
 A static site: plain HTML, CSS and JavaScript. No build step, no framework, no database.
 Everything the site needs is in this folder, including fonts, images, videos and both CVs.
 

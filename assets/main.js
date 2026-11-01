@@ -671,7 +671,7 @@
   /* ---------- Footer: scrolling on past the end opens the next page (phones and tablets) ----------
      Two steps, so a fast fling from the middle of the page never opens the next one by accident (Nastya, 31.10):
      1. The page ends at the footer. Arriving there, the footer only hints: the line fills to 25% and goes back to 0.
-     2. After that (finger lifted, page at rest) the footer grows by a stretch of real scroll (1.6 screens).
+     2. After that (finger lifted and page at rest, or a new touch at the end) the footer grows by a stretch of real scroll (1.6 screens).
         The footer is part of the page (Nastya, 01.11: no gap between the spheres and the footer): the whole page,
         footer included, moves up as you scroll; ©year and the arrow up stay at the footer's top edge, the next page's
         block stays at the bottom of the screen, then moves to the middle as the brand colour fills the screen.
@@ -762,7 +762,14 @@
       if (anim || !armed) return;
       idle = setTimeout(() => { if (!holding && p > 0.002 && p < 0.995) back(); }, 180);
     }, { passive: true });
-    addEventListener("touchstart", () => { holding = true; stopAnim(); }, { passive: true });
+    // a new touch at the end of the page is a deliberate gesture: the stretch opens right away, even while the page still
+    // bounces or the hint plays (01.11: quick repeated swipes at the end never gave the page a moment of rest to open it)
+    addEventListener("touchstart", () => {
+      holding = true; stopAnim();
+      if (going || armed || !R || !on() || scrollY < start() - 4) return;
+      if (hintAnim) { cancelAnimationFrame(hintAnim); hintAnim = 0; setP(0, 0); }
+      hinted = true; armed = true; grow(); update();
+    }, { passive: true });
     addEventListener("touchend", () => { holding = false; if (armed && p >= 0.995) go(); }, { passive: true });
     addEventListener("touchcancel", () => { holding = false; }, { passive: true });
     addEventListener("wheel", () => { lastMove = performance.now(); stopAnim(); }, { passive: true });

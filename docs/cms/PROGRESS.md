@@ -329,3 +329,8 @@ Rule: one step at a time. Test, commit, push, then tick it here.
      0 lone punctuation, 0 overflow in Chromium (11 widths) and WebKit (4 widths). Figma check: fewer differences on every page.
      Left: a few long paragraphs on About/Approach break one word differently because the browser draws the font a hair
      narrower than Figma; forcing Figma's breaks would break other phone widths.
+- 2026-11-01 (3): footer stretch on iPhone, quick repeated swipes at the end (Nastya's screen recording, Approach page): the stretch
+  waited for the finger to lift and the page to rest 250ms, but the bounce after each swipe lasts ~0.5s and she touched again
+  sooner, so it never opened and the page only bounced. Now a touchstart while at the end opens the stretch at once (also cuts
+  the hint short). A touch during a fling from the middle doesn't count (scrollY is still above the end). Test: WebKit, repeated
+  synthetic swipes open the next page on the 3rd swipe; tools/test-footer.js flow unchanged in Chromium and WebKit.

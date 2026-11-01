@@ -315,3 +315,17 @@ Rule: one step at a time. Test, commit, push, then tick it here.
      inline blocks. A word ending in nbsp followed by a one-word tag (<span class="nw">веб-дизайне</span>) is now wrapped with it
      in a no-wrap group (.lg). Checked 12 widths × 9 RU pages: 0 hanging words (old code: 8 in Chromium).
   5. Home circles on desktop: three equal 1fr columns across the whole column (457px at 1920 as before, 670px at 2560), not stuck left.
+- 2026-11-01 (2): fixes after Nastya's iPhone check.
+  1. Footer stretch on iOS: measure() shrank the open footer to read its height on every resize, and iOS Safari fires resize
+     whenever its bars slide, so the scroll was thrown back (the line never moved, the next page never opened). The footer's
+     height is now read only while the stretch is closed (a width change closes it first). Checked in WebKit 26 (Playwright
+     webkit, installed to /tmp/pw: `PLAYWRIGHT_BROWSERS_PATH=/tmp/pw`, link /opt/pw-browsers/* there for Chromium) with resize events.
+  2. Hairline between the spheres and the footer on phones (100lvh is fractional): .sfoot is positioned with a 1px brand box-shadow above.
+  3. Case pages: the cover and gallery kept translateY(16px) after the reveal (`.js .chero.rv` beat `.rv.in`), so the cover sat 46px
+     from the top instead of Figma's 30. `.rv.in` for them now sets transform: none. Desktop cover: 520/30/1370 = Figma.
+  4. Text like Figma: noOrphans only holds a short last word (up to 4 letters); Figma lets long ones sit alone ("дизайн-решения",
+     "gadgets."). EN lede: "includes X5 retail" non-breaking (X5 retail never splits; phones break as in Figma).
+     main.js: punctuation after a one-word tag (<span class="nw">дизайн-решение</span>.) is grouped with it. 0 hanging words,
+     0 lone punctuation, 0 overflow in Chromium (11 widths) and WebKit (4 widths). Figma check: fewer differences on every page.
+     Left: a few long paragraphs on About/Approach break one word differently because the browser draws the font a hair
+     narrower than Figma; forcing Figma's breaks would break other phone widths.

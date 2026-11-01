@@ -193,7 +193,14 @@
             if (/^ +$/.test(w)) { f.appendChild(document.createTextNode(w)); last = null; return; }
             const sp = document.createElement("span"); sp.className = "lw"; sp.textContent = w; f.appendChild(sp); last = sp;
           });
+          const first = f.firstChild;
           c.replaceWith(f);
+          // punctuation or a word right after a tag (<span class="nw">дизайн-решение</span>.) stays on its line
+          const pv = kids[i - 1];
+          if (first && first.className === "lw" && canWalk(pv) && !/ /.test(pv.textContent.trim())) {
+            if (pv.parentNode !== node && pv.parentNode.className === "lg") pv.parentNode.append(first);   // already grouped with the word before it
+            else { const g = document.createElement("span"); g.className = "lg"; pv.before(g); g.append(pv, first); }
+          }
           const nx = kids[i + 1];
           if (last && /\u00a0$/.test(last.textContent) && canWalk(nx) && !/ /.test(nx.textContent.trim())) {   // one word only: a no-wrap group must stay short
             const g = document.createElement("span"); g.className = "lg";
@@ -676,7 +683,7 @@
     const probe = document.createElement("div"); probe.style.cssText = "position:fixed;top:0;height:100lvh;width:0;visibility:hidden;pointer-events:none";
     document.body.appendChild(probe);
     const HINT = 0.25;
-    let R = 0, base = 0, p = 0, going = false, holding = false, idle = 0, anim = 0, hintAnim = 0;
+    let R = 0, base = 0, footW = 0, p = 0, going = false, holding = false, idle = 0, anim = 0, hintAnim = 0;
     let armed = false, hinted = false, lastMove = 0;   // armed: the stretch is open; hinted: the hint has played on this arrival
     const on = () => getComputedStyle(sfoot).display !== "none";
     const grow = () => { sfoot.style.minHeight = armed && R ? base + R + "px" : ""; };
@@ -688,7 +695,12 @@
     const measure = () => {
       if (!on()) { sfoot.style.minHeight = ""; sfoot.classList.remove("is-run", "is-pin"); return; }
       R = Math.round((probe.offsetHeight || innerHeight) * 1.6);   // 0.8 before 31.10: twice as long (Nastya)
-      sfoot.style.minHeight = ""; base = sfoot.offsetHeight; grow();
+      // The footer's own height is read only while the stretch is closed (or the width changed: then it closes first).
+      // Never shrink the open footer to measure it: iOS Safari fires resize whenever its bars slide in or out, and a
+      // shrunk page throws the scroll back to the footer (01.11: the line didn't move, the next page never opened).
+      if (armed && innerWidth !== footW) { armed = false; hinted = false; }
+      if (!armed) { sfoot.style.minHeight = ""; base = sfoot.offsetHeight; footW = innerWidth; }
+      grow();
       sfoot.classList.add("is-run");
       // how far the next-page block travels to sit in the middle of the screen at the end
       const fromBottom = parseFloat(getComputedStyle(sfoot).paddingBottom) + nextLink.offsetHeight / 2;

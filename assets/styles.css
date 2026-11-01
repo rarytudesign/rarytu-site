@@ -844,6 +844,9 @@ html[lang="ru"] .dfoot__title { font-family: var(--font-inter); font-size: 40px;
 /* The footer: brand colour, ©year and the arrow up on top; the next page (Work → About → Approach) at the bottom,
    full width on phones, the right half from tablet up. The line fills while you keep scrolling (main.js). */
 .sfoot { display: grid; grid-template-columns: 1fr; grid-template-rows: auto 1fr auto; min-height: 236px; padding: 24px var(--gutter) 17.6px; background: var(--brand); color: #fff; }
+/* The last screen is 100lvh, often a fraction of a pixel (812.33px), so phones drew a light hairline where the spheres meet
+   the footer. The footer paints 1px of its colour above its top edge, over that seam (positioned, so it is above the canvas). */
+.sfoot { position: relative; z-index: 1; box-shadow: 0 -1px 0 var(--brand); }
 .sfoot__top { grid-column: 1 / -1; display: flex; justify-content: space-between; align-items: center; }
 .sfoot__copy { font-size: 14px; line-height: 20px; letter-spacing: 0; }
 .sfoot__up { display: grid; place-items: center; width: 44px; height: 44px; border-radius: 50%; background: #fff; color: var(--brand); transition: opacity var(--t-fast); }
@@ -901,7 +904,7 @@ video::-webkit-media-controls-play-button { display: none !important; -webkit-ap
 /* Gallery and case cover: start as they enter and arrive faster, so scrolling never feels stuck */
 @media (prefers-reduced-motion: no-preference) {
   .js .gitem.rv, .js .chero.rv { transform: translateY(16px); }
-  .js .gitem.rv.in, .js .chero.rv.in { transition: opacity 450ms var(--easy), transform 600ms var(--easy); transition-delay: min(var(--d, 0ms), 80ms); }
+  .js .gitem.rv.in, .js .chero.rv.in { transform: none; transition: opacity 450ms var(--easy), transform 600ms var(--easy); transition-delay: min(var(--d, 0ms), 80ms); }
   .js .gitem img, .js .chero img { transition: opacity 300ms var(--easy), transform 700ms var(--ease); }
 }
 /* About photo dots on desktop: quicker one after another */

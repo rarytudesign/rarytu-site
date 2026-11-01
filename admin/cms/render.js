@@ -417,7 +417,7 @@ ${pageEnd(ctx, NEXT[ctx.nav])}`;
   // "©{year}": the year is filled in when the page is built and kept current in the browser by main.js ([data-year])
   const copyright = (site) => esc(site.copyright || "").replace("{year}", `<span data-year>${new Date().getFullYear()}</span>`);
 
-  // No orphans: the last two words of a paragraph stay together, so a paragraph never ends with one word alone on a line.
+  // No orphans: a short last word (up to 4 letters) stays with the word before it, so a paragraph never ends with "it." alone on a line.
   // Applies to <p> and <figcaption> with at least four words; text inside tags and SVG is untouched.
   function noOrphans(html) {
     const at = html.indexOf("<body"); if (at < 0) return html;
@@ -426,6 +426,8 @@ ${pageEnd(ctx, NEXT[ctx.nav])}`;
       const parts = inner.split(/(<[^>]+>)/);
       const words = parts.filter((x, i) => i % 2 === 0).join(" ").trim().split(/[ \u00a0]+/).filter(Boolean);
       if (words.length < 4) return m;
+      // Figma lets a long last word sit alone ("дизайн-решения", "gadgets."); only a short one (up to 4 letters) is held (01.11)
+      if (words[words.length - 1].replace(/<[^>]+>/g, "").replace(/[^\p{L}\p{N}]/gu, "").length > 4) return m;
       for (let i = parts.length - 1; i >= 0; i -= 1) {
         if (i % 2 === 1) { if (/^<br/.test(parts[i])) break; continue; }   // stop at a line break: the last line is handled
         const t = parts[i].replace(/\s+$/, ""), k = t.lastIndexOf(" ");

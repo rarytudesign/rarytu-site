@@ -334,3 +334,13 @@ Rule: one step at a time. Test, commit, push, then tick it here.
   sooner, so it never opened and the page only bounced. Now a touchstart while at the end opens the stretch at once (also cuts
   the hint short). A touch during a fling from the middle doesn't count (scrollY is still above the end). Test: WebKit, repeated
   synthetic swipes open the next page on the 3rd swipe; tools/test-footer.js flow unchanged in Chromium and WebKit.
+- 2026-11-01 (4): footer stretch rebuilt after a second iPhone recording (it still often didn't open). Any design that opens the
+  stretch mid-gesture changes the page height while Safari slides its bars and rubber-bands, which is unreliable. Now the stretch
+  is always there: main.js appends .sfoot__run (grid row 4, height 160lvh) and adds .has-run (footer min-height + --run), so
+  the page height never changes while scrolling; measure() only reads layout. The guard against a fling from the middle moved
+  from "open only at rest" to "open only for a gesture that starts at the footer": `fresh` is set on touchstart (or on a new
+  run of wheel events after 300ms) when scrollY >= start() - 8; go() needs fresh and a full line (or the real end of the page
+  past half the line). A fling that runs into the stretch, or a stop short of the end, eases back to the footer 180ms after
+  scrolling stops. No more arrival hint, arm/disarm, --q or .is-run. .is-pin: next block grid-row 2/5 + sticky; it needs an
+  explicit column (1 on phones, 2 on tablets) or the grid pushes it into a new column. Tests: tools/test-footer.js (touch
+  events added) in Chromium and WebKit; repeated swipes, resize events mid-drag, fling from the middle: all as intended.

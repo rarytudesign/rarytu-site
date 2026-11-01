@@ -12,8 +12,8 @@ let s=await st();console.log("after fling: peak p",peak.toFixed(2),"now",s);
 await p.waitForTimeout(800);s=await st();console.log("after rest:",s);
 // 2. scroll halfway into the stretch and stop: should ease back
 await p.evaluate(()=>scrollBy({top:200,behavior:"instant"}));await p.waitForTimeout(150);console.log("mid:",await st());await p.waitForTimeout(1200);console.log("eased back:",await st());
-// 3. scroll to the end of the stretch: next page opens
-await p.evaluate(async()=>{for(let i=0;i<60;i++){scrollBy({top:40,behavior:"instant"});await new Promise(r=>setTimeout(r,16));}}).catch(()=>{});
+// 3. a swipe that starts at the footer, to the end of the stretch: next page opens
+await p.evaluate(async()=>{dispatchEvent(new Event("touchstart"));for(let i=0;i<60;i++){scrollBy({top:40,behavior:"instant"});await new Promise(r=>setTimeout(r,16));}dispatchEvent(new Event("touchend"));}).catch(()=>{});
 await p.waitForTimeout(2500);console.log("after full:",p.url());
 // 4. top bar
 await p.goto(base+"/en/index.html");await p.waitForTimeout(500);

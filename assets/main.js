@@ -669,75 +669,41 @@
   if (location.hash === "#contact") { requestAnimationFrame(() => toContact("instant")); addEventListener("load", () => toContact("instant"), { once: true }); }
 
   /* ---------- Footer: scrolling on past the end opens the next page (phones and tablets) ----------
-     Two steps, so a fast fling from the middle of the page never opens the next one by accident (Nastya, 31.10):
-     1. The page ends at the footer. Arriving there, the footer only hints: the line fills to 25% and goes back to 0.
-     2. After that (finger lifted and page at rest, or a new touch at the end) the footer grows by a stretch of real scroll (1.6 screens).
-        The footer is part of the page (Nastya, 01.11: no gap between the spheres and the footer): the whole page,
-        footer included, moves up as you scroll; ©year and the arrow up stay at the footer's top edge, the next page's
-        block stays at the bottom of the screen, then moves to the middle as the brand colour fills the screen.
-        Only at a full line does the next page open (its loader is the same colour, so it reads as one move).
-        Stopping short eases back to the footer.
-     Going back up the page by more than half a screen closes the stretch again, so the next arrival hints first again. */
+     The footer always ends with a stretch of real scroll (.sfoot__run, 1.6 screens, CSS 160lvh). The page never changes its
+     height while you scroll (01.11: on iPhone, opening the stretch mid-gesture fought Safari's sliding bars, so it often
+     didn't open at all). Scrolling into the stretch, the whole page moves up as one piece; ©year and the arrow up stay at the
+     footer's top edge, the next page's block stays at the bottom of the screen (.is-pin), the brand colour fills the screen,
+     the line fills and the block moves to the middle (--p). At a full line the next page opens.
+     Only a gesture that starts at the footer counts (a touch, or a new run of wheel/trackpad scrolling): a fast fling from the
+     middle of the page that carries on into the stretch never opens the next page, and when it stops it eases back to the
+     footer. Stopping short of a full line also eases back. Desktop: no footer, no stretch. */
   const nextLink = $("[data-next]"), sfoot = $(".sfoot");
   if (nextLink && sfoot) {
-    const probe = document.createElement("div"); probe.style.cssText = "position:fixed;top:0;height:100lvh;width:0;visibility:hidden;pointer-events:none";
-    document.body.appendChild(probe);
-    const HINT = 0.25;
-    let R = 0, base = 0, footW = 0, p = 0, going = false, holding = false, idle = 0, anim = 0, hintAnim = 0;
-    let armed = false, hinted = false, lastMove = 0;   // armed: the stretch is open; hinted: the hint has played on this arrival
+    const run = document.createElement("div"); run.className = "sfoot__run"; run.setAttribute("aria-hidden", "true");
+    sfoot.appendChild(run); sfoot.classList.add("has-run");
+    let R = 0, padB = 0, p = 0, going = false, holding = false, fresh = false, idle = 0, anim = 0, lastWheel = 0;
     const on = () => getComputedStyle(sfoot).display !== "none";
-    const grow = () => { sfoot.style.minHeight = armed && R ? base + R + "px" : ""; };
-    const start = () => sfoot.getBoundingClientRect().top + scrollY + base - innerHeight;   // the end of the page while the stretch is closed
-    // p: the line; q: the brand colour and the next page's block (0 during the hint)
-    const setP = (v, q) => {
-      for (const el of [sfoot, nextLink]) { el.style.setProperty("--p", v.toFixed(4)); el.style.setProperty("--q", q.toFixed(4)); }
-    };
-    const measure = () => {
-      if (!on()) { sfoot.style.minHeight = ""; sfoot.classList.remove("is-run", "is-pin"); return; }
-      R = Math.round((probe.offsetHeight || innerHeight) * 1.6);   // 0.8 before 31.10: twice as long (Nastya)
-      // The footer's own height is read only while the stretch is closed (or the width changed: then it closes first).
-      // Never shrink the open footer to measure it: iOS Safari fires resize whenever its bars slide in or out, and a
-      // shrunk page throws the scroll back to the footer (01.11: the line didn't move, the next page never opened).
-      if (armed && innerWidth !== footW) { armed = false; hinted = false; }
-      if (!armed) { sfoot.style.minHeight = ""; base = sfoot.offsetHeight; footW = innerWidth; }
-      grow();
-      sfoot.classList.add("is-run");
+    // the scroll position where the page ends without the stretch (the footer's own bottom edge at the bottom of the screen)
+    const start = () => run.getBoundingClientRect().top + scrollY + padB - innerHeight;
+    const atEnd = () => scrollY >= document.documentElement.scrollHeight - innerHeight - 2;
+    const setP = (v) => { sfoot.style.setProperty("--p", v.toFixed(4)); nextLink.style.setProperty("--p", v.toFixed(4)); };
+    const measure = () => {   // reads layout only, never changes the page height
+      if (!on()) { R = 0; sfoot.classList.remove("is-pin"); return; }
+      R = run.offsetHeight; padB = parseFloat(getComputedStyle(sfoot).paddingBottom) || 0;
       // how far the next-page block travels to sit in the middle of the screen at the end
-      const fromBottom = parseFloat(getComputedStyle(sfoot).paddingBottom) + nextLink.offsetHeight / 2;
-      sfoot.style.setProperty("--rise", Math.max(0, innerHeight / 2 - fromBottom) + "px");
+      sfoot.style.setProperty("--rise", Math.max(0, innerHeight / 2 - padB - nextLink.offsetHeight / 2) + "px");
       update();
     };
     const go = () => { if (going) return; going = true; stopAnim(); setTimeout(() => nextLink.click(), 60); };
-    const atEnd = () => scrollY >= document.documentElement.scrollHeight - innerHeight - 2;
     const update = () => {
-      if (!R || hintAnim) return;
+      if (!R) return;
       const st = start();
-      p = armed ? Math.max(0, Math.min(1, (scrollY - st) / R)) : 0;
-      sfoot.classList.toggle("is-pin", armed && scrollY >= st - 1);   // pinned only inside the stretch: arriving, the footer looks as usual
-      setP(p, p);
-      if (armed && p >= 0.995 && !holding) go();
+      p = Math.max(0, Math.min(1, (scrollY - st) / R));
+      sfoot.classList.toggle("is-pin", scrollY >= st - 1);   // arriving, the footer looks as usual; inside the stretch the block stays at the bottom
+      setP(p);
+      if (fresh && !holding && (p >= 0.995 || (p > 0.5 && atEnd()))) go();
     };
-    // step 1: the hint, 0 → 25% → 0, then open the stretch once the finger is up and the page has come to rest
-    const hint = () => {
-      hinted = true;
-      const done = () => { hintAnim = 0; setP(0, 0); arm(); };
-      if (reduce) { done(); return; }
-      const t0 = performance.now(), up = 320, back = 520;
-      const step = (now) => {
-        const t = now - t0;
-        const v = t < up ? HINT * (1 - Math.pow(1 - t / up, 3)) : HINT * (1 - Math.min(1, (t - up) / back)) ** 2;
-        setP(v, 0);
-        if (t < up + back) hintAnim = requestAnimationFrame(step); else done();
-      };
-      hintAnim = requestAnimationFrame(step);
-    };
-    const arm = () => {
-      if (armed || !hinted) return;
-      if (holding || performance.now() - lastMove < 250) { setTimeout(arm, 120); return; }   // a fling or a drag still going
-      armed = true; grow(); update();
-    };
-    const disarm = () => { if (!armed && !hinted) return; armed = false; hinted = false; grow(); update(); };
-    // stopping inside the stretch short of the end: ease back to the footer
+    // stopping inside the stretch short of the end (or a fling that ran in): ease back to the footer
     const back = () => {
       const from = scrollY, to = start(), dist = from - to;
       if (dist <= 1) { update(); return; }
@@ -747,38 +713,35 @@
       const step = (now) => {
         const t = Math.min(1, (now - t0) / dur);
         scrollTo({ top: from - dist * ease(t), behavior: "instant" });   // html has smooth scrolling on
-        if (t < 1) anim = requestAnimationFrame(step); else { anim = 0; update(); }
+        if (t < 1) anim = requestAnimationFrame(step); else { anim = 0; fresh = false; update(); }
       };
       anim = requestAnimationFrame(step);
     };
     const stopAnim = () => { if (anim) { cancelAnimationFrame(anim); anim = 0; } };
-    addEventListener("scroll", () => {
-      if (!anim) lastMove = performance.now();
-      update();
-      if (going || !R) return;
-      if (!armed && !hinted && atEnd()) hint();
-      if (scrollY < start() - innerHeight / 2) disarm();
+    const settle = () => {
       clearTimeout(idle);
-      if (anim || !armed) return;
-      idle = setTimeout(() => { if (!holding && p > 0.002 && p < 0.995) back(); }, 180);
+      idle = setTimeout(() => { if (!holding && !going && !anim && p > 0.002) back(); }, 180);
+    };
+    addEventListener("scroll", () => {
+      update();
+      if (going || !R || anim) return;
+      settle();
     }, { passive: true });
-    // a new touch at the end of the page is a deliberate gesture: the stretch opens right away, even while the page still
-    // bounces or the hint plays (01.11: quick repeated swipes at the end never gave the page a moment of rest to open it)
-    addEventListener("touchstart", () => {
-      holding = true; stopAnim();
-      if (going || armed || !R || !on() || scrollY < start() - 4) return;
-      if (hintAnim) { cancelAnimationFrame(hintAnim); hintAnim = 0; setP(0, 0); }
-      hinted = true; armed = true; grow(); update();
+    // a gesture counts when it starts at the footer (or already inside the stretch)
+    addEventListener("touchstart", () => { holding = true; stopAnim(); clearTimeout(idle); fresh = R > 0 && scrollY >= start() - 8; }, { passive: true });
+    addEventListener("touchend", () => { holding = false; update(); if (!going) settle(); }, { passive: true });
+    addEventListener("touchcancel", () => { holding = false; settle(); }, { passive: true });
+    addEventListener("wheel", () => {
+      const now = performance.now();
+      if (now - lastWheel > 300) fresh = R > 0 && scrollY >= start() - 8;   // a new run of wheel or trackpad scrolling
+      lastWheel = now; stopAnim();
     }, { passive: true });
-    addEventListener("touchend", () => { holding = false; if (armed && p >= 0.995) go(); }, { passive: true });
-    addEventListener("touchcancel", () => { holding = false; }, { passive: true });
-    addEventListener("wheel", () => { lastMove = performance.now(); stopAnim(); }, { passive: true });
     addEventListener("resize", measure);
     addEventListener("load", measure);
     if (document.fonts && document.fonts.ready) document.fonts.ready.then(measure);
     measure();
-    // coming back (back button, restored scroll): the stretch is closed and nothing opens by itself
-    const reset = () => { going = false; stopAnim(); cancelAnimationFrame(hintAnim); hintAnim = 0; armed = false; hinted = false; grow(); update(); };
+    // coming back (back button, restored scroll): nothing opens by itself
+    const reset = () => { going = false; fresh = false; stopAnim(); if (R && scrollY > start() + 1) scrollTo({ top: start(), behavior: "instant" }); update(); };
     addEventListener("pageshow", reset);
     requestAnimationFrame(reset);
   }

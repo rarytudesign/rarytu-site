@@ -843,7 +843,7 @@ html[lang="ru"] .dfoot__title { font-family: var(--font-inter); font-size: 40px;
 
 /* The footer: brand colour, ©year and the arrow up on top; the next page (Work → About → Approach) at the bottom,
    full width on phones, the right half from tablet up. The line fills while you keep scrolling (main.js). */
-.sfoot { display: grid; grid-template-columns: 1fr; grid-template-rows: auto 1fr auto; min-height: 236px; padding: 24px var(--gutter) 17.6px; background: var(--brand); color: #fff; }
+.sfoot { --run: 0px; display: grid; grid-template-columns: 1fr; grid-template-rows: auto 1fr auto auto; min-height: calc(236px + var(--run)); padding: 24px var(--gutter) 17.6px; background: var(--brand); color: #fff; }
 /* The last screen is 100lvh, often a fraction of a pixel (812.33px), so phones drew a light hairline where the spheres meet
    the footer. The footer paints 1px of its colour above its top edge, over that seam (positioned, so it is above the canvas). */
 .sfoot { position: relative; z-index: 1; box-shadow: 0 -1px 0 var(--brand); }
@@ -864,7 +864,7 @@ html[lang="ru"] .dfoot__title { font-family: var(--font-inter); font-size: 40px;
 @media (hover: hover) { .sfoot__next:hover .sfoot__arrow { transform: translateX(4px); } }
 .sfoot__next:focus-visible .sfoot__arrow { transform: translateX(4px); }
 @media (min-width: 744px) {
-  .sfoot { grid-template-columns: 1fr 1fr; column-gap: 20px; min-height: 280px; padding: 32px var(--gutter) 32px; }
+  .sfoot { grid-template-columns: 1fr 1fr; column-gap: 20px; min-height: calc(280px + var(--run)); padding: 32px var(--gutter) 32px; }
   .sfoot__next { grid-column: 2; }
   .sfoot__next { max-width: 210px; }   /* Figma 286:2079: the next-page block is 210px wide, the bar 4px from the arrow */
   .sfoot__bar { margin-top: 30.3px; gap: 4px; }
@@ -938,14 +938,17 @@ video::-webkit-media-controls-play-button { display: none !important; -webkit-ap
   html[lang="ru"] .xlist--edu .xrow__text p + p { margin-top: 4px; }   /* RU education notes 24px apart (EN 26) */
 }
 
-/* Next page by scrolling on (phones and tablets; main.js adds .is-run here).
-   The footer is part of the page: when the stretch opens, the footer itself grows downwards (min-height set by main.js),
-   so the page, the spheres and the footer move up as one piece with no gap. ©year and the arrow up keep their place
-   under the footer's top edge. The next page's block is pinned to the bottom of the screen (.is-pin, sticky inside the
-   footer) and, as the brand colour fills the screen (--q 0→1), moves to the middle and grows. The line fills with --p
-   (the arrival hint fills only the line). */
-.sfoot__next { grid-row: 2 / 4; align-self: end; }   /* rows 2–3: room for the block to stay pinned while the footer grows */
-.sfoot.is-pin .sfoot__next { position: sticky; bottom: 17.6px; }
+/* Next page by scrolling on (phones and tablets). main.js adds .has-run and a stretch of real scroll at the end of the
+   footer (.sfoot__run, 160lvh), so the footer is always that much taller and the page never changes height mid-gesture.
+   Scrolling into the stretch, the page, the spheres and the footer move up as one piece; ©year and the arrow up keep their
+   place under the footer's top edge. The next page's block is pinned to the bottom of the screen (.is-pin, sticky inside the
+   footer) and, as the brand colour fills the screen (--p 0→1), moves to the middle and grows; the line fills with --p. */
+.sfoot__next { grid-row: 2 / 4; align-self: end; }
+@media (max-width: 743px) { .sfoot__next { grid-column: 1; } }   /* explicit column (tablets: 2): it may share rows with the stretch (.is-pin) */
+.sfoot.has-run { --run: 160vh; --run: 160lvh; }   /* lvh: the large screen height, it doesn't change when a phone's browser bars slide */
+.sfoot__run { grid-column: 1 / -1; grid-row: 4; height: var(--run); pointer-events: none; }
+/* inside the stretch the block's area runs to the end of the stretch, and sticky keeps it at the bottom of the screen */
+.sfoot.is-pin .sfoot__next { grid-row: 2 / 5; position: sticky; bottom: 17.6px; }
 @media (min-width: 744px) { .sfoot.is-pin .sfoot__next { bottom: 32px; } }
-.sfoot.is-run .sfoot__next { transform: translateY(calc(var(--q, 0) * var(--rise, 0px) * -1)); }
-.sfoot.is-run .sfoot__name { display: inline-block; transform-origin: 0 100%; transform: scale(calc(1 + var(--q, 0) * 0.75)); }
+.sfoot.has-run .sfoot__next { transform: translateY(calc(var(--p, 0) * var(--rise, 0px) * -1)); }
+.sfoot.has-run .sfoot__name { display: inline-block; transform-origin: 0 100%; transform: scale(calc(1 + var(--p, 0) * 0.75)); }

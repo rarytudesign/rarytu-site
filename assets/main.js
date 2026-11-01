@@ -173,21 +173,34 @@
     ".cover-text h2", ".cover-text p", ".footer__title", ".dfoot__title", ".chead__title",
     ".chead .tags", ".photo figcaption", ".wip__fig figcaption", ".swipe", ".frow__copy",
   ].join(",");
+  /* Words become inline blocks (.lw), and a line may break between any two inline blocks, even after a
+     non-breaking space. So a word that ends in one ("и\u00a0", "в\u00a0") and is followed by a tag
+     (<span class="nw">веб-дизайне</span>, a link) is wrapped together with that tag in a no-wrap group (.lg):
+     a short Russian word never hangs at the end of a line. */
+  const canWalk = (n) => n && n.nodeType === 1 && !/^(BR|SVG|IMG)$/i.test(n.tagName);
   function splitWords(el) {
     const walk = (node) => {
-      [...node.childNodes].forEach((c) => {
+      const kids = [...node.childNodes];
+      for (let i = 0; i < kids.length; i++) {
+        const c = kids[i];
         if (c.nodeType === 3) {
+          if (!c.textContent.trim()) continue;
           const parts = c.textContent.split(/( +)/);
-          if (!c.textContent.trim()) return;
           const f = document.createDocumentFragment();
+          let last = null;
           parts.forEach((w) => {
             if (!w) return;
-            if (/^ +$/.test(w)) { f.appendChild(document.createTextNode(w)); return; }
-            const sp = document.createElement("span"); sp.className = "lw"; sp.textContent = w; f.appendChild(sp);
+            if (/^ +$/.test(w)) { f.appendChild(document.createTextNode(w)); last = null; return; }
+            const sp = document.createElement("span"); sp.className = "lw"; sp.textContent = w; f.appendChild(sp); last = sp;
           });
           c.replaceWith(f);
-        } else if (c.nodeType === 1 && !/^(BR|SVG|IMG)$/i.test(c.tagName)) walk(c);
-      });
+          const nx = kids[i + 1];
+          if (last && /\u00a0$/.test(last.textContent) && canWalk(nx) && !/ /.test(nx.textContent.trim())) {   // one word only: a no-wrap group must stay short
+            const g = document.createElement("span"); g.className = "lg";
+            last.before(g); g.append(last, nx); walk(nx); i++;
+          }
+        } else if (canWalk(c)) walk(c);
+      }
     };
     walk(el);
   }
@@ -650,31 +663,35 @@
 
   /* ---------- Footer: scrolling on past the end opens the next page (phones and tablets) ----------
      Two steps, so a fast fling from the middle of the page never opens the next one by accident (Nastya, 31.10):
-     1. The page ends at the footer. Arriving there, the footer only hints: the brand colour rises a little and the
-        line fills to 25%, then both go back to 0.
-     2. After that (finger lifted, page at rest) a stretch of real scroll (.sfoot-run, 1.6 screens) opens up after
-        the footer. Scrolling into it, the footer stays pinned to the bottom while the brand colour rises and fills the
-        screen; the line fills with it and the next page's name moves to the middle. Only at a full line does the next
-        page open (its loader is the same colour, so it reads as one move). Stopping short eases back to the footer.
+     1. The page ends at the footer. Arriving there, the footer only hints: the line fills to 25% and goes back to 0.
+     2. After that (finger lifted, page at rest) the footer grows by a stretch of real scroll (1.6 screens).
+        The footer is part of the page (Nastya, 01.11: no gap between the spheres and the footer): the whole page,
+        footer included, moves up as you scroll; ©year and the arrow up stay at the footer's top edge, the next page's
+        block stays at the bottom of the screen, then moves to the middle as the brand colour fills the screen.
+        Only at a full line does the next page open (its loader is the same colour, so it reads as one move).
+        Stopping short eases back to the footer.
      Going back up the page by more than half a screen closes the stretch again, so the next arrival hints first again. */
   const nextLink = $("[data-next]"), sfoot = $(".sfoot");
   if (nextLink && sfoot) {
-    const run = document.createElement("div"); run.className = "sfoot-run"; run.setAttribute("aria-hidden", "true"); sfoot.after(run);
     const probe = document.createElement("div"); probe.style.cssText = "position:fixed;top:0;height:100lvh;width:0;visibility:hidden;pointer-events:none";
     document.body.appendChild(probe);
     const HINT = 0.25;
-    let R = 0, p = 0, going = false, holding = false, idle = 0, anim = 0, hintAnim = 0;
+    let R = 0, base = 0, p = 0, going = false, holding = false, idle = 0, anim = 0, hintAnim = 0;
     let armed = false, hinted = false, lastMove = 0;   // armed: the stretch is open; hinted: the hint has played on this arrival
     const on = () => getComputedStyle(sfoot).display !== "none";
-    const start = () => run.getBoundingClientRect().top + scrollY - innerHeight;   // where the stretch begins (= the end of the page while closed)
-    const setP = (v) => { sfoot.style.setProperty("--p", v.toFixed(4)); nextLink.style.setProperty("--p", v.toFixed(4)); };
+    const grow = () => { sfoot.style.minHeight = armed && R ? base + R + "px" : ""; };
+    const start = () => sfoot.getBoundingClientRect().top + scrollY + base - innerHeight;   // the end of the page while the stretch is closed
+    // p: the line; q: the brand colour and the next page's block (0 during the hint)
+    const setP = (v, q) => {
+      for (const el of [sfoot, nextLink]) { el.style.setProperty("--p", v.toFixed(4)); el.style.setProperty("--q", q.toFixed(4)); }
+    };
     const measure = () => {
-      if (!on()) { run.style.height = "0px"; sfoot.classList.remove("is-run"); return; }
+      if (!on()) { sfoot.style.minHeight = ""; sfoot.classList.remove("is-run", "is-pin"); return; }
       R = Math.round((probe.offsetHeight || innerHeight) * 1.6);   // 0.8 before 31.10: twice as long (Nastya)
-      run.style.height = (armed ? R : 0) + "px"; sfoot.classList.add("is-run");
-      sfoot.style.setProperty("--fh", sfoot.offsetHeight + "px");
+      sfoot.style.minHeight = ""; base = sfoot.offsetHeight; grow();
+      sfoot.classList.add("is-run");
       // how far the next-page block travels to sit in the middle of the screen at the end
-      const fromBottom = sfoot.offsetHeight - (nextLink.offsetTop + nextLink.offsetHeight / 2);   // layout values: the transform doesn't count
+      const fromBottom = parseFloat(getComputedStyle(sfoot).paddingBottom) + nextLink.offsetHeight / 2;
       sfoot.style.setProperty("--rise", Math.max(0, innerHeight / 2 - fromBottom) + "px");
       update();
     };
@@ -682,20 +699,22 @@
     const atEnd = () => scrollY >= document.documentElement.scrollHeight - innerHeight - 2;
     const update = () => {
       if (!R || hintAnim) return;
-      p = armed ? Math.max(0, Math.min(1, (scrollY - start()) / R)) : 0;
-      setP(p);
+      const st = start();
+      p = armed ? Math.max(0, Math.min(1, (scrollY - st) / R)) : 0;
+      sfoot.classList.toggle("is-pin", armed && scrollY >= st - 1);   // pinned only inside the stretch: arriving, the footer looks as usual
+      setP(p, p);
       if (armed && p >= 0.995 && !holding) go();
     };
     // step 1: the hint, 0 → 25% → 0, then open the stretch once the finger is up and the page has come to rest
     const hint = () => {
       hinted = true;
-      const done = () => { hintAnim = 0; setP(0); arm(); };
+      const done = () => { hintAnim = 0; setP(0, 0); arm(); };
       if (reduce) { done(); return; }
       const t0 = performance.now(), up = 320, back = 520;
       const step = (now) => {
         const t = now - t0;
         const v = t < up ? HINT * (1 - Math.pow(1 - t / up, 3)) : HINT * (1 - Math.min(1, (t - up) / back)) ** 2;
-        setP(v);
+        setP(v, 0);
         if (t < up + back) hintAnim = requestAnimationFrame(step); else done();
       };
       hintAnim = requestAnimationFrame(step);
@@ -703,9 +722,9 @@
     const arm = () => {
       if (armed || !hinted) return;
       if (holding || performance.now() - lastMove < 250) { setTimeout(arm, 120); return; }   // a fling or a drag still going
-      armed = true; run.style.height = R + "px"; update();
+      armed = true; grow(); update();
     };
-    const disarm = () => { if (!armed && !hinted) return; armed = false; hinted = false; run.style.height = "0px"; update(); };
+    const disarm = () => { if (!armed && !hinted) return; armed = false; hinted = false; grow(); update(); };
     // stopping inside the stretch short of the end: ease back to the footer
     const back = () => {
       const from = scrollY, to = start(), dist = from - to;
@@ -740,7 +759,7 @@
     if (document.fonts && document.fonts.ready) document.fonts.ready.then(measure);
     measure();
     // coming back (back button, restored scroll): the stretch is closed and nothing opens by itself
-    const reset = () => { going = false; stopAnim(); cancelAnimationFrame(hintAnim); hintAnim = 0; armed = false; hinted = false; run.style.height = "0px"; update(); };
+    const reset = () => { going = false; stopAnim(); cancelAnimationFrame(hintAnim); hintAnim = 0; armed = false; hinted = false; grow(); update(); };
     addEventListener("pageshow", reset);
     requestAnimationFrame(reset);
   }

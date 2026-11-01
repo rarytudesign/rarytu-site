@@ -308,6 +308,7 @@ html.menu-open { background: var(--surface-muted); }
 }
 /* text: lines rise in one after another (no masks, so nothing gets clipped) */
 @media (prefers-reduced-motion: no-preference) {
+  .js .ls .lg { white-space: nowrap; }   /* a short word and the tag after it (main.js) */
   .js .ls .lw { display: inline-block; opacity: 0; transform: translateY(0.45em); }
   .js .ls.in .lw { opacity: 1; transform: none; transition: opacity 700ms var(--easy), transform 900ms var(--easy); transition-delay: calc(var(--l, 0) * 90ms + var(--d, 0ms)); }
 }
@@ -332,9 +333,16 @@ html.menu-open { background: var(--surface-muted); }
 .card { display: flex; flex-direction: column; gap: 16px; transition: opacity var(--t-fast); }
 .card:active { opacity: 0.6; }
 @media (min-width: 1280px) { .card { gap: 28px; } }
-.card__cover { position: relative; overflow: hidden; isolation: isolate; border-radius: 12px; aspect-ratio: 678 / 420; background: var(--bg, var(--placeholder)); }
-@media (min-width: 1280px) { .card__cover { border-radius: 16px; } }
-.card__cover img { width: 100%; height: 100%; object-fit: cover; }
+/* Rounded corners are a share of the picture's width (Figma radius ÷ Figma width), so they look the same on every
+   screen size: 12px on a 358px phone card, 12px on a 368px tablet card, 16px on a 678px desktop card (1920 frame).
+   Horizontal % is of the width, vertical % of the height, hence the aspect ratio in the second value.
+   The picture itself is rounded too (radius: inherit): a picture clipped only by its frame gets jagged corners
+   in some browsers, and the frame's placeholder colour showed as a thin outline at the edges. */
+.card__cover { --rr: 3.352; --hw: calc(420 / 678); position: relative; overflow: hidden; isolation: isolate; aspect-ratio: 678 / 420; background: var(--bg, var(--placeholder));
+  border-radius: calc(var(--rr) * 1%) / calc(var(--rr) * 1% / var(--hw)); }
+@media (min-width: 744px) { .card__cover { --rr: 3.261; } }
+@media (min-width: 1280px) { .card__cover { --rr: 2.36; } }
+.card__cover img { width: 100%; height: 100%; object-fit: cover; border-radius: inherit; }
 .card__meta { display: flex; flex-direction: column; gap: 10px; }
 @media (min-width: 1280px) { .card__meta { gap: 22px; } }
 .card__title { font-family: var(--font-inter); font-weight: 500; font-size: 24px; line-height: 28px; letter-spacing: -1px; }
@@ -364,7 +372,8 @@ html.menu-open { background: var(--surface-muted); }
 /* Circles */
 .callouts { display: grid; grid-template-columns: 1fr; padding: 0 var(--gutter); margin-top: 26px; }   /* Figma 290:2985: 26px under the last card */
 @media (min-width: 744px) { .callouts { grid-template-columns: repeat(3, minmax(0, 1fr)); margin-top: 60px; } }
-@media (min-width: 1280px) { .callouts { grid-template-columns: repeat(3, minmax(0, 457px)); margin-top: 100px; } }
+/* desktop: three equal circles across the whole column (457px each at 1920), so wide monitors get bigger circles, not a row stuck to the left */
+@media (min-width: 1280px) { .callouts { grid-template-columns: repeat(3, minmax(0, 1fr)); margin-top: 100px; } }
 .circle {
   position: relative; aspect-ratio: 1; border-radius: 50%; border: 1px solid var(--brand);
   display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center;
@@ -683,11 +692,14 @@ html[lang="ru"] .intro__head p { max-width: 500px; }
 }
 @media (min-width: 1280px) { .chead { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); margin: 0; } }
 
-.chero { position: relative; overflow: hidden; border-radius: 12px; background: var(--bg, var(--placeholder)); aspect-ratio: 1370 / 788; }
+/* corners: 12px of 358 (phone), 16px of 756 (tablet), 24px of 1370 (desktop, 1920 frame), as a share of the width */
+.chero { --rr: 3.352; --hw: calc(788 / 1370); position: relative; overflow: hidden; background: var(--bg, var(--placeholder)); aspect-ratio: 1370 / 788;
+  border-radius: calc(var(--rr) * 1%) / calc(var(--rr) * 1% / var(--hw)); }
 .chero img, .chero iframe { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; border: 0; }
+.chero img { border-radius: inherit; }
 .chero iframe { top: 50%; left: 50%; width: max(100%, calc(100% * 16 / 9 * 788 / 1370)); height: max(100%, calc(100% * 1370 / 788 * 9 / 16)); transform: translate(-50%, -50%); }
-@media (min-width: 744px) { .chero { border-radius: 16px; } }
-@media (min-width: 1280px) { .chero { border-radius: 24px; } }
+@media (min-width: 744px) { .chero { --rr: 2.116; } }
+@media (min-width: 1280px) { .chero { --rr: 1.752; } }
 
 .cover-text { display: flex; flex-direction: column; gap: 12px; margin: 38px 0; }
 .cover-text h2 { font-size: 20px; line-height: 24px; letter-spacing: -0.2px; }
@@ -703,13 +715,18 @@ html[lang="ru"] .intro__head p { max-width: 500px; }
 
 .gallery { display: flex; flex-direction: column; gap: 6px; }
 @media (min-width: 744px) { .gallery { gap: 8px; } }
-.gitem { position: relative; overflow: hidden; border-radius: 12px; aspect-ratio: 1 / var(--ar); background: var(--placeholder); }
-@media (min-width: 744px) { .gitem { border-radius: 16px; } }
-@media (min-width: 1280px) { .gitem { border-radius: 24px; } }
-.gitem img { width: 100%; height: 100%; object-fit: cover; }
+/* same corners as the cover: a share of the width; --ar is height ÷ width */
+.gitem { --rr: 3.352; position: relative; overflow: hidden; aspect-ratio: 1 / var(--ar); background: var(--placeholder);
+  border-radius: calc(var(--rr) * 1%) / calc(var(--rr) * 1% / var(--ar)); }
+@media (min-width: 744px) { .gitem { --rr: 2.116; } }
+@media (min-width: 1280px) { .gitem { --rr: 1.752; } }
+.gitem img { width: 100%; height: 100%; object-fit: cover; border-radius: inherit; }
+/* once the picture is in, the grey placeholder goes: it must never show at the picture's edges */
+.gitem:has(> img.is-loaded), .chero:has(> img.is-loaded), .card__cover:has(> img.is-loaded) { background: transparent; }
 .gitem--video { background: transparent; }
 /* videos bleed 1px past the rounded frame so no background hairline shows at the edges */
-.gitem__v, .chero__v { position: absolute; inset: -1px; width: calc(100% + 2px); height: calc(100% + 2px); max-width: none; object-fit: cover; }
+.gitem .vposter, .chero .vposter { border-radius: inherit; }
+.gitem__v, .chero__v { position: absolute; inset: -1px; width: calc(100% + 2px); height: calc(100% + 2px); max-width: none; object-fit: cover; border-radius: inherit; }
 .gitem iframe { position: absolute; top: 50%; left: 50%; border: 0; transform: translate(-50%, -50%); width: max(100%, calc(100% * (16 / 9) * var(--ar))); height: max(100%, calc(100% / ((16 / 9) * var(--ar)))); }
 
 .pnav { display: flex; justify-content: space-between; align-items: center; gap: 16px; margin-top: 16px; height: 58px; border-top: 1px solid var(--brand); border-bottom: 1px solid var(--brand); text-transform: uppercase; letter-spacing: 0.2px; line-height: 20px; font-size: 16px; }
@@ -832,7 +849,7 @@ html[lang="ru"] .dfoot__title { font-family: var(--font-inter); font-size: 40px;
 .sfoot__up { display: grid; place-items: center; width: 44px; height: 44px; border-radius: 50%; background: #fff; color: var(--brand); transition: opacity var(--t-fast); }
 .sfoot__uparrow { width: 19px; height: 14px; transform: rotate(-90deg); }
 .sfoot__up:active { opacity: 0.6; }
-.sfoot__next { grid-row: 3; display: flex; flex-direction: column; color: #fff; }
+.sfoot__next { display: flex; flex-direction: column; color: #fff; }
 .sfoot__name { font-size: 24px; line-height: 20px; letter-spacing: 0; text-transform: uppercase; }
 /* Figma 290:2985: 12px from the name's baseline to the bar, 8px from the bar to the hint's capitals, 24px from its baseline to the bottom */
 .sfoot__bar { display: flex; align-items: center; gap: 2px; margin-top: 10.75px; height: 12.5px; }
@@ -918,14 +935,14 @@ video::-webkit-media-controls-play-button { display: none !important; -webkit-ap
   html[lang="ru"] .xlist--edu .xrow__text p + p { margin-top: 4px; }   /* RU education notes 24px apart (EN 26) */
 }
 
-/* Next page by scrolling on (phones and tablets; main.js adds .sfoot-run after the footer and .is-run here).
-   The footer is pinned to the bottom of the screen while the stretch scrolls; the brand colour rises from it (--p 0→1),
-   the next page's name moves to the middle and grows, the ©/arrow row fades. */
-.sfoot.is-run { position: sticky; top: calc(100vh - var(--fh, 236px)); top: calc(100dvh - var(--fh, 236px)); z-index: 4; }
-.sfoot.is-run::before { content: ""; position: absolute; left: 0; right: 0; bottom: 100%; pointer-events: none; background: var(--brand);
-  height: calc(var(--p, 0) * (100vh - var(--fh, 236px))); height: calc(var(--p, 0) * (100dvh - var(--fh, 236px))); }
-.sfoot.is-run .sfoot__top { opacity: calc(1 - var(--p, 0) * 2.5); }
-.sfoot.is-run .sfoot__next { transform: translateY(calc(var(--p, 0) * var(--rise, 0px) * -1)); }
-.sfoot.is-run .sfoot__name { display: inline-block; transform-origin: 0 100%; transform: scale(calc(1 + var(--p, 0) * 0.75)); }
-.sfoot-run { pointer-events: none; }
-@media (min-width: 1280px) { .sfoot-run { display: none; } }
+/* Next page by scrolling on (phones and tablets; main.js adds .is-run here).
+   The footer is part of the page: when the stretch opens, the footer itself grows downwards (min-height set by main.js),
+   so the page, the spheres and the footer move up as one piece with no gap. ©year and the arrow up keep their place
+   under the footer's top edge. The next page's block is pinned to the bottom of the screen (.is-pin, sticky inside the
+   footer) and, as the brand colour fills the screen (--q 0→1), moves to the middle and grows. The line fills with --p
+   (the arrival hint fills only the line). */
+.sfoot__next { grid-row: 2 / 4; align-self: end; }   /* rows 2–3: room for the block to stay pinned while the footer grows */
+.sfoot.is-pin .sfoot__next { position: sticky; bottom: 17.6px; }
+@media (min-width: 744px) { .sfoot.is-pin .sfoot__next { bottom: 32px; } }
+.sfoot.is-run .sfoot__next { transform: translateY(calc(var(--q, 0) * var(--rise, 0px) * -1)); }
+.sfoot.is-run .sfoot__name { display: inline-block; transform-origin: 0 100%; transform: scale(calc(1 + var(--q, 0) * 0.75)); }

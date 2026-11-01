@@ -300,3 +300,18 @@ Rule: one step at a time. Test, commit, push, then tick it here.
   the last screen's area (18px minimum on phones), a 2px gap that is never closed, pointer pushes spheres out with a scatter.
   Water fills 40% of the screen (never above the buttons); the title and buttons are solid. Tuning values: `TUNE` at the top
   of spheres.js. render.js links spheres.js instead of the two old files; build.js hashes it into assetsVersion.
+- 2026-11-01: Five fixes from Nastya's screenshots.
+  1. Rounded corners of case covers, gallery items and Work cards are a share of the picture's width (Figma radius ÷ Figma width:
+     12/358 phone, 16/756 tablet, 24/1370 desktop for cases; 12/358, 12/368, 16/678 for cards), so they look the same at any
+     screen size (24px at 1920, 18px at 1440, 35px at 2560). `--rr` per breakpoint in styles.css. The picture itself is rounded too
+     (border-radius: inherit) instead of being clipped only by its frame: frame-only clipping gave jagged corners on her Windows PC.
+  2. Footer stretch reworked: the footer is no longer sticky; it grows downwards (min-height = its height + the stretch), so the page,
+     the spheres and the footer move up as one piece (there was a white gap). ©year and the arrow up keep their top offset; the next
+     page's block is sticky at the bottom of the screen (.is-pin, only inside the stretch) and moves to the middle with --q.
+     The arrival hint now only fills the line (--p) and no longer raises the brand colour over the page. No more .sfoot-run element.
+  3. No outlines at picture edges: the grey placeholder is removed once the picture has loaded (:has(> img.is-loaded)), and
+     dom/gallery-image-8-2(-sm).webp had a semi-transparent last pixel row (now opaque, no alpha).
+  4. Hanging short words (RU): the nbsp was there, but main.js wraps every word in an inline block and a line can break between
+     inline blocks. A word ending in nbsp followed by a one-word tag (<span class="nw">веб-дизайне</span>) is now wrapped with it
+     in a no-wrap group (.lg). Checked 12 widths × 9 RU pages: 0 hanging words (old code: 8 in Chromium).
+  5. Home circles on desktop: three equal 1fr columns across the whole column (457px at 1920 as before, 670px at 2560), not stuck left.

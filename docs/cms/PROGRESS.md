@@ -357,3 +357,11 @@ Rule: one step at a time. Test, commit, push, then tick it here.
   Debug: add ?debug to a page address (e.g. rarytu.com/ru/?debug) for a live readout (scroll, end, start, heights, p, fresh,
   holding). Simulated a wrong innerHeight (±80px) in WebKit: opens in all cases. Still no iPhone-only cause confirmed:
   next step is a screen recording with ?debug from Nastya.
+- 2026-11-01 (7): favicons and link previews (Nastya's files: 1200×630 share image, 180 and 512 photo, 32 = solid brand square).
+  Tab / Google: the brand circle (assets/favicon.svg + /favicon.ico 16/32/48, transparent, circle as in the SVG; her 32px square
+  not used: she asked for the circle at tiny sizes). Phones: /apple-touch-icon.png (her 180 photo), /site.webmanifest with
+  assets/icons/icon-192.png / icon-512.png (her 512 photo). Preview: assets/img/share.jpg (JPEG, crawlers don't all read WebP).
+  site.json: `url` (https://rarytu.com) and `shareImage` is now { src, width, height, alt{en,ru} } (was a path string);
+  render.js writes canonical, og:type/site_name/locale/url/title/description/image (+size, alt) and twitter:card with full
+  addresses (messengers ignore relative ones). Root index.html (language redirect) got the same tags by hand, because a shared
+  "rarytu.com" link is read there and crawlers don't follow the JS redirect.

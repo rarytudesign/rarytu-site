@@ -66,6 +66,11 @@
       <a class="u-link" href="${href(site.cv[lang])}" download data-cv>${esc(ui.downloadCV)}</a></div>`;
     const enPath = lang === "en" ? path : ctx.altPath, ruPath = lang === "ru" ? path : ctx.altPath;
     const title = esc(ctx.title), desc = esc(ctx.description);
+    // link previews need full addresses (Telegram, WhatsApp, LinkedIn and others ignore relative ones)
+    const base = String(site.url || "").replace(/\/+$/, "");
+    const abs = (p) => base ? base + "/" + p.replace(/^\/+/, "") : href(p);
+    const pageUrl = abs(path.replace(/index\.html$/, ""));
+    const share = site.shareImage || {};
     return `<!doctype html>
 <html lang="${lang}">
 <head>
@@ -76,10 +81,22 @@
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <title>${title}</title>
 <meta name="description" content="${desc}">
+<link rel="canonical" href="${esc(pageUrl)}">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="${esc(site.name)}">
+<meta property="og:locale" content="${lang === "ru" ? "ru_RU" : "en_US"}">
+<meta property="og:url" content="${esc(pageUrl)}">
 <meta property="og:title" content="${title}">
-<meta property="og:description" content="${desc}">
-<meta property="og:image" content="${href(site.shareImage)}">
+<meta property="og:description" content="${desc}">${share.src ? `
+<meta property="og:image" content="${esc(abs(share.src))}">
+<meta property="og:image:width" content="${share.width}">
+<meta property="og:image:height" content="${share.height}">
+<meta property="og:image:alt" content="${esc(tr(share.alt, lang))}">
+<meta name="twitter:card" content="summary_large_image">` : ""}
+<link rel="icon" href="${href("favicon.ico")}" sizes="48x48">
 <link rel="icon" href="${href("assets/favicon.svg")}" type="image/svg+xml">
+<link rel="apple-touch-icon" href="${href("apple-touch-icon.png")}">
+<link rel="manifest" href="${href("site.webmanifest")}">
 <link rel="alternate" hreflang="en" href="${href(enPath)}">
 <link rel="alternate" hreflang="ru" href="${href(ruPath)}">
 <link rel="preload" href="${href("assets/fonts/inter-tight-latin-500-normal.woff2")}" as="font" type="font/woff2" crossorigin>

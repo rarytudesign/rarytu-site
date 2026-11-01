@@ -1,7 +1,16 @@
 {
   "name": "Anastasia Rarytu",
   "copyright": "©{year}",
-  "shareImage": "assets/img/cover-hevy.webp",
+  "url": "https://rarytu.com",
+  "shareImage": {
+    "src": "assets/img/share.jpg",
+    "width": 1200,
+    "height": 630,
+    "alt": {
+      "en": "Hi, I’m a brand & digital designer",
+      "ru": "Hi, I’m a brand & digital designer"
+    }
+  },
   "cv": {
     "en": "assets/cv/Anastasia_Alekseeva_CV.pdf",
     "ru": "assets/cv/Anastasia_Alekseeva_CV_RUS.pdf"

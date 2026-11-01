@@ -382,3 +382,7 @@ Rule: one step at a time. Test, commit, push, then tick it here.
   visible); About photo dots start at -10% (was -40%, half a screen too late); dot time 420ms (640), 110ms between dots (200).
   Blocks: rio threshold 0.01 with +4% margin (was 12% with -5%); .rv 550/700ms (900/1100), text lines 450/600ms + 60ms/line
   (700/900 + 90), cards 480/320, rules 800, gallery 350/450; batch stagger 50ms (80). Desktop timings unchanged.
+- 2026-11-01 (11): EN | RU is one switch everywhere (phone bar, tablet bar, desktop sidebar): render.js outputs a single
+  <a class="lang" href=other language hreflang data-lang-switch aria-label> with spans, the current one .is-cur (bold).
+  Tap anywhere on it switches to the other language. Larger hit area by padding with equal negative margin (phone 44px tall,
+  tablet 40, desktop 32), so nothing moves. Hover (mouse): the other language dims. main.js still remembers the choice.

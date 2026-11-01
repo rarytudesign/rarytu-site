@@ -105,8 +105,11 @@ html { scrollbar-color: rgba(84, 23, 37, 0.45) transparent; scrollbar-width: thi
 .arrow-link:active { opacity: 0.6; }
 
 .lang { display: flex; align-items: center; gap: 12px; font-weight: 500; letter-spacing: 0; line-height: 20px; }
-.lang a[aria-current="true"] { font-weight: 800; cursor: default; }
-.lang a:active:not([aria-current]) { opacity: 0.6; }
+.lang .is-cur { font-weight: 800; }
+/* one link for the whole EN | RU block, with a larger tap area that doesn't move anything */
+.lang { padding: 10px 8px; margin: -10px -8px; -webkit-tap-highlight-color: transparent; transition: opacity var(--t-fast); }
+.lang:active { opacity: 0.6; }
+@media (hover: hover) { .lang span:not(.is-cur) { transition: opacity var(--t-fast); } .lang:hover span:not(.is-cur) { opacity: 0.6; } }
 
 /* =========================================================
    Navigation chrome
@@ -181,7 +184,7 @@ html { scrollbar-color: rgba(84, 23, 37, 0.45) transparent; scrollbar-width: thi
 /* Figma "Mobile nav/Closed" (380:623): EN | RU next to the menu button, 16px apart, 20px before the button */
 .mbar__right { display: flex; align-items: center; gap: 20px; }
 .mbar .lang { gap: 16px; font-size: 16px; line-height: 20px; }
-.mbar .lang a { padding: 12px 0; margin: -12px 0; -webkit-tap-highlight-color: transparent; }   /* taller tap area, same look */
+.mbar .lang { padding: 12px 8px; margin: -12px -8px; }   /* 44px tall tap area, same look */
 .mbar__btn svg { width: 24px; height: 24px; }
 /* Open menu: full screen (Figma "Mobile nav_new"): p32, title block on top, nav + links at the bottom */
 .mmenu {

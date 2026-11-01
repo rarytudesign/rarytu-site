@@ -57,9 +57,9 @@
     const brand = `<a class="brand" href="${href(pagePath(lang, "work"))}">${esc(site.name)}</a>`;
     const navItems = ["work", "about", "approach"].map((k) =>
       `<li><a href="${href(pagePath(lang, k))}"${k === ctx.nav ? ' aria-current="page"' : ""}><span>${esc(ui.nav[k])}</span><i class="dot" aria-hidden="true"></i></a></li>`).join("");
-    const langNav = `<nav class="lang" aria-label="Language / Язык">` + ["en", "ru"].map((l) => l === lang
-      ? `<a aria-current="true" lang="${l}">${l.toUpperCase()}</a>`
-      : `<a href="${href(ctx.altPath)}" hreflang="${l}" lang="${l}" data-lang-switch>${l.toUpperCase()}</a>`).join('<span aria-hidden="true">|</span>') + `</nav>`;
+    // EN | RU is one switch (Nastya 01.11): the whole block is a single link to the other language, an easy target on a phone
+    const langNav = `<a class="lang" href="${href(ctx.altPath)}" hreflang="${other}" lang="${other}" data-lang-switch aria-label="${other === "en" ? "English version" : "Русская версия"}">` +
+      ["en", "ru"].map((l) => `<span${l === lang ? ' class="is-cur"' : ""}>${l.toUpperCase()}</span>`).join('<span aria-hidden="true">|</span>') + `</a>`;
     // project pages have no last screen: "Contact" opens the one on Approach
     const contactHref = ctx.bodyClass === "page-case" ? href(pagePath(lang, "approach")) + "#contact" : "#contact";
     const utility = `<div class="utility"><a class="u-link" href="${contactHref}" data-contact>${esc(ui.contact)}</a>

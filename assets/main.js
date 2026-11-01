@@ -21,6 +21,7 @@
   }
   $$("[data-lang-switch]").forEach((a) => a.addEventListener("click", () => {
     try { sessionStorage.setItem("rarytu-scroll", String(scrollY / Math.max(1, document.documentElement.scrollHeight - innerHeight))); } catch {}
+    try { localStorage.setItem("rarytu-lang", a.getAttribute("hreflang")); } catch {}   // rarytu.com opens this language next time (root index.html)
   }));
 
   /* ---------- Background under a point: is it the brand colour? ---------- */

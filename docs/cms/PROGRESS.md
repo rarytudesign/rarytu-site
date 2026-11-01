@@ -365,3 +365,8 @@ Rule: one step at a time. Test, commit, push, then tick it here.
   render.js writes canonical, og:type/site_name/locale/url/title/description/image (+size, alt) and twitter:card with full
   addresses (messengers ignore relative ones). Root index.html (language redirect) got the same tags by hand, because a shared
   "rarytu.com" link is read there and crawlers don't follow the JS redirect.
+- 2026-11-01 (8): favicon circle fills the square (r 15 of 32, was 12) and gets a light ring in dark browser themes (SVG media
+  query; the brand colour was nearly invisible on dark tab bars); favicon.ico redrawn the same way. Language on rarytu.com
+  (root index.html): the visitor's own choice on the site wins (main.js stores `rarytu-lang` in localStorage when the EN/RU
+  switch is used), else the first of ru/en in navigator.languages (a Kazakh phone with Russian second gets RU), else EN.
+  No location-based choice (static hosting has no visitor location; device language is the better signal anyway).

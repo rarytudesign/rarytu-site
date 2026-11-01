@@ -386,3 +386,8 @@ Rule: one step at a time. Test, commit, push, then tick it here.
   <a class="lang" href=other language hreflang data-lang-switch aria-label> with spans, the current one .is-cur (bold).
   Tap anywhere on it switches to the other language. Larger hit area by padding with equal negative margin (phone 44px tall,
   tablet 40, desktop 32), so nothing moves. Hover (mouse): the other language dims. main.js still remembers the choice.
+- 2026-11-01 (12): after the EN | RU change Nastya saw no bold language and taps only on the letters: her browser kept the old
+  page (GitHub Pages: cache-control max-age=600) while styles.css / main.js were already new (Pages ignores ?v=, so an old page
+  gets the newest assets when they are not cached). Kept compatibility: CSS still bolds `.lang a[aria-current="true"]`, and
+  main.js turns a tap anywhere on an old <nav class="lang"> into a click on its other-language link. Lesson: when markup and
+  CSS/JS change together, keep old selectors working for at least 10 minutes' worth of cached pages (or for good).

@@ -19,6 +19,12 @@
     const go = () => scrollTo({ top: +keepScroll * (document.documentElement.scrollHeight - innerHeight), behavior: "instant" });
     requestAnimationFrame(go); addEventListener("load", go, { once: true });
   }
+  // Pages cached by the browser from before 01.11 have EN and RU as separate links in a <nav class="lang">: a tap anywhere on
+  // the block still switches (GitHub Pages lets browsers keep a page for 10 minutes while the scripts are already new)
+  $$("nav.lang").forEach((n) => n.addEventListener("click", (e) => {
+    if (e.target.closest("a[href]")) return;
+    const other = n.querySelector("a[href][data-lang-switch]"); if (other) { e.preventDefault(); other.click(); }
+  }));
   $$("[data-lang-switch]").forEach((a) => a.addEventListener("click", () => {
     try { sessionStorage.setItem("rarytu-scroll", String(scrollY / Math.max(1, document.documentElement.scrollHeight - innerHeight))); } catch {}
     try { localStorage.setItem("rarytu-lang", a.getAttribute("hreflang")); } catch {}   // rarytu.com opens this language next time (root index.html)

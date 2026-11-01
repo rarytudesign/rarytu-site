@@ -160,9 +160,10 @@
   const dotGroups = $$(".dots");
   if ("IntersectionObserver" in window) {
     const seen = (entries, obs) => entries.forEach((e) => { if (e.isIntersecting) { e.target.classList.add("is-in"); obs.unobserve(e.target); } });
-    const io = new IntersectionObserver(seen, { threshold: 0.2 });
+    const touch = innerWidth < 1280;   // phones and tablets: start earlier, a quick scroll should still see the dots (01.11)
+    const io = new IntersectionObserver(seen, touch ? { threshold: 0, rootMargin: "0px 0px -8% 0px" } : { threshold: 0.2 });
     // the About photo dots wait until the photos are well on screen (they sit around them, partly above)
-    const late = new IntersectionObserver(seen, { threshold: 0, rootMargin: isMobile() || innerWidth < 1280 ? "0px 0px -40% 0px" : "0px 0px -10% 0px" });
+    const late = new IntersectionObserver(seen, { threshold: 0, rootMargin: touch ? "0px 0px -10% 0px" : "0px 0px -10% 0px" });   // phones: was -40%, too late for a quick scroll
     shown.then(() => dotGroups.forEach((g) => (g.classList.contains("dots--photos") ? late : io).observe(g)));
   } else dotGroups.forEach((g) => g.classList.add("is-in"));
 
@@ -243,7 +244,7 @@
     const all = els.concat(textEls);
     let batch = 0, batchTimer = 0;
     const show = (el) => {
-      el.style.setProperty("--d", `${Math.min(batch++, 6) * 80}ms`);
+      el.style.setProperty("--d", `${Math.min(batch++, 6) * (innerWidth < 1280 ? 50 : 80)}ms`);
       if (el.classList.contains("ls")) numberLines(el);
       requestAnimationFrame(() => el.classList.add("in"));
     };
@@ -252,7 +253,7 @@
         .sort((a, b) => a.boundingClientRect.top - b.boundingClientRect.top || a.boundingClientRect.left - b.boundingClientRect.left)
         .forEach((e) => { show(e.target); rio.unobserve(e.target); });
       clearTimeout(batchTimer); batchTimer = setTimeout(() => (batch = 0), 140);
-    }, { threshold: 0.12, rootMargin: "0px 0px -5% 0px" });
+    }, innerWidth < 1280 ? { threshold: 0.01, rootMargin: "0px 0px 4% 0px" } : { threshold: 0.12, rootMargin: "0px 0px -5% 0px" });   // phones/tablets: as soon as it comes in
     // gallery images and the case cover are tall: start them as soon as their top edge comes in
     const gio = new IntersectionObserver((entries) => entries.forEach((e) => { if (e.isIntersecting) { show(e.target); gio.unobserve(e.target); } }), { threshold: 0, rootMargin: "0px 0px 6% 0px" });
     // Blocks at the very end of the page (footer contacts, "Back to top") can sit below that trigger line

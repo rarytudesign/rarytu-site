@@ -912,6 +912,16 @@ video::-webkit-media-controls-play-button { display: none !important; -webkit-ap
   .js .gitem.rv.in, .js .chero.rv.in { transform: none; transition: opacity 450ms var(--easy), transform 600ms var(--easy); transition-delay: min(var(--d, 0ms), 80ms); }
   .js .gitem img, .js .chero img { transition: opacity 300ms var(--easy), transform 700ms var(--ease); }
 }
+/* Phones and tablets: everything arrives quicker, so a fast scroll never outruns it (Nastya 01.11) */
+@media (max-width: 1279px) and (prefers-reduced-motion: no-preference) {
+  :root { --dot-t: 420ms; }
+  .js .dots.is-in i { animation-delay: calc(var(--i) * 110ms + 60ms); }
+  .js .rv.in { transition: opacity 550ms var(--ease), transform 700ms var(--ease); transition-delay: var(--d, 0ms); }
+  .js .rule.rv.in { transition: transform 800ms var(--ease) var(--d, 0ms); }
+  .js .card.rv.in { transition: transform 480ms var(--easy) var(--d, 0ms), opacity 320ms var(--easy) var(--d, 0ms); }
+  .js .ls.in .lw { transition: opacity 450ms var(--easy), transform 600ms var(--easy); transition-delay: calc(var(--l, 0) * 60ms + var(--d, 0ms)); }
+  .js .gitem.rv.in, .js .chero.rv.in { transition: opacity 350ms var(--easy), transform 450ms var(--easy); transition-delay: min(var(--d, 0ms), 50ms); }
+}
 /* About photo dots on desktop: quicker one after another */
 @media (min-width: 1280px) and (prefers-reduced-motion: no-preference) {
   .js .dots--photos.is-in i { animation-duration: 480ms, 360ms; animation-delay: calc(var(--i) * 90ms); }

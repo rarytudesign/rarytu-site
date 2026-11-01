@@ -375,3 +375,10 @@ Rule: one step at a time. Test, commit, push, then tick it here.
   absolutely placed 8px below the name's top and 16px from the right edge (was a 23px cross). Menu buttons: no iOS tap highlight
   (the grey rounded patch on tap), opacity 0.6 when pressed. About menuTagline EN: "in brands" non-breaking (Figma breaks).
   The open menu stays full screen (Figma frame shows a 714px panel with rounded bottom; full screen was chosen earlier).
+- 2026-11-01 (10): About photo dots, RU: the RU Figma frames (phone and tablet) kept the dots 36-48px higher (phone) / lower
+  (tablet) relative to the photos than EN, so on the site a dot slid under the brand block (phone) and under a caption (tablet).
+  RU --mx/--my and --tx/--ty now equal EN's (content/pages/about.json photos.dots.ru); desktop values untouched.
+  Phones and tablets (< 1280): reveals start earlier and run quicker. Dots: io threshold 0 with -8% bottom margin (was 20%
+  visible); About photo dots start at -10% (was -40%, half a screen too late); dot time 420ms (640), 110ms between dots (200).
+  Blocks: rio threshold 0.01 with +4% margin (was 12% with -5%); .rv 550/700ms (900/1100), text lines 450/600ms + 60ms/line
+  (700/900 + 90), cards 480/320, rules 800, gallery 350/450; batch stagger 50ms (80). Desktop timings unchanged.

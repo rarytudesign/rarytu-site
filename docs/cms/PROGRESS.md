@@ -344,3 +344,9 @@ Rule: one step at a time. Test, commit, push, then tick it here.
   scrolling stops. No more arrival hint, arm/disarm, --q or .is-run. .is-pin: next block grid-row 2/5 + sticky; it needs an
   explicit column (1 on phones, 2 on tablets) or the grid pushes it into a new column. Tests: tools/test-footer.js (touch
   events added) in Chromium and WebKit; repeated swipes, resize events mid-drag, fling from the middle: all as intended.
+- 2026-11-01 (5): third iPhone recording: one swipe from the "Let's work together" screen filled the line to ~95%, sat there
+  ~1.5s (iOS momentum tail) and eased back, because only swipes that start at the footer counted. Now a gesture counts when it
+  starts with the last screen covering at least half the screen (its top at or above the middle), at the footer or in the
+  stretch (nearEnd()). And when scrolling stops after a counted swipe with the line at 80% or more, the next page opens instead
+  of easing back. WebKit scenarios (/tmp/tf5.js style): swipe from the last screen opens, 85% from the footer opens, 30% eases
+  back, a fling from a third of the page down stays.

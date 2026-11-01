@@ -674,8 +674,8 @@
      didn't open at all). Scrolling into the stretch, the whole page moves up as one piece; ©year and the arrow up stay at the
      footer's top edge, the next page's block stays at the bottom of the screen (.is-pin), the brand colour fills the screen,
      the line fills and the block moves to the middle (--p). At a full line the next page opens.
-     Only a gesture that starts at the footer counts (a touch, or a new run of wheel/trackpad scrolling): a fast fling from the
-     middle of the page that carries on into the stretch never opens the next page, and when it stops it eases back to the
+     Only a gesture that starts on the last screen or the footer counts (a touch, or a new run of wheel/trackpad scrolling):
+     a fast fling from further up the page that carries on into the stretch never opens the next page, and when it stops it eases back to the
      footer. Stopping short of a full line also eases back. Desktop: no footer, no stretch. */
   const nextLink = $("[data-next]"), sfoot = $(".sfoot");
   if (nextLink && sfoot) {
@@ -720,20 +720,25 @@
     const stopAnim = () => { if (anim) { cancelAnimationFrame(anim); anim = 0; } };
     const settle = () => {
       clearTimeout(idle);
-      idle = setTimeout(() => { if (!holding && !going && !anim && p > 0.002) back(); }, 180);
+      // stopped with the line nearly full after a deliberate swipe: open; otherwise ease back to the footer
+      idle = setTimeout(() => { if (holding || going || anim || p <= 0.002) return; if (fresh && p >= 0.8) go(); else back(); }, 180);
     };
     addEventListener("scroll", () => {
       update();
       if (going || !R || anim) return;
       settle();
     }, { passive: true });
-    // a gesture counts when it starts at the footer (or already inside the stretch)
-    addEventListener("touchstart", () => { holding = true; stopAnim(); clearTimeout(idle); fresh = R > 0 && scrollY >= start() - 8; }, { passive: true });
+    // a gesture counts when it starts on the last screen ("Let's work together" with the spheres fills at least half the
+    // screen), at the footer or inside the stretch (01.11: one swipe from the last screen is deliberate too; only a fling
+    // from further up the page must not open the next page)
+    const lastScreen = $(".dfoot");
+    const nearEnd = () => R > 0 && (scrollY >= start() - 8 || (lastScreen && lastScreen.getBoundingClientRect().top <= innerHeight / 2));
+    addEventListener("touchstart", () => { holding = true; stopAnim(); clearTimeout(idle); fresh = nearEnd(); }, { passive: true });
     addEventListener("touchend", () => { holding = false; update(); if (!going) settle(); }, { passive: true });
     addEventListener("touchcancel", () => { holding = false; settle(); }, { passive: true });
     addEventListener("wheel", () => {
       const now = performance.now();
-      if (now - lastWheel > 300) fresh = R > 0 && scrollY >= start() - 8;   // a new run of wheel or trackpad scrolling
+      if (now - lastWheel > 300) fresh = nearEnd();   // a new run of wheel or trackpad scrolling
       lastWheel = now; stopAnim();
     }, { passive: true });
     addEventListener("resize", measure);

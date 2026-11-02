@@ -35,7 +35,7 @@ admin/cms/render.js          pure functions content → HTML (runs in Node and i
 tools/build.js               writes all 18 pages from content (en/, ru/), stamps asset versions (?v=hash)
 tools/test-render.js         checks the committed pages equal the renderer's output
 en/ ru/ (index, about/, approach/, work/<slug>/)   GENERATED pages, committed as plain HTML
-index.html (root)            hand-made: picks the language (saved choice, else device languages, else EN) + link-preview tags
+index.html (root)            generated too (renderRoot): picks the language (saved choice, else device languages, else EN) + link preview
 assets/styles.css, main.js, spheres.js           hand-written, the panel never edits them
 admin/                       Nastya's admin panel (forms + live preview, drafts, Publish = one commit, backups)
 ```

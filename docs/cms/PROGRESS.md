@@ -396,3 +396,13 @@ Rule: one step at a time. Test, commit, push, then tick it here.
   docs/AI-CONTEXT.md (English, for any AI: how to work with Nastya, architecture, golden rules, gotchas, test method).
   ASCII file names on purpose (Windows' unzip garbles Cyrillic names). README links both. Backup v15 (22:23) matched the live
   site exactly (fingerprint 5d8f2b1235e55703); a new backup is needed so the zip contains these two files.
+- 2026-11-02: (1) Telegram's in-app browser on iPhone shows the page under its own see-through top bar, so content showed
+  above our fixed phone bar. .mbar and .mmenu now paint their colour 240px upwards (box-shadow 0 -240px 0 240px), off screen
+  in normal browsers. (2) Panel, Site tab: "Link preview" (picture → JPEG ≤1200 wide under a new name assets/img/share-xxxx.jpg,
+  size and alt EN/RU in site.json shareImage) and "Site icon" (tab icon: SVG/PNG → favicon.ico 16/32/48 built in the browser,
+  SVG also to assets/favicon.svg; phone icon → apple-touch-icon.png 180, assets/icons/icon-192/512.png). site.json icons
+  { ico, svg ("" = none), touch, v }: v changes on upload and is added as ?v= to the icon links. Code: admin/cms/ed-brand.js.
+  render.js: shareTags()/iconTags(); the root index.html is now generated too (renderRoot, last item of listPages), so a new
+  preview picture reaches rarytu.com itself. Thumbnails fall back to raw.githubusercontent.com while Pages deploys.
+  Test: tools/test-brand.js against the mock GitHub (upload, Publish, files and tags in the commit, ICO sizes).
+  Lesson again: never pkill -f a pattern that also appears in the same shell command.

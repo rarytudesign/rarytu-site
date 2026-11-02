@@ -47,6 +47,46 @@
     close: '<svg viewBox="0 0 16 16" aria-hidden="true"><path d="m0 0 16 16M16 0 0 16" stroke="currentColor" stroke-width="1.5" stroke-linecap="butt"/></svg>',
   };
 
+  // ---------- link preview and icons (set in the panel: Site → Link preview, Site icon) ----------
+  // site.shareImage = { src, width, height, alt{en,ru} }; site.icons = { ico, svg ("" = none), touch, v (changes on upload) }
+  function shareTags(site, abs, lang) {
+    const sh = site.shareImage || {};
+    if (!sh.src) return "";
+    return `
+<meta property="og:image" content="${esc(abs(sh.src))}">
+<meta property="og:image:width" content="${sh.width}">
+<meta property="og:image:height" content="${sh.height}">
+<meta property="og:image:alt" content="${esc(tr(sh.alt, lang))}">
+<meta name="twitter:card" content="summary_large_image">`;
+  }
+  function iconTags(site, href) {
+    const ic = site.icons || {}, v = ic.v ? "?v=" + encodeURIComponent(ic.v) : "";
+    const svg = ic.svg === undefined ? "assets/favicon.svg" : ic.svg;
+    return `<link rel="icon" href="${href(ic.ico || "favicon.ico")}${v}" sizes="48x48">` +
+      (svg ? `\n<link rel="icon" href="${href(svg)}${v}" type="image/svg+xml">` : "") +
+      `\n<link rel="apple-touch-icon" href="${href(ic.touch || "apple-touch-icon.png")}${v}">` +
+      `\n<link rel="manifest" href="${href("site.webmanifest")}">`;
+  }
+  /* rarytu.com itself (index.html at the root): picks the language and carries the link preview, because a shared
+     "rarytu.com" link is read here and link-preview robots don't follow the script */
+  const ROOT_JS = '/* language: the visitor\'s own choice on the site (remembered), else the first of Russian or English in the device\'s language list, else English */\n(function(){var l;try{l=localStorage.getItem("rarytu-lang")}catch(e){}if(l!=="ru"&&l!=="en"){l="en";var a=navigator.languages&&navigator.languages.length?navigator.languages:[navigator.language||""];for(var i=0;i<a.length;i++){var c=String(a[i]).toLowerCase().slice(0,2);if(c==="ru"){l="ru";break}if(c==="en")break}}location.replace(l+"/index.html")})()';
+  function renderRoot(site, work) {
+    const base = String(site.url || "").replace(/\/+$/, ""), abs = (p) => base ? base + "/" + p.replace(/^\/+/, "") : p;
+    const title = esc(tr(work.title, "en")), desc = esc(tr(work.description, "en"));
+    return `<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>${title}</title>
+<meta name="description" content="${desc}">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="${esc(site.name)}">
+<meta property="og:url" content="${esc(abs(""))}">
+<meta property="og:title" content="${title}">
+<meta property="og:description" content="${desc}">${shareTags(site, abs, "en")}
+${iconTags(site, (p) => p)}
+<script>${ROOT_JS}</script>
+<meta http-equiv="refresh" content="0;url=en/index.html"></head><body></body></html>
+`;
+  }
+
   // ---------- shell ----------
   /* ctx: { site, lang, path, altPath, nav: "work"|"about"|"approach", bodyClass,
             title, description, tagline, menuTagline } */
@@ -87,16 +127,8 @@
 <meta property="og:locale" content="${lang === "ru" ? "ru_RU" : "en_US"}">
 <meta property="og:url" content="${esc(pageUrl)}">
 <meta property="og:title" content="${title}">
-<meta property="og:description" content="${desc}">${share.src ? `
-<meta property="og:image" content="${esc(abs(share.src))}">
-<meta property="og:image:width" content="${share.width}">
-<meta property="og:image:height" content="${share.height}">
-<meta property="og:image:alt" content="${esc(tr(share.alt, lang))}">
-<meta name="twitter:card" content="summary_large_image">` : ""}
-<link rel="icon" href="${href("favicon.ico")}" sizes="48x48">
-<link rel="icon" href="${href("assets/favicon.svg")}" type="image/svg+xml">
-<link rel="apple-touch-icon" href="${href("apple-touch-icon.png")}">
-<link rel="manifest" href="${href("site.webmanifest")}">
+<meta property="og:description" content="${desc}">${shareTags(site, abs, lang)}
+${iconTags(site, href)}
 <link rel="alternate" hreflang="en" href="${href(enPath)}">
 <link rel="alternate" hreflang="ru" href="${href(ruPath)}">
 <link rel="preload" href="${href("assets/fonts/inter-tight-latin-500-normal.woff2")}" as="font" type="font/woff2" crossorigin>
@@ -464,6 +496,7 @@ ${pageEnd(ctx, NEXT[ctx.nav])}`;
   /* p: { lang, key: "work"|"about"|"approach"|"case", slug? , path }
      data: { site, read(file) → parsed JSON }  (read is sync in Node; the panel passes a cache) */
   function renderPage(p, data) {
+    if (p.key === "root") return renderRoot(data.site, data.read("content/pages/work.json"));
     const html = renderRaw(p, data);
     return noOrphans(p.lang === "ru" ? keepHyphens(html) : html);
   }
@@ -508,10 +541,11 @@ ${pageEnd(ctx, NEXT[ctx.nav])}`;
       for (const key of ["work", "about", "approach"]) out.push({ lang, key, path: pagePath(lang, key) });
       for (const slug of work.projects) out.push({ lang, key: "case", slug, path: casePath(lang, slug) });
     }
+    out.push({ lang: "en", key: "root", path: "index.html" });   // rarytu.com: language pick + link preview
     return out;
   }
 
-  const api = { HEAD_JS, HEAD_JS_HASH, noOrphans, keepHyphens, headingVar, listPages, renderPage, approachMain, aboutMain, caseMain, workMain, vp, esc, rich, pick, variant, tr, up, pagePath, casePath, shell, lastScreen, siteFooter, SVG };
+  const api = { renderRoot, shareTags, iconTags, HEAD_JS, HEAD_JS_HASH, noOrphans, keepHyphens, headingVar, listPages, renderPage, approachMain, aboutMain, caseMain, workMain, vp, esc, rich, pick, variant, tr, up, pagePath, casePath, shell, lastScreen, siteFooter, SVG };
   root.RarytuRender = api;
   if (typeof module !== "undefined" && module.exports) module.exports = api;
 })(typeof window !== "undefined" ? window : globalThis);

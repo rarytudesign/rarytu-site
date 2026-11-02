@@ -24,7 +24,7 @@
     };
     el.append(
       h("h1", { class: "ed__title" }, "Site"),
-      h("p", { class: "ed__lede" }, "Things every page shares: your name, contacts, CV and the small interface texts."),
+      h("p", { class: "ed__lede" }, "Things every page shares: your name, contacts, CV, the link preview, the site icon and the small interface texts."),
       group("Name and copyright",
         input(b("name"), { label: "Name", hint: "Shown at the top of every page." }),
         input(b("copyright"), { label: "Copyright line", placeholder: "©{year}", hint: "{year} becomes the current year and changes by itself every January." })),
@@ -45,6 +45,8 @@
               ib.sub("icon").get() ? note("Has its own icon.") : note("No icon yet: the button shows a plain arrow."));
           } })),
       group("CV files", cv("en", "English CV"), cv("ru", "Russian CV")),
+      Brand.preview(),
+      Brand.icons(),
       group("Menu",
         navUi("work", "Work page"), navUi("about", "About page"), navUi("approach", "Approach page"),
         ui("contact", "Contact link"), ui("downloadCV", "Download CV link")),

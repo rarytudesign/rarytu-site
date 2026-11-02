@@ -1,0 +1,28 @@
+<!doctype html><html lang="ru"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Проверка шапки A</title>
+<style>
+html,body{margin:0;font:15px/1.4 -apple-system,system-ui,sans-serif;background:#fff}
+.stripe{height:60px;display:flex;align-items:center;padding:0 16px;color:#222;border-bottom:1px solid #ddd}
+.stripe:nth-child(odd){background:#f0f0f0}
+.fixed{position:fixed;left:0;right:0;top:0;height:56px;z-index:10;background:#d33;color:#fff;display:flex;align-items:center;padding:0 16px;
+  padding-top:env(safe-area-inset-top);box-shadow:0 -300px 0 300px #36c;font-weight:600}
+.above{position:fixed;left:0;right:0;top:-200px;height:200px;background:#2a2;z-index:9}
+#info{position:fixed;left:8px;right:8px;bottom:8px;z-index:11;background:rgba(0,0,0,.8);color:#fff;font:12px/1.35 ui-monospace,monospace;padding:8px;border-radius:6px;white-space:pre-wrap}
+.probe{position:fixed;top:0;height:0;padding-top:env(safe-area-inset-top);visibility:hidden}
+</style></head><body>
+<div class="above"></div>
+<div class="fixed">КРАСНАЯ ПАНЕЛЬ (тест A)</div>
+<div class="probe" id="probe"></div>
+<div style="height:56px"></div>
+<div id="list"></div>
+<div id="info"></div>
+<script>
+var l=document.getElementById("list");for(var i=1;i<=60;i++){var d=document.createElement("div");d.className="stripe";d.textContent="Полоса "+i;l.appendChild(d)}
+function upd(){var v=window.visualViewport,p=document.getElementById("probe");
+document.getElementById("info").textContent="тест A\nscrollY "+Math.round(scrollY)+"  innerH "+innerHeight+"  clientH "+document.documentElement.clientHeight+
+"\nvv.h "+(v?Math.round(v.height):"-")+"  vv.top "+(v?Math.round(v.offsetTop):"-")+"  vv.pageTop "+(v?Math.round(v.pageTop):"-")+
+"\nscreen "+screen.width+"x"+screen.height+"  safe-top "+p.offsetHeight+"\n"+navigator.userAgent.slice(0,110)}
+addEventListener("scroll",upd,{passive:true});addEventListener("resize",upd);if(window.visualViewport)visualViewport.addEventListener("resize",upd);upd();
+</script></body></html>

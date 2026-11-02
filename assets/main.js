@@ -19,6 +19,10 @@
     const go = () => scrollTo({ top: +keepScroll * (document.documentElement.scrollHeight - innerHeight), behavior: "instant" });
     requestAnimationFrame(go); addEventListener("load", go, { once: true });
   }
+  // an old address with index.html (bookmarks, links shared before 02.11) shows as the clean one: rarytu.com/en/about/
+  if (/\/index\.html$/.test(location.pathname) && /^https?:$/.test(location.protocol)) {
+    try { history.replaceState(history.state, "", location.pathname.replace(/index\.html$/, "") + location.search + location.hash); } catch {}
+  }
   // Pages cached by the browser from before 01.11 have EN and RU as separate links in a <nav class="lang">: a tap anywhere on
   // the block still switches (GitHub Pages lets browsers keep a page for 10 minutes while the scripts are already new)
   $$("nav.lang").forEach((n) => n.addEventListener("click", (e) => {

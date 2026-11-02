@@ -125,7 +125,7 @@
         await Store.published(r.sha, files);
         for (const [p, v] of Object.entries(files)) if (v === null) delete Store.state.published[p];
         dialog(`<h2>Published v.${r.v}</h2><p>${r.pagesChanged} page${r.pagesChanged === 1 ? "" : "s"} updated${r.removed ? `, ${r.removed} file${r.removed === 1 ? "" : "s"} removed` : ""}. The site shows the changes in 1–2 minutes.</p>
-          <div class="row"><a class="btnlink primary" href="../index.html" target="_blank" rel="noopener">Open the site ↗</a><button class="secondary" data-x>Close</button></div>`);
+          <div class="row"><a class="btnlink primary" href="../" target="_blank" rel="noopener">Open the site ↗</a><button class="secondary" data-x>Close</button></div>`);
         App.route();
       }
     } catch (e) {

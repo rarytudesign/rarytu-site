@@ -69,7 +69,7 @@
   }
   /* rarytu.com itself (index.html at the root): picks the language and carries the link preview, because a shared
      "rarytu.com" link is read here and link-preview robots don't follow the script */
-  const ROOT_JS = '/* language: the visitor\'s own choice on the site (remembered), else the first of Russian or English in the device\'s language list, else English */\n(function(){var l;try{l=localStorage.getItem("rarytu-lang")}catch(e){}if(l!=="ru"&&l!=="en"){l="en";var a=navigator.languages&&navigator.languages.length?navigator.languages:[navigator.language||""];for(var i=0;i<a.length;i++){var c=String(a[i]).toLowerCase().slice(0,2);if(c==="ru"){l="ru";break}if(c==="en")break}}location.replace(l+"/index.html")})()';
+  const ROOT_JS = '/* language: the visitor\'s own choice on the site (remembered), else the first of Russian or English in the device\'s language list, else English */\n(function(){var l;try{l=localStorage.getItem("rarytu-lang")}catch(e){}if(l!=="ru"&&l!=="en"){l="en";var a=navigator.languages&&navigator.languages.length?navigator.languages:[navigator.language||""];for(var i=0;i<a.length;i++){var c=String(a[i]).toLowerCase().slice(0,2);if(c==="ru"){l="ru";break}if(c==="en")break}}location.replace(l+"/")})()';
   function renderRoot(site, work) {
     const base = String(site.url || "").replace(/\/+$/, ""), abs = (p) => base ? base + "/" + p.replace(/^\/+/, "") : p;
     const title = esc(tr(work.title, "en")), desc = esc(tr(work.description, "en"));
@@ -83,7 +83,7 @@
 <meta property="og:description" content="${desc}">${shareTags(site, abs, "en")}
 ${iconTags(site, (p) => p)}
 <script>${ROOT_JS}</script>
-<meta http-equiv="refresh" content="0;url=en/index.html"></head><body></body></html>
+<meta http-equiv="refresh" content="0;url=en/"></head><body></body></html>
 `;
   }
 
@@ -495,10 +495,13 @@ ${pageEnd(ctx, NEXT[ctx.nav])}`;
   // ---------- pages ----------
   /* p: { lang, key: "work"|"about"|"approach"|"case", slug? , path }
      data: { site, read(file) → parsed JSON }  (read is sync in Node; the panel passes a cache) */
+  // Clean addresses (02.11): links point to folders, rarytu.com/en/about/ instead of …/about/index.html.
+  // The files stay index.html; GitHub Pages serves a folder's index.html. Only relative links are touched.
+  const cleanLinks = (html) => html.replace(/(href=")((?:\.\.\/)*(?:[\w-]+\/)*)index\.html(#[^"]*)?"/g, (m, a, dir, hash) => `${a}${dir || "./"}${hash || ""}"`);
   function renderPage(p, data) {
     if (p.key === "root") return renderRoot(data.site, data.read("content/pages/work.json"));
     const html = renderRaw(p, data);
-    return noOrphans(p.lang === "ru" ? keepHyphens(html) : html);
+    return cleanLinks(noOrphans(p.lang === "ru" ? keepHyphens(html) : html));
   }
   function renderRaw(p, data) {
     const { site } = data, lang = p.lang, other = lang === "en" ? "ru" : "en";
@@ -545,7 +548,7 @@ ${pageEnd(ctx, NEXT[ctx.nav])}`;
     return out;
   }
 
-  const api = { renderRoot, shareTags, iconTags, HEAD_JS, HEAD_JS_HASH, noOrphans, keepHyphens, headingVar, listPages, renderPage, approachMain, aboutMain, caseMain, workMain, vp, esc, rich, pick, variant, tr, up, pagePath, casePath, shell, lastScreen, siteFooter, SVG };
+  const api = { cleanLinks, renderRoot, shareTags, iconTags, HEAD_JS, HEAD_JS_HASH, noOrphans, keepHyphens, headingVar, listPages, renderPage, approachMain, aboutMain, caseMain, workMain, vp, esc, rich, pick, variant, tr, up, pagePath, casePath, shell, lastScreen, siteFooter, SVG };
   root.RarytuRender = api;
   if (typeof module !== "undefined" && module.exports) module.exports = api;
 })(typeof window !== "undefined" ? window : globalThis);

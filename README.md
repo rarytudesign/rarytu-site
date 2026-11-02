@@ -16,7 +16,7 @@ assets/cv           CV PDFs (EN, RU)
 
 To look at it on your computer: open Terminal in this folder and run
 `python3 -m http.server 8000`, then go to http://localhost:8000.
-(Opening index.html by double-click also works, apart from a few browser restrictions on video.)
+(Links point to folders like en/about/, so double-clicking index.html opens the first page but links between pages need the local server above.)
 
 ---
 

@@ -406,3 +406,8 @@ Rule: one step at a time. Test, commit, push, then tick it here.
   preview picture reaches rarytu.com itself. Thumbnails fall back to raw.githubusercontent.com while Pages deploys.
   Test: tools/test-brand.js against the mock GitHub (upload, Publish, files and tags in the commit, ICO sizes).
   Lesson again: never pkill -f a pattern that also appears in the same shell command.
+- 2026-11-02: clean addresses. Links were written to files (en/about/index.html) so the site worked from a double-click;
+  on the domain that showed as "rarytu.com/en/index.html" when people copied the address. render.js cleanLinks() rewrites
+  every relative href ending in index.html to its folder (../../ru/about/, ../../../ru/approach/#contact); the root redirect
+  goes to en/ or ru/; main.js turns an old …/index.html address into the clean one (history.replaceState). Files stay
+  index.html (Pages serves a folder's index.html). Local crawl: 20 internal links, 1473 files, no 404.
